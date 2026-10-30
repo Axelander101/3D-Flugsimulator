@@ -1,0 +1,16 @@
+plugins {
+    id 'java-library'
+    id "io.github.0ffz.github-packages" version "1.2.1" // Plugin for anonymous inclusion of artifacts hosted in github package registry
+}
+
+dependencies {
+    api libs.jmeCore
+    runtimeOnly libs.jmeJogg
+    runtimeOnly libs.jmePlugins
+
+    
+    
+
+
+
+}
