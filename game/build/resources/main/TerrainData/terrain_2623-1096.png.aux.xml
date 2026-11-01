@@ -1,0 +1,7 @@
+<PAMDataset>
+  <SRS dataAxisToSRSAxisMapping="1,2">LOCAL_CS["CH1903+ / LV95",UNIT["metre",1,AUTHORITY["EPSG","9001"]],AXIS["Easting",EAST],AXIS["Northing",NORTH]]</SRS>
+  <GeoTransform>  2.6229993491701921e+06,  1.9524894240156199e+00,  0.0000000000000000e+00,  1.0970005578800559e+06,  0.0000000000000000e+00, -1.9525801952580195e+00</GeoTransform>
+  <PAMRasterBand band="1">
+    <NoDataValue>-9.99900000000000E+03</NoDataValue>
+  </PAMRasterBand>
+</PAMDataset>
