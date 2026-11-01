@@ -13,8 +13,12 @@ public class DesktopLauncher {
 
         final AppSettings appSettings = new AppSettings(true);
 
-        game.setSettings(appSettings);
-        game.setShowSettings(false); //Settings dialog not supported on mac
+        AppSettings settings = new AppSettings(true);
+        settings.setResolution(1600, 900);
+
+        settings.setUseJoysticks(true);
+        game.setSettings(settings);
+        game.setShowSettings(false);
         game.start();
     }
 }

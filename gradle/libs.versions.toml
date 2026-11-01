@@ -1,5 +1,5 @@
 [versions]
-jme = "3.9.0-stable"
+jme = "3.10.0-beta3"
 
 appcompat = "1.4.0"
 googleMaterial = "1.4.0"
