@@ -1,6 +1,7 @@
 /.gradle/
 /.nb-gradle/
-/build/
+build/
+**/build/
 /private/
 /*.dll
 /*.dylib
