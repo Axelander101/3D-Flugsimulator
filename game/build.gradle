@@ -8,10 +8,4 @@ dependencies {
     api libs.jmeCore
     runtimeOnly libs.jmeJogg
     runtimeOnly libs.jmePlugins
-
-    
-    
-
-
-
 }
