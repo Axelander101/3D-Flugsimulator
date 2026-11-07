@@ -72,7 +72,7 @@ public final class TerrainDownloader implements AutoCloseable {
                 .build(), Path.of("terrain-cache"));
     }
 
-    /** Das übergebene Verzeichnis gehört ausschließlich diesem Downloader. */
+
     TerrainDownloader(Path cacheDirectory, HttpClient client) {
         this(cacheDirectory, client, null);
     }
