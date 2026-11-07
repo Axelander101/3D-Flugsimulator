@@ -27,6 +27,7 @@ public class FlightTraining extends SimpleApplication {
 
     @Override
     public void simpleInitApp() {
+
         setDisplayFps(false);
         setDisplayStatView(false);
 
@@ -40,6 +41,14 @@ public class FlightTraining extends SimpleApplication {
 
         physics = new FlightPhysics(plane, input);
         terrain = new TerrainStreaming(assetManager, rootNode);
+    }
+
+    @Override
+    public void destroy() {
+        if (terrain != null) {
+            terrain.close();
+        }
+        super.destroy();
     }
 
     @Override
