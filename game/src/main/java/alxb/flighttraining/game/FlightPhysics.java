@@ -1,5 +1,7 @@
 package alxb.flighttraining.game;
 
+import com.jme3.collision.CollisionResults;
+import com.jme3.math.Ray;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Node;
 
@@ -18,6 +20,7 @@ final class FlightPhysics {
     private final float wingArea = 20f;
     private final float mass = 10000f;
     private final float sideArea = 10f;
+
 
     FlightPhysics(Node plane, FlightInput input) {
         this.plane = plane;
@@ -477,4 +480,5 @@ final class FlightPhysics {
                 rollSpeed * tpf
         );
     }
+
 }
