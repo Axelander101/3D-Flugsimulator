@@ -2,7 +2,6 @@ package alxb.flighttraining.game;
 
 import com.jme3.anim.AnimComposer;
 import com.jme3.asset.AssetManager;
-import com.jme3.collision.CollisionResult;
 import com.jme3.collision.CollisionResults;
 import com.jme3.effect.ParticleEmitter;
 import com.jme3.effect.ParticleMesh;

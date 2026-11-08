@@ -21,6 +21,10 @@ final class FlightPhysics {
     private final float mass = 10000f;
     private final float sideArea = 10f;
 
+    private float rollCommand = 0f;
+
+    private float pitchCommand = 0f;
+    private float trimAoADeg = 3f;
 
     FlightPhysics(Node plane, FlightInput input) {
         this.plane = plane;
@@ -260,14 +264,11 @@ final class FlightPhysics {
     private float calculateQFactor(float speed) {
         float referenceSpeed = 150f;
 
-        float referencePressure =
-                0.5f * rho * referenceSpeed * referenceSpeed;
+        float referencePressure = 0.5f * rho * referenceSpeed * referenceSpeed;
 
-        float dynamicPressure =
-                0.5f * rho * speed * speed;
+        float dynamicPressure = 0.5f * rho * speed * speed;
 
-        float qFactor =
-                dynamicPressure / referencePressure;
+        float qFactor = dynamicPressure / referencePressure;
 
         return Math.max(0f, Math.min(qFactor, 1f));
     }
@@ -294,103 +295,114 @@ final class FlightPhysics {
     }
 
     private void updatePitch(float tpf, float qFactor, float aoaControlFactor, float forwardSpeed) {
-        float rotationSpeed = 1.5f;
-
-        float aoaStability = 0.03f;
-
-        float requiredCl = calculateRequiredCl(forwardSpeed);
-        float targetAoA = -requiredCl * 15f;
-        float currentAoA = getAngleOfAttack();
-        float aoAError = currentAoA - targetAoA;
-
-        float restoringAcceleration =
-                aoAError
-                        * aoaStability
-                        * qFactor;
-
-        float maxPitchSpeed = 0.5f;
-
-        // Tastatur
-        if (input.pitchUp) {
-            pitchSpeed += rotationSpeed
-                            * tpf
-                            * qFactor
-                            * aoaControlFactor;
+        if (tpf <= 0f) {
+            return;
         }
 
-        if (input.pitchDown) {
-            pitchSpeed -= rotationSpeed
-                            * tpf
-                            * qFactor
-                            * aoaControlFactor;
-        }
 
-        float pitchDamping = 1f;
+        float targetCommand = (input.pitchUp ? 1f : 0f) - (input.pitchDown ? 1f : 0f);
 
-        pitchSpeed -= pitchSpeed * pitchDamping * tpf;
 
-        float restoringFactor = 0f;
+        float controlResponse = 7f;
+        float blend = 1f - (float) Math.exp(-controlResponse * tpf);
 
-        if (forwardSpeed > 30f) {
-            restoringFactor = (forwardSpeed - 30f) / 30f;
-            restoringFactor = Math.min(restoringFactor, 1f);
-        }
+        pitchCommand += (targetCommand - pitchCommand) * blend;
 
-        pitchSpeed += restoringAcceleration * restoringFactor * tpf;
 
-        // Begrenzen
-        pitchSpeed = Math.max(-maxPitchSpeed, Math.min(pitchSpeed, maxPitchSpeed));
+        float pressure = Math.max(0f, Math.min(3f, qFactor));
+
+        float controlAuthority = Math.max(0f, Math.min(1f, aoaControlFactor));
+
+
+        float currentAoA = -(float) Math.toRadians(getAngleOfAttack());
+
+        float trimAoA = (float) Math.toRadians(trimAoADeg);
+
+
+        float aoaError = trimAoA - currentAoA;
+
+        float controlGain = 2.5f;
+        float stabilityGain = 1.2f;
+
+        float controlAcceleration = pitchCommand
+                        * controlGain
+                        * pressure
+                        * controlAuthority;
+
+        float stabilityAcceleration = aoaError
+                        * stabilityGain
+                        * pressure;
+
+        float acceleration =
+                controlAcceleration + stabilityAcceleration;
+
+
+        float damping = 0.2f + 1.5f * (float) Math.sqrt(pressure);
+
+
+        float decay = (float) Math.exp(-damping * tpf);
+
+        float equilibriumRate = acceleration / damping;
+
+        pitchSpeed = equilibriumRate + (pitchSpeed - equilibriumRate) * decay;
+
+
+        float maxPitchSpeed = (float) Math.toRadians(40f);
+
+        pitchSpeed = Math.max(-maxPitchSpeed, Math.min(maxPitchSpeed, pitchSpeed));
     }
 
     private void updateRoll(float tpf, float aoaControlFactor) {
-        float rotationSpeed = 1.5f;
-        float abbremsen = 1f;
-
-        float stabilisationStrength = 0.2f;
-        float damping = 2.0f;
-
-        float maxRollSpeed = 1.5f;
-
-        float rollDeg = getRollAngle();
-
-        // Stabilisierung
-        if (!input.rollLeft && !input.rollRight && Math.abs(input.rollInput) < 0.05f) {
-            if (rollSpeed > 0) {
-                rollSpeed = Math.max(0, rollSpeed - abbremsen * tpf);
-            }
-
-            if (rollSpeed < 0) {
-                rollSpeed = Math.min(0, rollSpeed + abbremsen * tpf);
-            }
-
-            rollSpeed += (-rollDeg * stabilisationStrength) * tpf;
-
-            rollSpeed -= rollSpeed * damping * tpf;
+        if (tpf <= 0f) {
+            return;
         }
 
-        // Tastatur
-        if (input.rollLeft) {
-            rollSpeed += rotationSpeed
-                            * tpf
-                            * aoaControlFactor;
+        float deadzone = 0.05f;
+        float stick = input.rollInput;
+
+
+        if (Math.abs(stick) <= deadzone) {
+            stick = 0f;
+        } else {
+            stick = Math.signum(stick)
+                    * (Math.abs(stick) - deadzone)
+                    / (1f - deadzone);
         }
 
-        if (input.rollRight) {
-            rollSpeed -= rotationSpeed
-                            * tpf
-                            * aoaControlFactor;
-        }
 
-        // Controller
-        if (Math.abs(input.rollInput) > 0.05f) {
-            rollSpeed += input.rollInput
-                            * rotationSpeed
-                            * tpf
-                            * aoaControlFactor;
-        }
+        float keyboard = (input.rollLeft ? 1f : 0f) - (input.rollRight ? 1f : 0f);
 
-        // Begrenzen
-        rollSpeed = Math.max(-maxRollSpeed, Math.min(rollSpeed, maxRollSpeed));
+        // Tastatur hat bei Betätigung Vorrang.
+        float targetCommand = keyboard != 0f ? keyboard : stick;
+
+        targetCommand = Math.max(-1f, Math.min(1f, targetCommand));
+
+
+        float controlResponse = 8f;
+        float blend = 1f - (float) Math.exp(-controlResponse * tpf);
+
+        rollCommand += (targetCommand - rollCommand) * blend;
+
+        float controlAuthority = Math.max(0f, Math.min(1f, aoaControlFactor));
+
+
+        float rollAcceleration = 6f;
+        float rollDamping = 2f;
+
+        float acceleration = rollCommand
+                        * rollAcceleration
+                        * controlAuthority;
+
+
+        float decay = (float) Math.exp(-rollDamping * tpf);
+
+        float equilibriumRate = acceleration / rollDamping;
+
+        rollSpeed = equilibriumRate + (rollSpeed - equilibriumRate) * decay;
+
+        float maxRollSpeed = (float) Math.toRadians(150f);
+
+        rollSpeed = Math.max(-maxRollSpeed, Math.min(maxRollSpeed, rollSpeed));
     }
 
     private void updateYaw(float tpf, float qFactor, float aoaControlFactor) {
