@@ -22,6 +22,7 @@ public class FlightTraining extends SimpleApplication {
     private Guns guns;
     private AnimComposer composer;
     private Spatial planeModel;
+    private FlightSurfaces flightSurfaces;
 
     public FlightTraining() {
     }
@@ -55,6 +56,9 @@ public class FlightTraining extends SimpleApplication {
             System.out.println(composer.getAnimClipsNames());
         }
         guns = new Guns(plane, input, rootNode, composer, assetManager);
+
+        flightSurfaces = new FlightSurfaces(plane, input);
+        composer.setEnabled(false);
     }
 
     @Override
@@ -68,6 +72,7 @@ public class FlightTraining extends SimpleApplication {
     @Override
     public void simpleUpdate(float tpf) {
         physics.update(tpf);
+        flightSurfaces.update(tpf);
         updateCamera();
 
         guns.shoot(tpf);
