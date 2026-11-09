@@ -1,7 +1,9 @@
 package alxb.flighttraining.game;
 
+import com.jme3.anim.AnimComposer;
 import com.jme3.app.SimpleApplication;
 import com.jme3.app.state.AppState;
+import com.jme3.asset.AssetManager;
 import com.jme3.environment.FastLightProbeFactory;
 import com.jme3.light.DirectionalLight;
 import com.jme3.light.LightProbe;
@@ -17,6 +19,10 @@ public class FlightTraining extends SimpleApplication {
     private FlightPhysics physics;
     private FlightHud hud;
     private TerrainStreaming terrain;
+    private Guns guns;
+    private AnimComposer composer;
+    private Spatial planeModel;
+    private FlightSurfaces flightSurfaces;
 
     public FlightTraining() {
     }
@@ -41,6 +47,18 @@ public class FlightTraining extends SimpleApplication {
 
         physics = new FlightPhysics(plane, input);
         terrain = new TerrainStreaming(assetManager, rootNode);
+
+        composer = findAnimComposer(planeModel);
+
+        if (composer == null) {
+            System.out.println("Kein AnimComposer gefunden!");
+        } else {
+            System.out.println(composer.getAnimClipsNames());
+        }
+        guns = new Guns(plane, input, rootNode, composer, assetManager);
+
+        flightSurfaces = new FlightSurfaces(plane, input);
+        composer.setEnabled(false);
     }
 
     @Override
@@ -54,7 +72,10 @@ public class FlightTraining extends SimpleApplication {
     @Override
     public void simpleUpdate(float tpf) {
         physics.update(tpf);
+        flightSurfaces.update(tpf);
         updateCamera();
+
+        guns.shoot(tpf);
 
         Vector3f position = plane.getLocalTranslation();
         terrain.update(position);
@@ -78,9 +99,9 @@ public class FlightTraining extends SimpleApplication {
     private void initializePlane() {
         plane = new Node("Plane");
 
-        Spatial planeModel =
+        planeModel =
                 assetManager.loadModel(
-                        "Models/FA18C_Swiss_Hornet.glb"
+                        "Models/FA18C_Swiss_Hornet_Cannon.glb"
                 );
 
         planeModel.rotate(
@@ -142,5 +163,29 @@ public class FlightTraining extends SimpleApplication {
                 planePosition.add(forward.mult(10)),
                 up
         );
+    }
+
+    private AnimComposer findAnimComposer(Spatial spatial) {
+
+        AnimComposer composer =
+                spatial.getControl(AnimComposer.class);
+
+        if (composer != null) {
+            return composer;
+        }
+
+        if (spatial instanceof Node node) {
+
+            for (Spatial child : node.getChildren()) {
+
+                AnimComposer found = findAnimComposer(child);
+
+                if (found != null) {
+                    return found;
+                }
+            }
+        }
+
+        return null;
     }
 }

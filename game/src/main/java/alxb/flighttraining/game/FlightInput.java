@@ -32,6 +32,8 @@ final class FlightInput {
     boolean throttleUp;
     boolean throttleDown;
 
+    boolean shoot;
+
     FlightInput(InputManager inputManager) {
         this.inputManager = inputManager;
         configureJoystick();
@@ -51,6 +53,9 @@ final class FlightInput {
         inputManager.addMapping("ThrottleUp", new KeyTrigger(KeyInput.KEY_R));
         inputManager.addMapping("ThrottleDown", new KeyTrigger(KeyInput.KEY_F));
 
+
+        inputManager.addMapping("Shoot", new KeyTrigger(KeyInput.KEY_SPACE));
+
         inputManager.addListener(actionListener,
                 "PitchUp",
                 "PitchDown",
@@ -59,7 +64,8 @@ final class FlightInput {
                 "YawLeft",
                 "YawRight",
                 "ThrottleUp",
-                "ThrottleDown"
+                "ThrottleDown",
+                "Shoot"
         );
     }
 
@@ -188,6 +194,10 @@ final class FlightInput {
 
             case "ThrottleDown":
                 throttleDown = isPressed;
+                break;
+
+            case "Shoot":
+                shoot = isPressed;
                 break;
         }
     };

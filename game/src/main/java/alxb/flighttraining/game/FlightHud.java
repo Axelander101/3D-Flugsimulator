@@ -19,6 +19,9 @@ final class FlightHud {
         String aoaText = String.format("%.1f", -physics.getAngleOfAttack());
         String betaText = String.format("%.1f", physics.getSideSlipAngle());
         String flightPathText = String.format("%.1f", physics.getFlightPathAngle());
+        String gFaktor = String.format("%.1f", physics.getNormalG()+1);
+        String pitchSpeed = String.format("%.3f", physics.getPitchSpeed());
+        String verticalSpeed = String.format("%.1f", physics.getVerticalSpeed());
 
         hudText.setText(
                 "Speed: " + speedText + " m/s\n"
@@ -26,9 +29,10 @@ final class FlightHud {
                         + "AoA: " + aoaText + "°\n"
                         + "Beta: " + betaText + "°\n"
                         + "Throttle: " + (physics.getThrottle() * 100f) + "%\n"
-                        + "Vertical Speed: " + String.format("%.1f", physics.getVerticalSpeed()) + " m/s\n"
+                        + "Vertical Speed: " + verticalSpeed + " m/s\n"
                         + "Flight Path: " + flightPathText + "°\n"
-                        + "Pitch Speed: " + String.format("%.3f", physics.getPitchSpeed()) + " rad/s\n"
+                        + "Pitch Speed: " + pitchSpeed + " rad/s\n"
+                        + "G: " + gFaktor + " g\n"
         );
     }
 }
