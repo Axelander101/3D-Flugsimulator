@@ -1,7 +1,5 @@
 package alxb.flighttraining.game;
 
-import com.jme3.collision.CollisionResults;
-import com.jme3.math.Ray;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Node;
 
@@ -26,17 +24,50 @@ final class FlightPhysics {
     private float pitchCommand = 0f;
     private float trimAoADeg = 3f;
 
+
+    private static final float G = 9.81f;
+    private final Vector3f gravity = new Vector3f(0f, -G, 0f);
+
+    private float normalG = 0f;
+
+
     FlightPhysics(Node plane, FlightInput input) {
         this.plane = plane;
         this.input = input;
     }
 
+    float getNormalG() {
+        return normalG;
+    }
+
     void update(float tpf) {
+        if (tpf <= 0f) {
+            return;
+        }
+
+        Vector3f previousVelocity = velocity.clone();
+
         updateRotation(tpf);
         updateSpeed(tpf);
         updateLift(tpf);
         updateDrag(tpf);
         updateSideSlip(tpf);
+
+
+        Vector3f acceleration = velocity
+                .subtract(previousVelocity)
+                .divideLocal(tpf);
+
+
+        Vector3f specificForce = acceleration.subtract(gravity);
+
+
+        Vector3f aircraftUp = plane.getLocalRotation()
+                .mult(Vector3f.UNIT_Y)
+                .normalizeLocal();
+
+        normalG = specificForce.dot(aircraftUp) / G;
+
         plane.move(velocity.mult(tpf));
     }
 
@@ -207,7 +238,6 @@ final class FlightPhysics {
 
     private void updateSpeed(float tpf) {
         Vector3f forward = plane.getLocalRotation().mult(Vector3f.UNIT_Z.negate());
-        Vector3f gravity = new Vector3f(0, -9.81f, 0);
 
         float throttleForce = 0f;
 
