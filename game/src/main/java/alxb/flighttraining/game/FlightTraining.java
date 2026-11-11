@@ -152,7 +152,10 @@ public class FlightTraining extends SimpleApplication {
                 (float) Math.PI,
                 0f
         );
+
         plane.attachChild(planeModel);
+
+        //plane.scale(0.6f);
 
         plane.setLocalTranslation(SpawnSettings.WORLD_X, 0f, SpawnSettings.WORLD_Z);
 
