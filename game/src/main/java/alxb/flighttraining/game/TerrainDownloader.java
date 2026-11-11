@@ -1,34 +1,36 @@
 package alxb.flighttraining.game;
 
+import com.google.gson.JsonParser;
+import com.google.gson.JsonObject;
 import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.file.AtomicMoveNotSupportedException;
-import java.nio.file.DirectoryNotEmptyException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.nio.file.StandardOpenOption;
 import java.time.Duration;
-import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Set;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.FutureTask;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 import javax.imageio.ImageIO;
 
-/** Sechs Worker teilen sich Höhen- und PNG-Downloads. Jede Spielsitzung besitzt ihren Cache. */
+/** Sechs Worker laden Höhendaten und Luftbilder in denselben Karten-Cache. */
 public final class TerrainDownloader implements AutoCloseable {
     private static final int DATA_YEAR = 2024;
     private static final long RETRY_DELAY_NANOS = Duration.ofSeconds(30).toNanos();
-    private static final Pattern LEGACY_CACHE_FILE = Pattern.compile(
-            "(terrain|texture)_[0-9]+-[0-9]+[.](tif|png)(-.*[.]part)?"
+    private static final Pattern CACHE_FILE = Pattern.compile(
+            "(terrain|texture)_([0-9]+)-([0-9]+)[.](tif|png)"
     );
 
     private enum Kind { HEIGHT, TEXTURE }
@@ -51,47 +53,29 @@ public final class TerrainDownloader implements AutoCloseable {
 
     private static final class Download {
         final CompletableFuture<Path> result = new CompletableFuture<>();
+        FutureTask<Void> task;
         long retryAt;
     }
 
     private final HttpClient client;
     private final Path cacheDirectory;
-    private final Path legacyDirectory;
-    private final ExecutorService workers = Executors.newFixedThreadPool(
-            6, Thread.ofPlatform().daemon().name("map-download-", 0).factory()
+    private final ThreadPoolExecutor workers = new ThreadPoolExecutor(
+            6, 6, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>(),
+            Thread.ofPlatform().daemon().name("map-download-", 0).factory()
     );
     private final HashMap<Resource, Download> downloads = new HashMap<>();
-    private final CompletableFuture<Void> cleanupDone = new CompletableFuture<>();
-    private final Thread shutdownHook = new Thread(this::close, "map-cache-cleanup");
     private boolean closed;
 
     public TerrainDownloader() {
-        this(createSessionDirectory(), HttpClient.newBuilder()
+        this(Path.of("terrain-cache"), HttpClient.newBuilder()
                 .connectTimeout(Duration.ofSeconds(15))
                 .followRedirects(HttpClient.Redirect.NORMAL)
-                .build(), Path.of("terrain-cache"));
+                .build());
     }
-
 
     TerrainDownloader(Path cacheDirectory, HttpClient client) {
-        this(cacheDirectory, client, null);
-    }
-
-    private TerrainDownloader(Path cacheDirectory, HttpClient client, Path legacyDirectory) {
         this.cacheDirectory = cacheDirectory;
         this.client = client;
-        this.legacyDirectory = legacyDirectory;
-        Runtime.getRuntime().addShutdownHook(shutdownHook);
-    }
-
-    private static Path createSessionDirectory() {
-        try {
-            Path root = Path.of("terrain-cache");
-            Files.createDirectories(root);
-            return Files.createTempDirectory(root, "session-");
-        } catch (IOException e) {
-            throw new UncheckedIOException("Karten-Cache konnte nicht angelegt werden", e);
-        }
     }
 
     public CompletableFuture<Path> downloadTile(int tileX, int tileZ) {
@@ -108,12 +92,16 @@ public final class TerrainDownloader implements AutoCloseable {
         }
         Download previous = downloads.get(resource);
         if (previous != null && (!previous.result.isCompletedExceptionally()
-                || System.nanoTime() < previous.retryAt)) {
+                || System.nanoTime() - previous.retryAt < 0)) {
             return previous.result;
         }
         Download download = new Download();
+        download.task = new FutureTask<>(() -> {
+            fetch(resource, download);
+            return null;
+        });
         downloads.put(resource, download);
-        workers.execute(() -> fetch(resource, download));
+        workers.execute(download.task);
         return download.result;
     }
 
@@ -121,6 +109,73 @@ public final class TerrainDownloader implements AutoCloseable {
         String item = "swissalti3d_" + DATA_YEAR + "_" + tile.x() + "-" + tile.z();
         return URI.create("https://data.geo.admin.ch/ch.swisstopo.swissalti3d/"
                 + item + "/" + item + "_2_2056_5728.tif");
+    }
+
+    private URI findHeightAsset(TerrainTile tile) throws IOException, InterruptedException {
+        // Approximate LV95 to WGS84 at the centre of the 1 km tile.
+        double e = (tile.x() * 1000.0 + 500.0 - 2600000.0) / 1000000.0;
+        double n = (tile.z() * 1000.0 + 500.0 - 1200000.0) / 1000000.0;
+        double lon = (2.6779094 + 4.728982 * e + 0.791484 * e * n
+                + 0.1306 * e * n * n - 0.0436 * e * e * e) * 100.0 / 36.0;
+        double lat = (16.9023892 + 3.238272 * n - 0.270978 * e * e
+                - 0.002528 * n * n - 0.0447 * e * e * n - 0.0140 * n * n * n)
+                * 100.0 / 36.0;
+        String bbox = String.format(Locale.ROOT, "%.7f,%.7f,%.7f,%.7f",
+                lon - 0.0001, lat - 0.0001, lon + 0.0001, lat + 0.0001);
+        URI query = URI.create("https://data.geo.admin.ch/api/stac/v1/collections/"
+                + "ch.swisstopo.swissalti3d/items?bbox=" + bbox + "&limit=100");
+        HttpResponse<String> response = client.send(
+                HttpRequest.newBuilder(query).timeout(Duration.ofSeconds(20)).GET().build(),
+                HttpResponse.BodyHandlers.ofString()
+        );
+        if (response.statusCode() != 200) {
+            throw new IOException("Höhenkatalog antwortet mit HTTP " + response.statusCode());
+        }
+
+        Pattern fileName = Pattern.compile("swissalti3d_([0-9]{4})_"
+                + tile.x() + "-" + tile.z() + "_2_2056_5728[.]tif");
+        var features = JsonParser.parseString(response.body()).getAsJsonObject()
+                .getAsJsonArray("features");
+        if (features == null) {
+            throw new IOException("Höhenkatalog liefert keine Feature-Liste.");
+        }
+        URI newestAsset = null;
+        int newestYear = 0;
+        for (var feature : features) {
+            JsonObject assets = feature.getAsJsonObject().getAsJsonObject("assets");
+            if (assets == null) {
+                continue;
+            }
+            for (var entry : assets.entrySet()) {
+                var href = entry.getValue().getAsJsonObject().get("href");
+                if (href == null || !href.isJsonPrimitive()) {
+                    continue;
+                }
+                URI uri = URI.create(href.getAsString());
+                String path = uri.getPath();
+                if (!"https".equals(uri.getScheme())
+                        || !"data.geo.admin.ch".equalsIgnoreCase(uri.getHost()) || path == null) {
+                    continue;
+                }
+                var match = fileName.matcher(path.substring(path.lastIndexOf('/') + 1));
+                if (match.matches()) {
+                    int year = Integer.parseInt(match.group(1));
+                    if (year > newestYear) {
+                        newestYear = year;
+                        newestAsset = uri;
+                    }
+                }
+            }
+        }
+        return newestAsset;
+    }
+
+    private HttpResponse<Path> fetchFile(URI uri, Path temporary)
+            throws IOException, InterruptedException {
+        return client.send(HttpRequest.newBuilder(uri)
+                        .timeout(Duration.ofSeconds(60)).GET().build(),
+                HttpResponse.BodyHandlers.ofFile(temporary,
+                        StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING));
     }
 
     static URI textureUri(TerrainTile tile) {
@@ -167,16 +222,32 @@ public final class TerrainDownloader implements AutoCloseable {
             if (!isCurrent(resource, download)) {
                 return;
             }
-            HttpRequest request = HttpRequest.newBuilder(resource.uri())
-                    .timeout(Duration.ofSeconds(60)).GET().build();
+            URI uri = resource.uri();
             temporary = Files.createTempFile(cacheDirectory, resource.fileName() + "-", ".part");
-            HttpResponse<Path> response = client.send(request, HttpResponse.BodyHandlers.ofFile(temporary));
+            HttpResponse<Path> response = fetchFile(uri, temporary);
+            if (response.statusCode() == 404 && resource.kind() == Kind.HEIGHT
+                    && isCurrent(resource, download)) {
+                URI catalogAsset = findHeightAsset(resource.tile());
+                if (catalogAsset != null && isCurrent(resource, download)) {
+                    uri = catalogAsset;
+                    System.out.println("Höhenkachel aus swisstopo-Katalog: " + uri);
+                    response = fetchFile(uri, temporary);
+                    if (response.statusCode() == 404) {
+                        throw new IOException("Höhenkatalog-Datei fehlt (HTTP 404): " + uri);
+                    }
+                }
+            }
             if (response.statusCode() == 404) {
-                download.result.complete(null);
+                synchronized (this) {
+                    if (isCurrent(resource, download)) {
+                        System.err.println("Kartendatei nicht verfügbar (HTTP 404): " + resource.uri());
+                        download.result.complete(null);
+                    }
+                }
                 return;
             }
             if (response.statusCode() != 200) {
-                throw new IOException("HTTP " + response.statusCode() + " für " + resource.uri());
+                throw new IOException("HTTP " + response.statusCode() + " für " + uri);
             }
             if (!isCurrent(resource, download)) {
                 return;
@@ -235,13 +306,18 @@ public final class TerrainDownloader implements AutoCloseable {
         }
         TerrainTile tile = new TerrainTile(tileX, tileZ);
         for (Kind kind : Kind.values()) {
-            Resource resource = new Resource(tile, kind);
-            Download removed = downloads.remove(resource);
-            if (removed != null) {
-                removed.result.cancel(false);
-            }
-            workers.execute(() -> deleteUnusedFile(resource));
+            forgetResource(new Resource(tile, kind));
         }
+    }
+
+    private void forgetResource(Resource resource) {
+        Download removed = downloads.remove(resource);
+        if (removed != null) {
+            removed.result.cancel(false);
+            removed.task.cancel(true);
+            workers.remove(removed.task);
+        }
+        workers.execute(() -> deleteUnusedFile(resource));
     }
 
     private synchronized void deleteUnusedFile(Resource resource) {
@@ -256,85 +332,49 @@ public final class TerrainDownloader implements AutoCloseable {
     }
 
     synchronized void retainTiles(Set<TerrainTile> wanted) {
+        if (closed) {
+            return;
+        }
         for (Resource resource : Set.copyOf(downloads.keySet())) {
             if (!wanted.contains(resource.tile())) {
-                deleteTile(resource.tile().x(), resource.tile().z());
+                forgetResource(resource);
             }
         }
+        // Auch Dateien eines früheren Spielstarts berücksichtigen.
+        workers.execute(() -> {
+            if (!Files.isDirectory(cacheDirectory)) {
+                return;
+            }
+            try (var files = Files.list(cacheDirectory)) {
+                files.forEach(file -> {
+                    var match = CACHE_FILE.matcher(file.getFileName().toString());
+                    if (match.matches()) {
+                        TerrainTile tile = new TerrainTile(
+                                Integer.parseInt(match.group(2)), Integer.parseInt(match.group(3))
+                        );
+                        if (!wanted.contains(tile)) {
+                            Kind kind = match.group(1).equals("terrain") ? Kind.HEIGHT : Kind.TEXTURE;
+                            deleteUnusedFile(new Resource(tile, kind));
+                        }
+                    }
+                });
+            } catch (IOException e) {
+                System.err.println("Karten-Cache konnte nicht bereinigt werden: " + e.getMessage());
+            }
+        });
     }
 
     @Override
-    public void close() {
-        boolean performCleanup;
-        synchronized (this) {
-            performCleanup = !closed;
-            if (performCleanup) {
-                closed = true;
-                for (Download download : downloads.values()) {
-                    download.result.completeExceptionally(new CancellationException("Spiel beendet"));
-                }
-                downloads.clear();
-                workers.shutdownNow();
-                client.shutdownNow();
-            }
-        }
-        if (!performCleanup) {
-            cleanupDone.join();
+    public synchronized void close() {
+        if (closed) {
             return;
         }
-
-        boolean interrupted = Thread.interrupted();
-        try {
-            // Erst wenn kein Worker mehr schreibt, kann der Cache endgültig entfernt werden.
-            boolean stopped = false;
-            while (!stopped) {
-                try {
-                    stopped = workers.awaitTermination(1, TimeUnit.SECONDS);
-                } catch (InterruptedException e) {
-                    interrupted = true;
-                }
-            }
-            deleteSessionFiles();
-        } catch (IOException e) {
-            System.err.println("Karten-Cache konnte nicht vollständig gelöscht werden: " + e.getMessage());
-        } finally {
-            cleanupDone.complete(null);
-            if (Thread.currentThread() != shutdownHook) {
-                try {
-                    Runtime.getRuntime().removeShutdownHook(shutdownHook);
-                } catch (IllegalStateException e) {
-                    // Während des JVM-Shutdowns wartet der Hook bereits auf cleanupDone.
-                }
-            }
-            if (interrupted) {
-                Thread.currentThread().interrupt();
-            }
+        closed = true;
+        for (Download download : downloads.values()) {
+            download.result.completeExceptionally(new CancellationException("Spiel beendet"));
         }
-    }
-
-    private void deleteSessionFiles() throws IOException {
-        if (Files.exists(cacheDirectory)) {
-            try (var files = Files.walk(cacheDirectory)) {
-                for (Path path : files.sorted(Comparator.reverseOrder()).toList()) {
-                    Files.deleteIfExists(path);
-                }
-            }
-        }
-        if (legacyDirectory != null && Files.isDirectory(legacyDirectory)) {
-            // Bekannte Dateien der vorherigen Version lagen direkt in terrain-cache.
-            try (var files = Files.list(legacyDirectory)) {
-                for (Path file : files.toList()) {
-                    if (Files.isRegularFile(file)
-                            && LEGACY_CACHE_FILE.matcher(file.getFileName().toString()).matches()) {
-                        Files.deleteIfExists(file);
-                    }
-                }
-            }
-            try {
-                Files.deleteIfExists(legacyDirectory);
-            } catch (DirectoryNotEmptyException e) {
-                // Andere Spielsitzungen können hier noch eigene Unterordner besitzen.
-            }
-        }
+        downloads.clear();
+        workers.shutdownNow();
+        client.shutdownNow();
     }
 }

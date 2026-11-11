@@ -1,7 +1,15 @@
 package alxb.flighttraining.game;
 
+import com.jme3.anim.AnimComposer;
 import com.jme3.anim.Joint;
 import com.jme3.anim.SkinningControl;
+import com.jme3.asset.AssetManager;
+import com.jme3.effect.Particle;
+import com.jme3.effect.ParticleEmitter;
+import com.jme3.effect.ParticleMesh;
+import com.jme3.material.Material;
+import com.jme3.math.ColorRGBA;
+import com.jme3.math.Plane;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Node;
@@ -10,6 +18,9 @@ import com.jme3.scene.Spatial;
 public final class FlightSurfaces {
 
     private final FlightInput input;
+    private final FlightPhysics physics;
+    private final Node plane;
+    private final AssetManager assetManager;
 
     private Joint stabilatorLeft;
     private Joint stabilatorRight;
@@ -36,6 +47,10 @@ public final class FlightSurfaces {
     private Quaternion neutralRudderRight;
 
 
+    private ParticleEmitter wingVaporLeft;
+    private ParticleEmitter wingVaporRight;
+
+
     private float stabilatorAngle;
     private float aileronAngle = 0f;
     private float leadingEdgeFlapAngle = 0f;
@@ -49,16 +64,32 @@ public final class FlightSurfaces {
             new Vector3f(0.78f, -0.38f, 2.74f)
                     .normalizeLocal();
 
-    public FlightSurfaces(Spatial model, FlightInput input) {
+
+    private AnimComposer composer;
+    private boolean wasSupersonic;
+    private boolean wasStalling;
+
+    public FlightSurfaces(Spatial model, FlightInput input, AnimComposer composer, FlightPhysics physics,
+                            AssetManager assetManager, Node plane) {
         this.input = input;
-        initPitchSurfaces(model);
+        this.composer = composer;
+        this.physics = physics;
+        this.assetManager = assetManager;
+        this.plane = plane;
+        initSurfaces(model);
+        wingVaporLeft = createWingVapor(plane, assetManager, "WingVapor.L",
+                new Vector3f(-1.2f, 0.6f, -2f));
+        wingVaporRight = createWingVapor(plane, assetManager, "WingVapor.R",
+                new Vector3f(1.2f, 0.6f, -2f));
     }
 
     public void update(float tpf) {
+
         updateControlSurfaces(tpf);
+        updateWingVapor();
     }
 
-    private void initPitchSurfaces(Spatial model) {
+    private void initSurfaces(Spatial model) {
         SkinningControl skin = findSkinningControl(model);
 
         if (skin == null) {
@@ -96,8 +127,8 @@ public final class FlightSurfaces {
             );
         }
 
-        neutralAileronLeft = stabilatorLeft.getInitialTransform().getRotation().clone();
-        neutralAileronRight = stabilatorRight.getInitialTransform().getRotation().clone();
+        neutralAileronLeft = aileronLeft.getInitialTransform().getRotation().clone();
+        neutralAileronRight = aileronRight.getInitialTransform().getRotation().clone();
 
 
         if (leadingEdgeFlapLeft == null || leadingEdgeFlapRight == null) {
@@ -118,6 +149,56 @@ public final class FlightSurfaces {
         neutralRudderLeft = rudderLeft.getInitialTransform().getRotation().clone();
         neutralRudderRight = rudderRight.getInitialTransform().getRotation().clone();
 
+    }
+
+    private ParticleEmitter createWingVapor(
+            Node plane, AssetManager assets,
+            String name, Vector3f position
+    ) {
+        ParticleEmitter vapor = new ParticleEmitter(
+                name, ParticleMesh.Type.Triangle, 64
+        );
+
+        Material material = new Material(
+                assets, "Common/MatDefs/Misc/Particle.j3md"
+        );
+        material.setTexture("Texture",
+                assets.loadTexture("Textures/Particles/vapor.png"));
+        vapor.setMaterial(material);
+
+        vapor.setParticlesPerSec(0f);
+        vapor.setInWorldSpace(false);
+        vapor.setGravity(0f, 0f, 0f);
+        vapor.setLowLife(0.25f);
+        vapor.setHighLife(0.45f);
+        vapor.setStartSize(0.35f);
+        vapor.setEndSize(1.3f);
+        vapor.setStartColor(new ColorRGBA(1f, 1f, 1f, 0.3f));
+        vapor.setEndColor(new ColorRGBA(1f, 1f, 1f, 0f));
+        vapor.getParticleInfluencer()
+                .setInitialVelocity(new Vector3f(0f, 0f, 9f));
+        vapor.getParticleInfluencer().setVelocityVariation(0.2f);
+
+        vapor.setLocalTranslation(position);
+        plane.attachChild(vapor);
+        return vapor;
+    }
+
+    private void stallEffect(){
+        composer.setCurrentAction(
+                "05_Stall_Buffet_Recovery",
+                AnimComposer.DEFAULT_LAYER,
+                false
+        );
+
+    }
+
+    private void superSonicEffect(){
+        composer.setCurrentAction(
+                "06_Transonic_FX_Preview",
+                AnimComposer.DEFAULT_LAYER,
+                false
+        );
     }
 
     private SkinningControl findSkinningControl(Spatial spatial) {
@@ -233,4 +314,31 @@ public final class FlightSurfaces {
         );
     }
 
+    public void updateEffects() {
+        boolean supersonic = physics.getSpeed() >= 343f;
+        boolean stalling = Math.abs(physics.getAngleOfAttack()) > 15f;
+
+        if (stalling && !wasStalling) {
+            stallEffect();
+        } else if (supersonic && !wasSupersonic) {
+            superSonicEffect();
+        }
+
+        wasStalling = stalling;
+        wasSupersonic = supersonic;
+    }
+
+    private void updateWingVapor() {
+        float aoa = -physics.getAngleOfAttack();
+        float intensity = Math.max(0f, Math.min(1f, (aoa - 10f) / 12f));
+        float rate = physics.getSpeed() > 50f ? 70f * intensity : 0f;
+        wingVaporLeft.setParticlesPerSec(rate);
+        wingVaporRight.setParticlesPerSec(rate);
+    }
+
+
 }
+
+
+
+
