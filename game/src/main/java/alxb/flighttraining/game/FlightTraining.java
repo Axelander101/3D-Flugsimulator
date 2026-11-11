@@ -2,8 +2,11 @@ package alxb.flighttraining.game;
 
 import com.jme3.anim.AnimComposer;
 import com.jme3.app.SimpleApplication;
+import com.jme3.anim.SkinningControl;
+import com.jme3.scene.control.AbstractControl;
+import com.jme3.renderer.RenderManager;
+import com.jme3.renderer.ViewPort;
 import com.jme3.app.state.AppState;
-import com.jme3.asset.AssetManager;
 import com.jme3.environment.FastLightProbeFactory;
 import com.jme3.light.DirectionalLight;
 import com.jme3.light.LightProbe;
@@ -14,6 +17,7 @@ import com.jme3.scene.Spatial;
 import com.jme3.util.SkyFactory;
 
 public class FlightTraining extends SimpleApplication {
+    private boolean spawnReady;
     private Node plane;
     private FlightInput input;
     private FlightPhysics physics;
@@ -22,7 +26,7 @@ public class FlightTraining extends SimpleApplication {
     private Guns guns;
     private AnimComposer composer;
     private Spatial planeModel;
-    private FlightSurfaces flightSurfaces;
+    private FlightSurfaces surfaces;
 
     public FlightTraining() {
     }
@@ -51,14 +55,30 @@ public class FlightTraining extends SimpleApplication {
         composer = findAnimComposer(planeModel);
 
         if (composer == null) {
-            System.out.println("Kein AnimComposer gefunden!");
-        } else {
-            System.out.println(composer.getAnimClipsNames());
+            throw new IllegalStateException("Das Flugzeugmodell enthält keinen AnimComposer.");
         }
         guns = new Guns(plane, input, rootNode, composer, assetManager);
 
-        flightSurfaces = new FlightSurfaces(plane, input);
-        composer.setEnabled(false);
+        surfaces = new FlightSurfaces(plane, input, composer, physics, assetManager, plane);
+        // Procedural surfaces must run after clips have set the pose.
+        SkinningControl skin = findSkinningControl(planeModel);
+        if (skin == null) {
+            throw new IllegalStateException("Das Flugzeugmodell enthält kein SkinningControl.");
+        }
+        composer.getSpatial().addControl(new AbstractControl() {
+            @Override
+            protected void controlUpdate(float tpf) {
+                if (spawnReady) {
+                    surfaces.update(tpf);
+                    skin.getArmature().update();
+                }
+                input.resetControllerInput();
+            }
+
+            @Override
+            protected void controlRender(RenderManager rm, ViewPort vp) {
+            }
+        });
     }
 
     @Override
@@ -71,17 +91,40 @@ public class FlightTraining extends SimpleApplication {
 
     @Override
     public void simpleUpdate(float tpf) {
+        if (!spawnReady) {
+            updateSpawn();
+            input.resetControllerInput();
+            return;
+        }
+
         physics.update(tpf);
-        flightSurfaces.update(tpf);
         updateCamera();
 
         guns.shoot(tpf);
 
         Vector3f position = plane.getLocalTranslation();
-        terrain.update(position);
+        terrain.update(position, cam);
         physics.resolveGroundCollision(terrain.getGroundHeight(position));
         hud.update(physics, plane.getLocalTranslation().y);
-        input.resetControllerInput();
+    }
+
+    private void updateSpawn() {
+        Vector3f position = plane.getLocalTranslation();
+        updateCamera();
+        terrain.update(position, cam);
+
+        float groundHeight = terrain.getGroundHeight(position);
+        if (!Float.isFinite(groundHeight)) {
+            hud.showLoading(terrain.getGroundLoadStatus(position));
+            return;
+        }
+
+        plane.setLocalTranslation(
+                position.x, groundHeight + SpawnSettings.HEIGHT_ABOVE_GROUND, position.z
+        );
+        spawnReady = true;
+        updateCamera();
+        hud.update(physics, plane.getLocalTranslation().y);
     }
 
     public float getAngleOfAttack() {
@@ -111,7 +154,7 @@ public class FlightTraining extends SimpleApplication {
         );
         plane.attachChild(planeModel);
 
-        plane.setLocalTranslation(2500, 2000, -1000);
+        plane.setLocalTranslation(SpawnSettings.WORLD_X, 0f, SpawnSettings.WORLD_Z);
 
         rootNode.attachChild(plane);
     }
@@ -163,6 +206,22 @@ public class FlightTraining extends SimpleApplication {
                 planePosition.add(forward.mult(10)),
                 up
         );
+    }
+
+    private SkinningControl findSkinningControl(Spatial spatial) {
+        SkinningControl skin = spatial.getControl(SkinningControl.class);
+        if (skin != null) {
+            return skin;
+        }
+        if (spatial instanceof Node node) {
+            for (Spatial child : node.getChildren()) {
+                skin = findSkinningControl(child);
+                if (skin != null) {
+                    return skin;
+                }
+            }
+        }
+        return null;
     }
 
     private AnimComposer findAnimComposer(Spatial spatial) {

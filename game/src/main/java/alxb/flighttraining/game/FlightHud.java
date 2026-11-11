@@ -13,6 +13,10 @@ final class FlightHud {
         guiNode.attachChild(hudText);
     }
 
+    void showLoading(String status) {
+        hudText.setText(status);
+    }
+
     void update(FlightPhysics physics, float height) {
         String speedText = String.format("%.0f", physics.getSpeed());
         String heightText = String.format("%.0f", height);

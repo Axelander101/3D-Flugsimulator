@@ -4,6 +4,7 @@ plugins {
 }
 
 dependencies {
+    implementation "com.google.code.gson:gson:2.14.0"
     implementation "org.jmonkeyengine:jme3-terrain:3.9.0-stable"
     api libs.jmeCore
     runtimeOnly libs.jmeJogg
