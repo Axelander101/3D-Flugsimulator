@@ -16,6 +16,8 @@ import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.util.SkyFactory;
 
+import java.awt.event.ActionListener;
+
 public class FlightTraining extends SimpleApplication {
     private boolean spawnReady;
     private Node plane;
@@ -28,6 +30,8 @@ public class FlightTraining extends SimpleApplication {
     private Spatial planeModel;
     private FlightSurfaces surfaces;
 
+    private Menu menu;
+
     public FlightTraining() {
     }
 
@@ -37,9 +41,24 @@ public class FlightTraining extends SimpleApplication {
 
     @Override
     public void simpleInitApp() {
-
         setDisplayFps(false);
         setDisplayStatView(false);
+        flyCam.setEnabled(false);
+
+        menu = new Menu(
+                assetManager,
+                cam.getWidth(),
+                cam.getHeight(),
+                this,
+                inputManager
+        );
+
+        menu.show(guiNode);
+        inputManager.setCursorVisible(true);
+
+        System.out.println("Menü erstellt und angehängt");
+
+
 
         input = new FlightInput(inputManager);
         hud = new FlightHud(guiFont, guiNode, cam.getHeight());
@@ -91,22 +110,26 @@ public class FlightTraining extends SimpleApplication {
 
     @Override
     public void simpleUpdate(float tpf) {
-        if (!spawnReady) {
-            updateSpawn();
-            input.resetControllerInput();
-            return;
+        if (!menu.getMenuOffen()) {
+
+            if (!spawnReady) {
+                updateSpawn();
+                input.resetControllerInput();
+                return;
+            }
+
+            physics.update(tpf);
+            updateCamera();
+
+            guns.shoot(tpf);
+
+            Vector3f position = plane.getLocalTranslation();
+            terrain.update(position, cam);
+            physics.resolveGroundCollision(terrain.getGroundHeight(position));
+            hud.update(physics, plane.getLocalTranslation().y);
         }
-
-        physics.update(tpf);
-        updateCamera();
-
-        guns.shoot(tpf);
-
-        Vector3f position = plane.getLocalTranslation();
-        terrain.update(position, cam);
-        physics.resolveGroundCollision(terrain.getGroundHeight(position));
-        hud.update(physics, plane.getLocalTranslation().y);
     }
+
 
     private void updateSpawn() {
         Vector3f position = plane.getLocalTranslation();
@@ -153,9 +176,9 @@ public class FlightTraining extends SimpleApplication {
                 0f
         );
 
-        plane.attachChild(planeModel);
+        planeModel.setLocalScale(0.5f);
 
-        //plane.scale(0.6f);
+        plane.attachChild(planeModel);
 
         plane.setLocalTranslation(SpawnSettings.WORLD_X, 0f, SpawnSettings.WORLD_Z);
 
@@ -186,7 +209,7 @@ public class FlightTraining extends SimpleApplication {
                 renderManager, assetManager, 128,
                 Vector3f.ZERO, 0.1f, 100f, lightingSky
         );
-        daylight.getArea().setRadius(20_000f);
+        daylight.getArea().setRadius(2_000_000f);
         rootNode.addLight(daylight);
     }
 
@@ -200,8 +223,8 @@ public class FlightTraining extends SimpleApplication {
         Vector3f planePosition = plane.getLocalTranslation();
 
         Vector3f cameraPosition = planePosition
-                .subtract(forward.mult(18))
-                .add(up.mult(6));
+                .subtract(forward.mult(10))
+                .add(up.mult(3));
 
         cam.setLocation(cameraPosition);
 

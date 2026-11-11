@@ -78,13 +78,12 @@ public final class FlightSurfaces {
         this.plane = plane;
         initSurfaces(model);
         wingVaporLeft = createWingVapor(plane, assetManager, "WingVapor.L",
-                new Vector3f(-1.2f, 0.6f, -2f));
+                new Vector3f(-0.6f, 0.3f, -1f));
         wingVaporRight = createWingVapor(plane, assetManager, "WingVapor.R",
-                new Vector3f(1.2f, 0.6f, -2f));
+                new Vector3f(0.6f, 0.3f, -1f));
     }
 
     public void update(float tpf) {
-
         updateControlSurfaces(tpf);
         updateWingVapor();
     }
