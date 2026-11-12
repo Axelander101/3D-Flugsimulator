@@ -31,6 +31,7 @@ public class FlightTraining extends SimpleApplication {
     private FlightSurfaces surfaces;
 
     private Menu menu;
+    private SpawnSettings spawnSettings = new SpawnSettings(-6548f, -9563f, 600f);
 
     public FlightTraining() {
     }
@@ -130,6 +131,16 @@ public class FlightTraining extends SimpleApplication {
         }
     }
 
+    public void startFreePlay(SpawnSettings settings) {
+        this.spawnSettings = settings;
+
+        plane.setLocalTranslation(settings.worldX, 0f, settings.worldZ);
+
+        spawnReady = false;
+
+        menu.hide();
+        inputManager.setCursorVisible(false);
+    }
 
     private void updateSpawn() {
         Vector3f position = plane.getLocalTranslation();
@@ -143,7 +154,7 @@ public class FlightTraining extends SimpleApplication {
         }
 
         plane.setLocalTranslation(
-                position.x, groundHeight + SpawnSettings.HEIGHT_ABOVE_GROUND, position.z
+                position.x, groundHeight + spawnSettings.heightAboveGround, position.z
         );
         spawnReady = true;
         updateCamera();
@@ -180,7 +191,7 @@ public class FlightTraining extends SimpleApplication {
 
         plane.attachChild(planeModel);
 
-        plane.setLocalTranslation(SpawnSettings.WORLD_X, 0f, SpawnSettings.WORLD_Z);
+        plane.setLocalTranslation(spawnSettings.worldX, 0f, spawnSettings.worldZ);
 
         rootNode.attachChild(plane);
     }

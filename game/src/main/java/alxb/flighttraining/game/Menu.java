@@ -1,7 +1,6 @@
 package alxb.flighttraining.game;
 
 import com.jme3.asset.AssetManager;
-import com.jme3.input.Input;
 import com.jme3.input.InputManager;
 import com.jme3.input.MouseInput;
 import com.jme3.input.controls.MouseButtonTrigger;
@@ -11,9 +10,8 @@ import com.jme3.texture.Texture2D;
 import com.jme3.texture.plugins.AWTLoader;
 import com.jme3.ui.Picture;
 
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.Graphics2D;
+import java.awt.*;
+
 import com.jme3.input.controls.ActionListener;
 import java.awt.image.BufferedImage;
 
@@ -30,6 +28,9 @@ public class Menu{
     private boolean freePlayOffen = false;
 
     private Color hellBlau = new Color(50, 100, 160);
+
+    private final java.util.Map<String, BufferedImage> airportImages =
+            new java.util.HashMap<>();
 
     private static final String[] AIRPORTS = {
             "Zürich", "Genf", "Basel-Mulhouse",
@@ -83,15 +84,12 @@ public class Menu{
         this.app = app;
         this.input = input;
 
-        BufferedImage image = new BufferedImage(
-                width, height, BufferedImage.TYPE_INT_ARGB
-        );
-
-        Graphics2D g = image.createGraphics();
-
-        Texture2D texture = new Texture2D(
-                new AWTLoader().load(image, true)
-        );
+        for (String airport : AIRPORTS) {
+            airportImages.put(
+                    airport,
+                    loadMenuImage("/Airports/" + airport + ".png")
+            );
+        }
 
         picture = new Picture("MainMenu");
         picture.setWidth(width);
@@ -153,8 +151,7 @@ public class Menu{
                         if (airportBounds.get(i).contains(mouseX, mouseY)) {
                             System.out.println("Flugplatz: " + AIRPORTS[i]);
 
-                            // Hier deinen Flugplatz auswählen / Flug starten.
-                            return;
+                            startGame(AIRPORTS[i]);
                         }
                     }
                 }
@@ -270,8 +267,7 @@ public class Menu{
 
         // Kartenraster
         int top = 125;
-        int cardWidth = (width - 2 * margin - (columns - 1) * gap)
-                / columns;
+        int cardWidth = (width - 2 * margin - (columns - 1) * gap) / columns;
 
         int cardHeight = Math.min(
                 155,
@@ -292,31 +288,111 @@ public class Menu{
         }
     }
 
+    private void startGame(String flughafen){
+
+        switch (flughafen){
+            case "Zürich" -> app.startFreePlay(new SpawnSettings(62160f, -164460f, 600f));
+            case "Genf" -> app.startFreePlay(new SpawnSettings(-124060f, -29110f, 600f));
+            case "Basel-Mulhouse" -> app.startFreePlay(new SpawnSettings(-15300f, -179730f, 600f));
+            case "Bern-Belp" -> app.startFreePlay(new SpawnSettings(-16970f, -103340, 600f));
+            case "St. Gallen-Altenrhein" -> app.startFreePlay(new SpawnSettings(138510f, -169020f, 600f));
+            case "Lugano-Agno" -> app.startFreePlay(new SpawnSettings(92500f, -3240f, 600f));
+            case "Sion" -> app.startFreePlay(new SpawnSettings(-30120f, -26140f, 600f));
+            case "Grenchen" -> app.startFreePlay(new SpawnSettings(-23190f, -133100f, 600f));
+            case "Payerne" -> app.startFreePlay(new SpawnSettings(-61550f, -95560f, 600f));
+            case "Meiringen" -> app.startFreePlay(new SpawnSettings(29740f, -84500f, 600f));
+            case "Emmen" -> app.startFreePlay(new SpawnSettings(44320f, -123520f, 600f));
+        }
+    }
+
+    private void drawCoverImage(Graphics2D g, BufferedImage image, int x, int y, int width, int height) {
+        Graphics2D copy = (Graphics2D) g.create();
+
+        try {
+            copy.setRenderingHint(
+                    RenderingHints.KEY_INTERPOLATION,
+                    RenderingHints.VALUE_INTERPOLATION_BILINEAR
+            );
+
+            copy.clip(new java.awt.geom.RoundRectangle2D.Float(
+                    x, y, width, height, 12, 12
+            ));
+
+            double scale = Math.max(
+                    (double) width / image.getWidth(),
+                    (double) height / image.getHeight()
+            );
+
+            int drawWidth = (int) Math.ceil(image.getWidth() * scale);
+            int drawHeight = (int) Math.ceil(image.getHeight() * scale);
+
+            copy.drawImage(
+                    image,
+                    x + (width - drawWidth) / 2,
+                    y + (height - drawHeight) / 2,
+                    drawWidth,
+                    drawHeight,
+                    null
+            );
+        } finally {
+            copy.dispose();
+        }
+    }
+
+    private BufferedImage loadMenuImage(String path) {
+        try (java.io.InputStream stream =
+                     Menu.class.getResourceAsStream(path)) {
+
+            if (stream == null) {
+                throw new IllegalArgumentException(
+                        "Bild nicht gefunden: " + path
+                );
+            }
+
+            BufferedImage image = javax.imageio.ImageIO.read(stream);
+
+            if (image == null) {
+                throw new IllegalArgumentException(
+                        "Bildformat nicht unterstützt: " + path
+                );
+            }
+
+            return image;
+
+        } catch (java.io.IOException e) {
+            throw new IllegalStateException(
+                    "Bild konnte nicht geladen werden: " + path, e
+            );
+        }
+    }
+
     private void drawAirportCard(Graphics2D g, String name, java.awt.Rectangle bounds) {
         int x = bounds.x;
         int y = bounds.y;
         int w = bounds.width;
         int h = bounds.height;
 
-        // Karte
         g.setColor(new Color(35, 49, 68));
         g.fillRoundRect(x, y, w, h, 16, 16);
 
-        // Bildplatzhalter – hier später das Flughafenbild zeichnen
         int imageHeight = h - 52;
+        BufferedImage image = airportImages.get(name);
 
-        g.setColor(new Color(48, 68, 91));
-        g.fillRoundRect(x + 8, y + 8, w - 16, imageHeight, 12, 12);
+        if (image != null) {
+            drawCoverImage(
+                    g, image,
+                    x + 8, y + 8,
+                    w - 16, imageHeight
+            );
+        } else {
+            g.setColor(new Color(48, 68, 91));
+            g.fillRoundRect(
+                    x + 8, y + 8,
+                    w - 16, imageHeight,
+                    12, 12
+            );
+        }
 
-        g.setColor(new Color(160, 180, 200));
-        g.setFont(new Font("SansSerif", Font.PLAIN, 13));
-
-        java.awt.Rectangle imageBounds = new java.awt.Rectangle(
-                x + 8, y + 8, w - 16, imageHeight
-        );
-        drawCenteredText(g, "Flughafenbild", imageBounds, 0);
-
-        // Flughafenname
         g.setColor(Color.WHITE);
         g.setFont(new Font("SansSerif", Font.BOLD, 18));
         g.drawString(name, x + 16, y + h - 17);
