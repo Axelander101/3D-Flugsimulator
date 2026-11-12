@@ -31,7 +31,7 @@ public class FlightTraining extends SimpleApplication {
     private FlightSurfaces surfaces;
 
     private Menu menu;
-    private SpawnSettings spawnSettings = new SpawnSettings(-6548f, -9563f, 600f);
+    private SpawnSettings spawnSettings = new SpawnSettings(-6548f, -9563f, 0f);
 
     public FlightTraining() {
     }

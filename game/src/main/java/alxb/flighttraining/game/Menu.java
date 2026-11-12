@@ -291,17 +291,21 @@ public class Menu{
     private void startGame(String flughafen){
 
         switch (flughafen){
-            case "Zürich" -> app.startFreePlay(new SpawnSettings(62160f, -164460f, 600f));
-            case "Genf" -> app.startFreePlay(new SpawnSettings(-124060f, -29110f, 600f));
-            case "Basel-Mulhouse" -> app.startFreePlay(new SpawnSettings(-15300f, -179730f, 600f));
-            case "Bern-Belp" -> app.startFreePlay(new SpawnSettings(-16970f, -103340, 600f));
-            case "St. Gallen-Altenrhein" -> app.startFreePlay(new SpawnSettings(138510f, -169020f, 600f));
-            case "Lugano-Agno" -> app.startFreePlay(new SpawnSettings(92500f, -3240f, 600f));
-            case "Sion" -> app.startFreePlay(new SpawnSettings(-30120f, -26140f, 600f));
-            case "Grenchen" -> app.startFreePlay(new SpawnSettings(-23190f, -133100f, 600f));
-            case "Payerne" -> app.startFreePlay(new SpawnSettings(-61550f, -95560f, 600f));
-            case "Meiringen" -> app.startFreePlay(new SpawnSettings(29740f, -84500f, 600f));
-            case "Emmen" -> app.startFreePlay(new SpawnSettings(44320f, -123520f, 600f));
+            case "Zürich" -> app.startFreePlay(new SpawnSettings(62160f, -164460f, 432f));
+            case "Genf" -> app.startFreePlay(new SpawnSettings(-124060f, -29110f, 430f));
+            case "Basel-Mulhouse" -> app.startFreePlay(new SpawnSettings(-15300f, -179730f, 270f));
+            case "Bern-Belp" -> app.startFreePlay(new SpawnSettings(-16970f, -103340, 510f));
+            case "St. Gallen-Altenrhein" -> app.startFreePlay(new SpawnSettings(138510f, -169020f, 398f));
+            case "Lugano-Agno" -> app.startFreePlay(new SpawnSettings(92500f, -3240f, 279f));
+            case "Sion" -> app.startFreePlay(new SpawnSettings(-30120f, -26140f, 482f));
+            case "Grenchen" -> app.startFreePlay(new SpawnSettings(-23190f, -133100f, 430f));
+            case "Payerne" -> app.startFreePlay(new SpawnSettings(-61550f, -95560f, 447f));
+            case "Meiringen" -> app.startFreePlay(new SpawnSettings(29740f, -84500f, 577f));
+            case "Emmen" -> app.startFreePlay(new SpawnSettings(44320f, -123520f, 427f));
+
+            default -> throw new IllegalArgumentException(
+                    "Unbekannter Flugplatz: " + flughafen
+            );
         }
     }
 
@@ -502,47 +506,20 @@ public class Menu{
                 "Anzeige und Steuerung", width
         );
 
-        int panelWidth = Math.min(900, width - 80);
-        int x = (width - panelWidth) / 2;
 
-        g.setColor(new Color(35, 49, 68));
-        g.fillRoundRect(x, 135, panelWidth, 400, 18, 18);
+        drawCenteredText(g, "Zurück", backBounds, 0);
+        drawButton(g, "Graphics", 180, 80, hellBlau);
+        drawButton(g, "Steering", 270, 80, hellBlau);
+        drawButton(g, "Gameplay", 360, 80, hellBlau);
+        drawButton(g, "Audio", 450, 80, hellBlau);
+        drawButton(g, "Interface", 540, 80, hellBlau);
 
-        g.setColor(new Color(110, 190, 240));
-        g.setFont(new Font("SansSerif", Font.BOLD, 15));
-        g.drawString("ANZEIGE", x + 24, 172);
 
-        drawSettingRow(
-                g, x + 24, 195, panelWidth - 48,
-                "Fenstergröße",
-                width + " × " + height
-        );
+    }
 
-        drawSettingRow(
-                g, x + 24, 275, panelWidth - 48,
-                "FPS-Anzeige",
-                showFps ? "AN" : "AUS"
-        );
+    private void drawGrafikSetting(Graphics2D g, int width, int height){
 
-        // Gesamte FPS-Zeile ist anklickbar.
-        fpsBounds.setBounds(x + 24, 275, panelWidth - 48, 64);
-
-        g.setColor(new Color(110, 190, 240));
-        g.setFont(new Font("SansSerif", Font.BOLD, 15));
-        g.drawString("STEUERUNG", x + 24, 380);
-
-        drawSettingRow(
-                g, x + 24, 400, panelWidth - 48,
-                "Eingabegeräte",
-                "Tastatur / Controller"
-        );
-
-        g.setColor(new Color(165, 180, 200));
-        g.setFont(new Font("SansSerif", Font.PLAIN, 14));
-        g.drawString(
-                "FPS-Anzeige anklicken zum Umschalten.",
-                x + 24, 505
-        );
+        //g.
     }
 
     private void drawSettingRow(Graphics2D g, int x, int y, int width, String label, String value) {
@@ -596,5 +573,4 @@ public class Menu{
     public boolean getMenuOffen(){
         return menuOffen;
     }
-
 }
