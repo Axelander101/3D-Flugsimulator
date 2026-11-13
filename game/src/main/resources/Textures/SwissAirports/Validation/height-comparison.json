@@ -1,0 +1,106 @@
+[
+  {
+    "icao": "LSZH",
+    "sample_east": 2684845.9477391597,
+    "sample_north": 1254831.9275284319,
+    "building_base": 427.2839956851676,
+    "terrain_height": 426.0,
+    "difference_m": 1.284,
+    "status": "PASS",
+    "source": "https://api3.geo.admin.ch/rest/services/height?easting=2684845.9477391597&northing=1254831.9275284319&sr=2056"
+  },
+  {
+    "icao": "LSGG",
+    "sample_east": 2496037.1504384894,
+    "sample_north": 1119962.7695500925,
+    "building_base": 430.4028681423515,
+    "terrain_height": 426.7,
+    "difference_m": 3.703,
+    "status": "PASS",
+    "source": "https://api3.geo.admin.ch/rest/services/height?easting=2496037.1504384894&northing=1119962.7695500925&sr=2056"
+  },
+  {
+    "icao": "LFSB",
+    "status": "No swissBUILDINGS source"
+  },
+  {
+    "icao": "LSZB",
+    "sample_east": 2604604.9036246655,
+    "sample_north": 1194875.0107549923,
+    "building_base": 512.1153636034578,
+    "terrain_height": 510.5,
+    "difference_m": 1.615,
+    "status": "PASS",
+    "source": "https://api3.geo.admin.ch/rest/services/height?easting=2604604.9036246655&northing=1194875.0107549923&sr=2056"
+  },
+  {
+    "icao": "LSZR",
+    "sample_east": 2760670.4713500715,
+    "sample_north": 1261141.1781041669,
+    "building_base": 401.1594750219956,
+    "terrain_height": 398.9,
+    "difference_m": 2.259,
+    "status": "PASS",
+    "source": "https://api3.geo.admin.ch/rest/services/height?easting=2760670.4713500715&northing=1261141.1781041669&sr=2056"
+  },
+  {
+    "icao": "LSZA",
+    "sample_east": 2713654.6104889065,
+    "sample_north": 1095176.6790005707,
+    "building_base": 277.01675803679973,
+    "terrain_height": 274.2,
+    "difference_m": 2.817,
+    "status": "PASS",
+    "source": "https://api3.geo.admin.ch/rest/services/height?easting=2713654.6104889065&northing=1095176.6790005707&sr=2056"
+  },
+  {
+    "icao": "LSGS",
+    "sample_east": 2592504.95915813,
+    "sample_north": 1118762.7769444878,
+    "building_base": 483.58583994954824,
+    "terrain_height": 482.9,
+    "difference_m": 0.686,
+    "status": "PASS",
+    "source": "https://api3.geo.admin.ch/rest/services/height?easting=2592504.95915813&northing=1118762.7769444878&sr=2056"
+  },
+  {
+    "icao": "LSZG",
+    "sample_east": 2597892.129605517,
+    "sample_north": 1225620.2228020206,
+    "building_base": 432.0250841891393,
+    "terrain_height": 429.9,
+    "difference_m": 2.125,
+    "status": "PASS",
+    "source": "https://api3.geo.admin.ch/rest/services/height?easting=2597892.129605517&northing=1225620.2228020206&sr=2056"
+  },
+  {
+    "icao": "LSMP",
+    "sample_east": 2558860.5155482115,
+    "sample_north": 1187305.95876918,
+    "building_base": 443.3631999604404,
+    "terrain_height": 446.4,
+    "difference_m": -3.037,
+    "status": "PASS",
+    "source": "https://api3.geo.admin.ch/rest/services/height?easting=2558860.5155482115&northing=1187305.95876918&sr=2056"
+  },
+  {
+    "icao": "LSMM",
+    "sample_east": 2652118.201234733,
+    "sample_north": 1176600.4718184676,
+    "building_base": 579.7291929507628,
+    "terrain_height": 578.9,
+    "difference_m": 0.829,
+    "status": "PASS",
+    "source": "https://api3.geo.admin.ch/rest/services/height?easting=2652118.201234733&northing=1176600.4718184676&sr=2056"
+  },
+  {
+    "icao": "LSME",
+    "sample_east": 2665200.931280574,
+    "sample_north": 1215059.23515409,
+    "building_base": 423.49850162584335,
+    "terrain_height": 426.7,
+    "difference_m": -3.201,
+    "status": "PASS",
+    "source": "https://api3.geo.admin.ch/rest/services/height?easting=2665200.931280574&northing=1215059.23515409&sr=2056"
+  }
+]

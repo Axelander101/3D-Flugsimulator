@@ -1,0 +1,1835 @@
+[
+  {
+    "id": "1269689c1b02b16c",
+    "name": "Batched_Building_ID_A99497CC-0D0C-496C-BE9E-FA24AA4C8A6F",
+    "east": 2760670.4713500715,
+    "north": 1261141.1781041669,
+    "ground_ln02": 401.1594750219956,
+    "source": "https://3d.geo.admin.ch/ch.swisstopo.swissbuildings3d.3d/v1/20260520/11/1631/1717.b3dm",
+    "height": 5.889468489214778
+  },
+  {
+    "id": "eebd660e1e6f10bd",
+    "name": "Batched_Building_ID_A99497CC-0D0C-496C-BE9E-FA24AA4C8A6F",
+    "east": 2760670.62577862,
+    "north": 1261140.582202473,
+    "ground_ln02": 395.17911089397967,
+    "source": "https://3d.geo.admin.ch/ch.swisstopo.swissbuildings3d.3d/v1/20260520/11/1631/1717.b3dm",
+    "height": 11.669550663791597
+  },
+  {
+    "id": "e94a9ece7dcc709e",
+    "name": "Batched_Building_ID_B0D90AEA-937B-41EF-96F6-6A2FEAE36D26",
+    "east": 2760201.0003469093,
+    "north": 1261337.7865174254,
+    "ground_ln02": 400.29668864421546,
+    "source": "https://3d.geo.admin.ch/ch.swisstopo.swissbuildings3d.3d/v1/20260520/11/1628/1719.b3dm",
+    "height": 3.4412654116749763
+  },
+  {
+    "id": "6b7b994a937a7dc4",
+    "name": "Batched_Building_ID_B0D90AEA-937B-41EF-96F6-6A2FEAE36D26",
+    "east": 2760200.9803705346,
+    "north": 1261337.043503184,
+    "ground_ln02": 394.3344087647274,
+    "source": "https://3d.geo.admin.ch/ch.swisstopo.swissbuildings3d.3d/v1/20260520/11/1628/1719.b3dm",
+    "height": 9.203868282958865
+  },
+  {
+    "id": "a6baa01c3704d500",
+    "name": "Batched_Building_ID_4B81CA3C-A0F9-4FFD-9ED9-E087A39DBAA7",
+    "east": 2759980.509851907,
+    "north": 1261801.0982730407,
+    "ground_ln02": 400.31018184963614,
+    "source": "https://3d.geo.admin.ch/ch.swisstopo.swissbuildings3d.3d/v1/20260520/11/1627/1723.b3dm",
+    "height": 6.714733527041972
+  },
+  {
+    "id": "3d723e82052dd967",
+    "name": "Batched_Building_ID_4B81CA3C-A0F9-4FFD-9ED9-E087A39DBAA7",
+    "east": 2759980.672399733,
+    "north": 1261800.958921641,
+    "ground_ln02": 394.2839037338272,
+    "source": "https://3d.geo.admin.ch/ch.swisstopo.swissbuildings3d.3d/v1/20260520/11/1627/1723.b3dm",
+    "height": 12.541417142376304
+  },
+  {
+    "id": "f27999d648ec5981",
+    "name": "Batched_Building_ID_8F734F98-F754-4C48-BCA6-B90406F35EFD",
+    "east": 2759842.8923842073,
+    "north": 1261801.3001580208,
+    "ground_ln02": 394.37874611094594,
+    "source": "https://3d.geo.admin.ch/ch.swisstopo.swissbuildings3d.3d/v1/20260520/11/1626/1723.b3dm",
+    "height": 16.837632669135928
+  },
+  {
+    "id": "b7cf4faff72455af",
+    "name": "Batched_Building_ID_8F734F98-F754-4C48-BCA6-B90406F35EFD",
+    "east": 2759841.43083934,
+    "north": 1261801.2172030355,
+    "ground_ln02": 400.51199080236256,
+    "source": "https://3d.geo.admin.ch/ch.swisstopo.swissbuildings3d.3d/v1/20260520/11/1626/1723.b3dm",
+    "height": 10.904189833439887
+  },
+  {
+    "id": "4c909edda37cbda2",
+    "name": "Batched_Building_ID_15BFBA83-C40B-48C2-BF5E-A814C691A769",
+    "east": 2759722.192758395,
+    "north": 1261772.067700462,
+    "ground_ln02": 394.36794402915984,
+    "source": "https://3d.geo.admin.ch/ch.swisstopo.swissbuildings3d.3d/v1/20260520/11/1625/1723.b3dm",
+    "height": 14.166055167093873
+  },
+  {
+    "id": "cbd846502bf66f62",
+    "name": "Batched_Building_ID_15BFBA83-C40B-48C2-BF5E-A814C691A769",
+    "east": 2759722.2002935363,
+    "north": 1261772.1336422,
+    "ground_ln02": 407.77425199653953,
+    "source": "https://3d.geo.admin.ch/ch.swisstopo.swissbuildings3d.3d/v1/20260520/11/1625/1723.b3dm",
+    "height": 0.9602886969223619
+  },
+  {
+    "id": "a197aa4f2f0492ab",
+    "name": "Batched_Building_ID_C87ED537-AB1E-4FF9-8F79-781E7279F007",
+    "east": 2760500.2903464055,
+    "north": 1261685.0512590306,
+    "ground_ln02": 404.23658120445907,
+    "source": "https://3d.geo.admin.ch/ch.swisstopo.swissbuildings3d.3d/v1/20260520/11/1630/1722.b3dm",
+    "height": 5.719186163507402
+  },
+  {
+    "id": "29f72b1d39156988",
+    "name": "Batched_Building_ID_C87ED537-AB1E-4FF9-8F79-781E7279F007",
+    "east": 2760502.1783353826,
+    "north": 1261685.0081571434,
+    "ground_ln02": 394.3574915807694,
+    "source": "https://3d.geo.admin.ch/ch.swisstopo.swissbuildings3d.3d/v1/20260520/11/1630/1722.b3dm",
+    "height": 15.398418742232025
+  },
+  {
+    "id": "a70f1ac5cd4e9a65",
+    "name": "Batched_Building_ID_B293E522-FBB8-4C35-BD24-D2C34AF5C32A",
+    "east": 2760203.720926012,
+    "north": 1261721.4611439237,
+    "ground_ln02": 403.4316921280697,
+    "source": "https://3d.geo.admin.ch/ch.swisstopo.swissbuildings3d.3d/v1/20260520/11/1628/1722.b3dm",
+    "height": 2.7327867774292827
+  },
+  {
+    "id": "dfb46ed327e2a34a",
+    "name": "Batched_Building_ID_B293E522-FBB8-4C35-BD24-D2C34AF5C32A",
+    "east": 2760203.9264266198,
+    "north": 1261721.341186345,
+    "ground_ln02": 394.35389127675444,
+    "source": "https://3d.geo.admin.ch/ch.swisstopo.swissbuildings3d.3d/v1/20260520/11/1628/1722.b3dm",
+    "height": 11.610771218314767
+  },
+  {
+    "id": "464fec6a47665ffa",
+    "name": "Batched_Building_ID_AE5198E7-3DE8-4E64-B360-6CDE0D068B8C",
+    "east": 2760317.9788582083,
+    "north": 1261710.823223297,
+    "ground_ln02": 407.14630587771535,
+    "source": "https://3d.geo.admin.ch/ch.swisstopo.swissbuildings3d.3d/v1/20260520/11/1629/1722.b3dm",
+    "height": 2.5166243044659495
+  },
+  {
+    "id": "0f31fa8a0993077f",
+    "name": "Batched_Building_ID_AE5198E7-3DE8-4E64-B360-6CDE0D068B8C",
+    "east": 2760318.242848701,
+    "north": 1261710.706508558,
+    "ground_ln02": 393.4689882574603,
+    "source": "https://3d.geo.admin.ch/ch.swisstopo.swissbuildings3d.3d/v1/20260520/11/1629/1722.b3dm",
+    "height": 15.994240744970739
+  },
+  {
+    "id": "c01242602d630ae9",
+    "name": "Batched_Building_ID_BBF56B08-038C-41C3-9271-F11E9AAC58A1",
+    "east": 2760111.596850101,
+    "north": 1261738.5357281317,
+    "ground_ln02": 403.1284361984581,
+    "source": "https://3d.geo.admin.ch/ch.swisstopo.swissbuildings3d.3d/v1/20260520/11/1628/1723.b3dm",
+    "height": 2.65622138697654
+  },
+  {
+    "id": "65e5ab65c29b4a0c",
+    "name": "Batched_Building_ID_BBF56B08-038C-41C3-9271-F11E9AAC58A1",
+    "east": 2760111.751924229,
+    "north": 1261738.4481774536,
+    "ground_ln02": 394.21688005514443,
+    "source": "https://3d.geo.admin.ch/ch.swisstopo.swissbuildings3d.3d/v1/20260520/11/1628/1723.b3dm",
+    "height": 11.367218594066799
+  },
+  {
+    "id": "34af874e102ae2c6",
+    "name": "Batched_Building_ID_8D4B586C-49EE-455E-8FAF-46C230FAB41D",
+    "east": 2759464.4974465007,
+    "north": 1261861.2241939835,
+    "ground_ln02": 393.92896817531437,
+    "source": "https://3d.geo.admin.ch/ch.swisstopo.swissbuildings3d.3d/v1/20260520/11/1624/1724.b3dm",
+    "height": 18.319827377796173
+  },
+  {
+    "id": "f505e915e7da34d4",
+    "name": "Batched_Building_ID_8D4B586C-49EE-455E-8FAF-46C230FAB41D",
+    "east": 2759464.302347609,
+    "north": 1261861.245293763,
+    "ground_ln02": 400.2972023813054,
+    "source": "https://3d.geo.admin.ch/ch.swisstopo.swissbuildings3d.3d/v1/20260520/11/1624/1724.b3dm",
+    "height": 12.151891485787928
+  },
+  {
+    "id": "f72c76ffe94635d7",
+    "name": "Batched_Building_ID_DA682570-96E0-492D-839A-6EC9E72948E8",
+    "east": 2759722.4993866533,
+    "north": 1261839.2465224648,
+    "ground_ln02": 394.7789841229096,
+    "source": "https://3d.geo.admin.ch/ch.swisstopo.swissbuildings3d.3d/v1/20260520/11/1625/1724.b3dm",
+    "height": 14.104488253593445
+  },
+  {
+    "id": "3cf4995b6aff21ae",
+    "name": "Batched_Building_ID_DA682570-96E0-492D-839A-6EC9E72948E8",
+    "east": 2759722.394412267,
+    "north": 1261839.2471429259,
+    "ground_ln02": 407.27339319419116,
+    "source": "https://3d.geo.admin.ch/ch.swisstopo.swissbuildings3d.3d/v1/20260520/11/1625/1724.b3dm",
+    "height": 1.8099493402987719
+  },
+  {
+    "id": "a7875cf94f426d18",
+    "name": "Batched_Building_ID_5079C182-9445-4753-8A2D-831A5EBAB9AD",
+    "east": 2759605.195875996,
+    "north": 1261945.6449913736,
+    "ground_ln02": 394.4069656794891,
+    "source": "https://3d.geo.admin.ch/ch.swisstopo.swissbuildings3d.3d/v1/20260520/11/1625/1725.b3dm",
+    "height": 16.518370404839516
+  },
+  {
+    "id": "b22b3346645a41ea",
+    "name": "Batched_Building_ID_5079C182-9445-4753-8A2D-831A5EBAB9AD",
+    "east": 2759605.197346718,
+    "north": 1261945.6493458685,
+    "ground_ln02": 400.66839929297566,
+    "source": "https://3d.geo.admin.ch/ch.swisstopo.swissbuildings3d.3d/v1/20260520/11/1625/1725.b3dm",
+    "height": 10.456893687136471
+  },
+  {
+    "id": "d6e83ed4e40a7a01",
+    "name": "Batched_Building_ID_7C38F5EB-4B7F-4C04-8AAF-54B101B1E688",
+    "east": 2759481.5084127826,
+    "north": 1261972.9790547532,
+    "ground_ln02": 393.66325785405934,
+    "source": "https://3d.geo.admin.ch/ch.swisstopo.swissbuildings3d.3d/v1/20260520/11/1624/1725.b3dm",
+    "height": 12.671613901853561
+  },
+  {
+    "id": "812c5f93d23fd625",
+    "name": "Batched_Building_ID_7C38F5EB-4B7F-4C04-8AAF-54B101B1E688",
+    "east": 2759480.0508519607,
+    "north": 1261972.9791513686,
+    "ground_ln02": 399.231648192741,
+    "source": "https://3d.geo.admin.ch/ch.swisstopo.swissbuildings3d.3d/v1/20260520/11/1624/1725.b3dm",
+    "height": 7.3030822314321995
+  },
+  {
+    "id": "66f63760a691997c",
+    "name": "Batched_Building_ID_B1C36BB2-B1C2-4824-9287-3722DD68D94F",
+    "east": 2759011.925347495,
+    "north": 1261501.3870425085,
+    "ground_ln02": 401.9245507242158,
+    "source": "https://3d.geo.admin.ch/ch.swisstopo.swissbuildings3d.3d/v1/20260520/11/1621/1721.b3dm",
+    "height": 7.618451481685042
+  },
+  {
+    "id": "ee7d2d5620393c84",
+    "name": "Batched_Building_ID_2599C293-CD7A-4450-96C6-F455B16C0AFD",
+    "east": 2759007.1829165807,
+    "north": 1261501.2910486893,
+    "ground_ln02": 394.77339271921664,
+    "source": "https://3d.geo.admin.ch/ch.swisstopo.swissbuildings3d.3d/v1/20260520/11/1621/1721.b3dm",
+    "height": 14.569603440351784
+  },
+  {
+    "id": "bf431d646388319d",
+    "name": "Batched_Building_ID_7C7B00D0-4B71-41CF-8DB4-143F4C33BD93",
+    "east": 2759170.531380349,
+    "north": 1261411.4767542253,
+    "ground_ln02": 395.0874460451305,
+    "source": "https://3d.geo.admin.ch/ch.swisstopo.swissbuildings3d.3d/v1/20260520/11/1622/1720.b3dm",
+    "height": 24.937383607029915
+  },
+  {
+    "id": "c127dc3020412071",
+    "name": "Batched_Building_ID_1832B537-A8AD-4E29-BC79-BBFCB8B84354",
+    "east": 2759170.622460182,
+    "north": 1261412.0367164384,
+    "ground_ln02": 394.9033280480653,
+    "source": "https://3d.geo.admin.ch/ch.swisstopo.swissbuildings3d.3d/v1/20260520/11/1622/1720.b3dm",
+    "height": 24.921213029883802
+  },
+  {
+    "id": "df2df69a9067f00a",
+    "name": "Batched_Building_ID_197411D6-BFF7-4F4B-94E9-204B81CF5B2F",
+    "east": 2759294.60669972,
+    "north": 1261429.4291885565,
+    "ground_ln02": 393.65370051190257,
+    "source": "https://3d.geo.admin.ch/ch.swisstopo.swissbuildings3d.3d/v1/20260520/11/1623/1720.b3dm",
+    "height": 13.840175544843078
+  },
+  {
+    "id": "35bcb1e447b6b9ae",
+    "name": "Batched_Building_ID_197411D6-BFF7-4F4B-94E9-204B81CF5B2F",
+    "east": 2759291.3785307035,
+    "north": 1261428.2991425386,
+    "ground_ln02": 401.309797921218,
+    "source": "https://3d.geo.admin.ch/ch.swisstopo.swissbuildings3d.3d/v1/20260520/11/1623/1720.b3dm",
+    "height": 6.384541433304548
+  },
+  {
+    "id": "f2ad88d0c6517376",
+    "name": "Batched_Building_ID_4A92B933-B20A-4308-9390-BE71ED513D8F",
+    "east": 2759093.753347037,
+    "north": 1261493.4190291588,
+    "ground_ln02": 401.05884452722967,
+    "source": "https://3d.geo.admin.ch/ch.swisstopo.swissbuildings3d.3d/v1/20260520/11/1622/1721.b3dm",
+    "height": 4.1507118083536625
+  },
+  {
+    "id": "b95c59bae6895ed3",
+    "name": "Batched_Building_ID_CD962C8D-610C-46AF-9078-D64438453549",
+    "east": 2759320.8798614168,
+    "north": 1261801.5570616692,
+    "ground_ln02": 394.6369423130527,
+    "source": "https://3d.geo.admin.ch/ch.swisstopo.swissbuildings3d.3d/v1/20260520/11/1623/1723.b3dm",
+    "height": 17.2109306845814
+  },
+  {
+    "id": "418b0e5d561f0ca8",
+    "name": "Batched_Building_ID_CD962C8D-610C-46AF-9078-D64438453549",
+    "east": 2759320.7728448845,
+    "north": 1261801.617170173,
+    "ground_ln02": 400.0843630172312,
+    "source": "https://3d.geo.admin.ch/ch.swisstopo.swissbuildings3d.3d/v1/20260520/11/1623/1723.b3dm",
+    "height": 11.963539358228445
+  },
+  {
+    "id": "8fdd85cc8955792e",
+    "name": "Batched_Building_ID_5A8F1118-4D22-41B3-B74B-5B879C08D25E",
+    "east": 2759143.2913529202,
+    "north": 1261751.972190904,
+    "ground_ln02": 400.40229976177216,
+    "source": "https://3d.geo.admin.ch/ch.swisstopo.swissbuildings3d.3d/v1/20260520/11/1622/1723.b3dm",
+    "height": 1.4591145040467381
+  },
+  {
+    "id": "3cb9503a4abb49b5",
+    "name": "Batched_Building_ID_9504D60E-2092-42DB-98E2-20EDBA537FB7",
+    "east": 2759223.3228397192,
+    "north": 1261791.574134943,
+    "ground_ln02": 394.04910037014633,
+    "source": "https://3d.geo.admin.ch/ch.swisstopo.swissbuildings3d.3d/v1/20260520/11/1622/1723.b3dm",
+    "height": 7.099184384569526
+  },
+  {
+    "id": "4b4e1f8eb124d5b3",
+    "name": "Batched_Building_ID_12EF2503-220A-4979-B08A-674FA51F956D",
+    "east": 2759104.61190369,
+    "north": 1261856.358695378,
+    "ground_ln02": 394.6450480427593,
+    "source": "https://3d.geo.admin.ch/ch.swisstopo.swissbuildings3d.3d/v1/20260520/11/1622/1724.b3dm",
+    "height": 16.219998460263014
+  },
+  {
+    "id": "711fe4f79534ae4e",
+    "name": "Batched_Building_ID_12EF2503-220A-4979-B08A-674FA51F956D",
+    "east": 2759105.3503474975,
+    "north": 1261856.694517502,
+    "ground_ln02": 400.91735049150884,
+    "source": "https://3d.geo.admin.ch/ch.swisstopo.swissbuildings3d.3d/v1/20260520/11/1622/1724.b3dm",
+    "height": 10.147742551751435
+  },
+  {
+    "id": "5bb84fbe9c15bb41",
+    "name": "Batched_Building_ID_1549D762-ADF6-4DCF-B652-9BC011C4E816",
+    "east": 2759295.5553614926,
+    "north": 1261850.1281381499,
+    "ground_ln02": 399.4705153275281,
+    "source": "https://3d.geo.admin.ch/ch.swisstopo.swissbuildings3d.3d/v1/20260520/11/1623/1724.b3dm",
+    "height": 14.467594929039478
+  },
+  {
+    "id": "e35a512decf27360",
+    "name": "Batched_Building_ID_B52CE9CA-817D-463D-83A9-3FEAC67FED7B",
+    "east": 2759302.339375128,
+    "north": 1261852.0796946017,
+    "ground_ln02": 394.3919958565384,
+    "source": "https://3d.geo.admin.ch/ch.swisstopo.swissbuildings3d.3d/v1/20260520/11/1623/1724.b3dm",
+    "height": 19.345822197385132
+  },
+  {
+    "id": "0279c093b43ac821",
+    "name": "Batched_Building_ID_8883A3AF-118F-4DD0-B604-0D52668E2E60",
+    "east": 2759294.6988615296,
+    "north": 1261974.4077487597,
+    "ground_ln02": 393.6872022887692,
+    "source": "https://3d.geo.admin.ch/ch.swisstopo.swissbuildings3d.3d/v1/20260520/11/1623/1725.b3dm",
+    "height": 16.047167765907943
+  },
+  {
+    "id": "b0a01ed62aca6543",
+    "name": "Batched_Building_ID_8883A3AF-118F-4DD0-B604-0D52668E2E60",
+    "east": 2759294.361345632,
+    "north": 1261974.10170939,
+    "ground_ln02": 398.9926047306508,
+    "source": "https://3d.geo.admin.ch/ch.swisstopo.swissbuildings3d.3d/v1/20260520/11/1623/1725.b3dm",
+    "height": 10.941748416982591
+  },
+  {
+    "id": "94b79ea9e1cef14e",
+    "name": "Batched_Building_ID_348AB159-22A6-43F6-A182-B70AAAE28689",
+    "east": 2759104.8613423435,
+    "north": 1261967.1486881627,
+    "ground_ln02": 402.4570504752919,
+    "source": "https://3d.geo.admin.ch/ch.swisstopo.swissbuildings3d.3d/v1/20260520/11/1622/1725.b3dm",
+    "height": 13.540753175504506
+  },
+  {
+    "id": "7145fa95644ea27f",
+    "name": "Batched_Building_ID_CD635AE9-2A08-43A2-BC61-0D2F84993844",
+    "east": 2759107.082836732,
+    "north": 1261966.8631403078,
+    "ground_ln02": 394.39908252097666,
+    "source": "https://3d.geo.admin.ch/ch.swisstopo.swissbuildings3d.3d/v1/20260520/11/1622/1725.b3dm",
+    "height": 21.39884224999696
+  },
+  {
+    "id": "LSZR_pavement_5518_2523",
+    "name": "Airport pavement",
+    "kind": "pavement",
+    "east": 2759324.3243489857,
+    "north": 1261735.9768629496,
+    "ground_ln02": 398.1188,
+    "height": 0,
+    "estimated_dimensions": true,
+    "elevation_method": "nearest runway endpoint interpolation",
+    "source": "https://www.openstreetmap.org/copyright",
+    "source_features": [
+      {
+        "id": "82465454",
+        "kind": "taxiway",
+        "width_m": 15,
+        "estimated_dimensions": true,
+        "source": "https://www.openstreetmap.org/way/82465454"
+      },
+      {
+        "id": "82465459",
+        "kind": "runway",
+        "width_m": 30.0,
+        "estimated_dimensions": false,
+        "source": "https://www.openstreetmap.org/way/82465459"
+      },
+      {
+        "id": "82465463",
+        "kind": "taxiway",
+        "width_m": 15,
+        "estimated_dimensions": true,
+        "source": "https://www.openstreetmap.org/way/82465463"
+      },
+      {
+        "id": "82465480",
+        "kind": "taxiway",
+        "width_m": 15,
+        "estimated_dimensions": true,
+        "source": "https://www.openstreetmap.org/way/82465480"
+      },
+      {
+        "id": "82465508",
+        "kind": "taxiway",
+        "width_m": 15,
+        "estimated_dimensions": true,
+        "source": "https://www.openstreetmap.org/way/82465508"
+      },
+      {
+        "id": "82465513",
+        "kind": "taxiway",
+        "width_m": 15,
+        "estimated_dimensions": true,
+        "source": "https://www.openstreetmap.org/way/82465513"
+      },
+      {
+        "id": "82465521",
+        "kind": "taxiway",
+        "width_m": 15,
+        "estimated_dimensions": true,
+        "source": "https://www.openstreetmap.org/way/82465521"
+      },
+      {
+        "id": "121082902",
+        "kind": "runway",
+        "width_m": 20.0,
+        "estimated_dimensions": false,
+        "source": "https://www.openstreetmap.org/way/121082902"
+      },
+      {
+        "id": "180668232",
+        "kind": "helipad",
+        "width_m": null,
+        "estimated_dimensions": false,
+        "source": "https://www.openstreetmap.org/way/180668232"
+      },
+      {
+        "id": "180668233",
+        "kind": "apron",
+        "width_m": null,
+        "estimated_dimensions": false,
+        "source": "https://www.openstreetmap.org/way/180668233"
+      },
+      {
+        "id": "180668234",
+        "kind": "taxiway",
+        "width_m": 15,
+        "estimated_dimensions": true,
+        "source": "https://www.openstreetmap.org/way/180668234"
+      },
+      {
+        "id": "180668235",
+        "kind": "taxiway",
+        "width_m": 15,
+        "estimated_dimensions": true,
+        "source": "https://www.openstreetmap.org/way/180668235"
+      },
+      {
+        "id": "180668237",
+        "kind": "apron",
+        "width_m": null,
+        "estimated_dimensions": false,
+        "source": "https://www.openstreetmap.org/way/180668237"
+      },
+      {
+        "id": "180668238",
+        "kind": "taxiway",
+        "width_m": 15,
+        "estimated_dimensions": true,
+        "source": "https://www.openstreetmap.org/way/180668238"
+      },
+      {
+        "id": "976102458",
+        "kind": "helipad",
+        "width_m": null,
+        "estimated_dimensions": false,
+        "source": "https://www.openstreetmap.org/way/976102458"
+      },
+      {
+        "id": "1181891826",
+        "kind": "apron",
+        "width_m": null,
+        "estimated_dimensions": false,
+        "source": "https://www.openstreetmap.org/way/1181891826"
+      },
+      {
+        "id": "1181891830",
+        "kind": "apron",
+        "width_m": null,
+        "estimated_dimensions": false,
+        "source": "https://www.openstreetmap.org/way/1181891830"
+      },
+      {
+        "id": "1181891831",
+        "kind": "apron",
+        "width_m": null,
+        "estimated_dimensions": false,
+        "source": "https://www.openstreetmap.org/way/1181891831"
+      },
+      {
+        "id": "1181891832",
+        "kind": "taxiway",
+        "width_m": 15,
+        "estimated_dimensions": true,
+        "source": "https://www.openstreetmap.org/way/1181891832"
+      },
+      {
+        "id": "1181891833",
+        "kind": "taxiway",
+        "width_m": 15,
+        "estimated_dimensions": true,
+        "source": "https://www.openstreetmap.org/way/1181891833"
+      },
+      {
+        "id": "1181891834",
+        "kind": "taxiway",
+        "width_m": 15,
+        "estimated_dimensions": true,
+        "source": "https://www.openstreetmap.org/way/1181891834"
+      },
+      {
+        "id": "1181894344",
+        "kind": "taxiway",
+        "width_m": 15,
+        "estimated_dimensions": true,
+        "source": "https://www.openstreetmap.org/way/1181894344"
+      },
+      {
+        "id": "1181894345",
+        "kind": "taxiway",
+        "width_m": 15,
+        "estimated_dimensions": true,
+        "source": "https://www.openstreetmap.org/way/1181894345"
+      },
+      {
+        "id": "1181894346",
+        "kind": "apron",
+        "width_m": null,
+        "estimated_dimensions": false,
+        "source": "https://www.openstreetmap.org/way/1181894346"
+      },
+      {
+        "id": "1181894347",
+        "kind": "apron",
+        "width_m": null,
+        "estimated_dimensions": false,
+        "source": "https://www.openstreetmap.org/way/1181894347"
+      },
+      {
+        "id": "1245555271",
+        "kind": "runway",
+        "width_m": 30.0,
+        "estimated_dimensions": false,
+        "source": "https://www.openstreetmap.org/way/1245555271"
+      },
+      {
+        "id": "1245555272",
+        "kind": "runway",
+        "width_m": 30.0,
+        "estimated_dimensions": false,
+        "source": "https://www.openstreetmap.org/way/1245555272"
+      },
+      {
+        "id": "1339117799",
+        "kind": "helipad",
+        "width_m": null,
+        "estimated_dimensions": false,
+        "source": "https://www.openstreetmap.org/way/1339117799"
+      },
+      {
+        "id": "1339117800",
+        "kind": "helipad",
+        "width_m": null,
+        "estimated_dimensions": false,
+        "source": "https://www.openstreetmap.org/way/1339117800"
+      },
+      {
+        "id": "1339117801",
+        "kind": "helipad",
+        "width_m": null,
+        "estimated_dimensions": false,
+        "source": "https://www.openstreetmap.org/way/1339117801"
+      },
+      {
+        "id": "1339117802",
+        "kind": "apron",
+        "width_m": null,
+        "estimated_dimensions": false,
+        "source": "https://www.openstreetmap.org/way/1339117802"
+      },
+      {
+        "id": "1490152569",
+        "kind": "helipad",
+        "width_m": null,
+        "estimated_dimensions": false,
+        "source": "https://www.openstreetmap.org/way/1490152569"
+      }
+    ]
+  },
+  {
+    "id": "LSZR_pavement_5519_2523",
+    "name": "Airport pavement",
+    "kind": "pavement",
+    "east": 2759748.2359335534,
+    "north": 1261766.30148979,
+    "ground_ln02": 398.1188,
+    "height": 0,
+    "estimated_dimensions": true,
+    "elevation_method": "nearest runway endpoint interpolation",
+    "source": "https://www.openstreetmap.org/copyright",
+    "source_features": [
+      {
+        "id": "82465454",
+        "kind": "taxiway",
+        "width_m": 15,
+        "estimated_dimensions": true,
+        "source": "https://www.openstreetmap.org/way/82465454"
+      },
+      {
+        "id": "82465459",
+        "kind": "runway",
+        "width_m": 30.0,
+        "estimated_dimensions": false,
+        "source": "https://www.openstreetmap.org/way/82465459"
+      },
+      {
+        "id": "82465463",
+        "kind": "taxiway",
+        "width_m": 15,
+        "estimated_dimensions": true,
+        "source": "https://www.openstreetmap.org/way/82465463"
+      },
+      {
+        "id": "82465480",
+        "kind": "taxiway",
+        "width_m": 15,
+        "estimated_dimensions": true,
+        "source": "https://www.openstreetmap.org/way/82465480"
+      },
+      {
+        "id": "82465508",
+        "kind": "taxiway",
+        "width_m": 15,
+        "estimated_dimensions": true,
+        "source": "https://www.openstreetmap.org/way/82465508"
+      },
+      {
+        "id": "82465513",
+        "kind": "taxiway",
+        "width_m": 15,
+        "estimated_dimensions": true,
+        "source": "https://www.openstreetmap.org/way/82465513"
+      },
+      {
+        "id": "82465521",
+        "kind": "taxiway",
+        "width_m": 15,
+        "estimated_dimensions": true,
+        "source": "https://www.openstreetmap.org/way/82465521"
+      },
+      {
+        "id": "121082902",
+        "kind": "runway",
+        "width_m": 20.0,
+        "estimated_dimensions": false,
+        "source": "https://www.openstreetmap.org/way/121082902"
+      },
+      {
+        "id": "180668232",
+        "kind": "helipad",
+        "width_m": null,
+        "estimated_dimensions": false,
+        "source": "https://www.openstreetmap.org/way/180668232"
+      },
+      {
+        "id": "180668233",
+        "kind": "apron",
+        "width_m": null,
+        "estimated_dimensions": false,
+        "source": "https://www.openstreetmap.org/way/180668233"
+      },
+      {
+        "id": "180668234",
+        "kind": "taxiway",
+        "width_m": 15,
+        "estimated_dimensions": true,
+        "source": "https://www.openstreetmap.org/way/180668234"
+      },
+      {
+        "id": "180668235",
+        "kind": "taxiway",
+        "width_m": 15,
+        "estimated_dimensions": true,
+        "source": "https://www.openstreetmap.org/way/180668235"
+      },
+      {
+        "id": "180668237",
+        "kind": "apron",
+        "width_m": null,
+        "estimated_dimensions": false,
+        "source": "https://www.openstreetmap.org/way/180668237"
+      },
+      {
+        "id": "180668238",
+        "kind": "taxiway",
+        "width_m": 15,
+        "estimated_dimensions": true,
+        "source": "https://www.openstreetmap.org/way/180668238"
+      },
+      {
+        "id": "976102458",
+        "kind": "helipad",
+        "width_m": null,
+        "estimated_dimensions": false,
+        "source": "https://www.openstreetmap.org/way/976102458"
+      },
+      {
+        "id": "1181891826",
+        "kind": "apron",
+        "width_m": null,
+        "estimated_dimensions": false,
+        "source": "https://www.openstreetmap.org/way/1181891826"
+      },
+      {
+        "id": "1181891830",
+        "kind": "apron",
+        "width_m": null,
+        "estimated_dimensions": false,
+        "source": "https://www.openstreetmap.org/way/1181891830"
+      },
+      {
+        "id": "1181891831",
+        "kind": "apron",
+        "width_m": null,
+        "estimated_dimensions": false,
+        "source": "https://www.openstreetmap.org/way/1181891831"
+      },
+      {
+        "id": "1181891832",
+        "kind": "taxiway",
+        "width_m": 15,
+        "estimated_dimensions": true,
+        "source": "https://www.openstreetmap.org/way/1181891832"
+      },
+      {
+        "id": "1181891833",
+        "kind": "taxiway",
+        "width_m": 15,
+        "estimated_dimensions": true,
+        "source": "https://www.openstreetmap.org/way/1181891833"
+      },
+      {
+        "id": "1181891834",
+        "kind": "taxiway",
+        "width_m": 15,
+        "estimated_dimensions": true,
+        "source": "https://www.openstreetmap.org/way/1181891834"
+      },
+      {
+        "id": "1181894344",
+        "kind": "taxiway",
+        "width_m": 15,
+        "estimated_dimensions": true,
+        "source": "https://www.openstreetmap.org/way/1181894344"
+      },
+      {
+        "id": "1181894345",
+        "kind": "taxiway",
+        "width_m": 15,
+        "estimated_dimensions": true,
+        "source": "https://www.openstreetmap.org/way/1181894345"
+      },
+      {
+        "id": "1181894346",
+        "kind": "apron",
+        "width_m": null,
+        "estimated_dimensions": false,
+        "source": "https://www.openstreetmap.org/way/1181894346"
+      },
+      {
+        "id": "1181894347",
+        "kind": "apron",
+        "width_m": null,
+        "estimated_dimensions": false,
+        "source": "https://www.openstreetmap.org/way/1181894347"
+      },
+      {
+        "id": "1245555271",
+        "kind": "runway",
+        "width_m": 30.0,
+        "estimated_dimensions": false,
+        "source": "https://www.openstreetmap.org/way/1245555271"
+      },
+      {
+        "id": "1245555272",
+        "kind": "runway",
+        "width_m": 30.0,
+        "estimated_dimensions": false,
+        "source": "https://www.openstreetmap.org/way/1245555272"
+      },
+      {
+        "id": "1339117799",
+        "kind": "helipad",
+        "width_m": null,
+        "estimated_dimensions": false,
+        "source": "https://www.openstreetmap.org/way/1339117799"
+      },
+      {
+        "id": "1339117800",
+        "kind": "helipad",
+        "width_m": null,
+        "estimated_dimensions": false,
+        "source": "https://www.openstreetmap.org/way/1339117800"
+      },
+      {
+        "id": "1339117801",
+        "kind": "helipad",
+        "width_m": null,
+        "estimated_dimensions": false,
+        "source": "https://www.openstreetmap.org/way/1339117801"
+      },
+      {
+        "id": "1339117802",
+        "kind": "apron",
+        "width_m": null,
+        "estimated_dimensions": false,
+        "source": "https://www.openstreetmap.org/way/1339117802"
+      },
+      {
+        "id": "1490152569",
+        "kind": "helipad",
+        "width_m": null,
+        "estimated_dimensions": false,
+        "source": "https://www.openstreetmap.org/way/1490152569"
+      }
+    ]
+  },
+  {
+    "id": "LSZR_pavement_5520_2522",
+    "name": "Airport pavement",
+    "kind": "pavement",
+    "east": 2760330.382711921,
+    "north": 1261477.0121874302,
+    "ground_ln02": 398.1188,
+    "height": 0,
+    "estimated_dimensions": true,
+    "elevation_method": "nearest runway endpoint interpolation",
+    "source": "https://www.openstreetmap.org/copyright",
+    "source_features": [
+      {
+        "id": "82465454",
+        "kind": "taxiway",
+        "width_m": 15,
+        "estimated_dimensions": true,
+        "source": "https://www.openstreetmap.org/way/82465454"
+      },
+      {
+        "id": "82465459",
+        "kind": "runway",
+        "width_m": 30.0,
+        "estimated_dimensions": false,
+        "source": "https://www.openstreetmap.org/way/82465459"
+      },
+      {
+        "id": "82465463",
+        "kind": "taxiway",
+        "width_m": 15,
+        "estimated_dimensions": true,
+        "source": "https://www.openstreetmap.org/way/82465463"
+      },
+      {
+        "id": "82465480",
+        "kind": "taxiway",
+        "width_m": 15,
+        "estimated_dimensions": true,
+        "source": "https://www.openstreetmap.org/way/82465480"
+      },
+      {
+        "id": "82465508",
+        "kind": "taxiway",
+        "width_m": 15,
+        "estimated_dimensions": true,
+        "source": "https://www.openstreetmap.org/way/82465508"
+      },
+      {
+        "id": "82465513",
+        "kind": "taxiway",
+        "width_m": 15,
+        "estimated_dimensions": true,
+        "source": "https://www.openstreetmap.org/way/82465513"
+      },
+      {
+        "id": "82465521",
+        "kind": "taxiway",
+        "width_m": 15,
+        "estimated_dimensions": true,
+        "source": "https://www.openstreetmap.org/way/82465521"
+      },
+      {
+        "id": "121082902",
+        "kind": "runway",
+        "width_m": 20.0,
+        "estimated_dimensions": false,
+        "source": "https://www.openstreetmap.org/way/121082902"
+      },
+      {
+        "id": "180668232",
+        "kind": "helipad",
+        "width_m": null,
+        "estimated_dimensions": false,
+        "source": "https://www.openstreetmap.org/way/180668232"
+      },
+      {
+        "id": "180668233",
+        "kind": "apron",
+        "width_m": null,
+        "estimated_dimensions": false,
+        "source": "https://www.openstreetmap.org/way/180668233"
+      },
+      {
+        "id": "180668234",
+        "kind": "taxiway",
+        "width_m": 15,
+        "estimated_dimensions": true,
+        "source": "https://www.openstreetmap.org/way/180668234"
+      },
+      {
+        "id": "180668235",
+        "kind": "taxiway",
+        "width_m": 15,
+        "estimated_dimensions": true,
+        "source": "https://www.openstreetmap.org/way/180668235"
+      },
+      {
+        "id": "180668237",
+        "kind": "apron",
+        "width_m": null,
+        "estimated_dimensions": false,
+        "source": "https://www.openstreetmap.org/way/180668237"
+      },
+      {
+        "id": "180668238",
+        "kind": "taxiway",
+        "width_m": 15,
+        "estimated_dimensions": true,
+        "source": "https://www.openstreetmap.org/way/180668238"
+      },
+      {
+        "id": "976102458",
+        "kind": "helipad",
+        "width_m": null,
+        "estimated_dimensions": false,
+        "source": "https://www.openstreetmap.org/way/976102458"
+      },
+      {
+        "id": "1181891826",
+        "kind": "apron",
+        "width_m": null,
+        "estimated_dimensions": false,
+        "source": "https://www.openstreetmap.org/way/1181891826"
+      },
+      {
+        "id": "1181891830",
+        "kind": "apron",
+        "width_m": null,
+        "estimated_dimensions": false,
+        "source": "https://www.openstreetmap.org/way/1181891830"
+      },
+      {
+        "id": "1181891831",
+        "kind": "apron",
+        "width_m": null,
+        "estimated_dimensions": false,
+        "source": "https://www.openstreetmap.org/way/1181891831"
+      },
+      {
+        "id": "1181891832",
+        "kind": "taxiway",
+        "width_m": 15,
+        "estimated_dimensions": true,
+        "source": "https://www.openstreetmap.org/way/1181891832"
+      },
+      {
+        "id": "1181891833",
+        "kind": "taxiway",
+        "width_m": 15,
+        "estimated_dimensions": true,
+        "source": "https://www.openstreetmap.org/way/1181891833"
+      },
+      {
+        "id": "1181891834",
+        "kind": "taxiway",
+        "width_m": 15,
+        "estimated_dimensions": true,
+        "source": "https://www.openstreetmap.org/way/1181891834"
+      },
+      {
+        "id": "1181894344",
+        "kind": "taxiway",
+        "width_m": 15,
+        "estimated_dimensions": true,
+        "source": "https://www.openstreetmap.org/way/1181894344"
+      },
+      {
+        "id": "1181894345",
+        "kind": "taxiway",
+        "width_m": 15,
+        "estimated_dimensions": true,
+        "source": "https://www.openstreetmap.org/way/1181894345"
+      },
+      {
+        "id": "1181894346",
+        "kind": "apron",
+        "width_m": null,
+        "estimated_dimensions": false,
+        "source": "https://www.openstreetmap.org/way/1181894346"
+      },
+      {
+        "id": "1181894347",
+        "kind": "apron",
+        "width_m": null,
+        "estimated_dimensions": false,
+        "source": "https://www.openstreetmap.org/way/1181894347"
+      },
+      {
+        "id": "1245555271",
+        "kind": "runway",
+        "width_m": 30.0,
+        "estimated_dimensions": false,
+        "source": "https://www.openstreetmap.org/way/1245555271"
+      },
+      {
+        "id": "1245555272",
+        "kind": "runway",
+        "width_m": 30.0,
+        "estimated_dimensions": false,
+        "source": "https://www.openstreetmap.org/way/1245555272"
+      },
+      {
+        "id": "1339117799",
+        "kind": "helipad",
+        "width_m": null,
+        "estimated_dimensions": false,
+        "source": "https://www.openstreetmap.org/way/1339117799"
+      },
+      {
+        "id": "1339117800",
+        "kind": "helipad",
+        "width_m": null,
+        "estimated_dimensions": false,
+        "source": "https://www.openstreetmap.org/way/1339117800"
+      },
+      {
+        "id": "1339117801",
+        "kind": "helipad",
+        "width_m": null,
+        "estimated_dimensions": false,
+        "source": "https://www.openstreetmap.org/way/1339117801"
+      },
+      {
+        "id": "1339117802",
+        "kind": "apron",
+        "width_m": null,
+        "estimated_dimensions": false,
+        "source": "https://www.openstreetmap.org/way/1339117802"
+      },
+      {
+        "id": "1490152569",
+        "kind": "helipad",
+        "width_m": null,
+        "estimated_dimensions": false,
+        "source": "https://www.openstreetmap.org/way/1490152569"
+      }
+    ]
+  },
+  {
+    "id": "LSZR_pavement_5520_2523",
+    "name": "Airport pavement",
+    "kind": "pavement",
+    "east": 2760124.1046096813,
+    "north": 1261684.3569887555,
+    "ground_ln02": 398.1188,
+    "height": 0,
+    "estimated_dimensions": true,
+    "elevation_method": "nearest runway endpoint interpolation",
+    "source": "https://www.openstreetmap.org/copyright",
+    "source_features": [
+      {
+        "id": "82465454",
+        "kind": "taxiway",
+        "width_m": 15,
+        "estimated_dimensions": true,
+        "source": "https://www.openstreetmap.org/way/82465454"
+      },
+      {
+        "id": "82465459",
+        "kind": "runway",
+        "width_m": 30.0,
+        "estimated_dimensions": false,
+        "source": "https://www.openstreetmap.org/way/82465459"
+      },
+      {
+        "id": "82465463",
+        "kind": "taxiway",
+        "width_m": 15,
+        "estimated_dimensions": true,
+        "source": "https://www.openstreetmap.org/way/82465463"
+      },
+      {
+        "id": "82465480",
+        "kind": "taxiway",
+        "width_m": 15,
+        "estimated_dimensions": true,
+        "source": "https://www.openstreetmap.org/way/82465480"
+      },
+      {
+        "id": "82465508",
+        "kind": "taxiway",
+        "width_m": 15,
+        "estimated_dimensions": true,
+        "source": "https://www.openstreetmap.org/way/82465508"
+      },
+      {
+        "id": "82465513",
+        "kind": "taxiway",
+        "width_m": 15,
+        "estimated_dimensions": true,
+        "source": "https://www.openstreetmap.org/way/82465513"
+      },
+      {
+        "id": "82465521",
+        "kind": "taxiway",
+        "width_m": 15,
+        "estimated_dimensions": true,
+        "source": "https://www.openstreetmap.org/way/82465521"
+      },
+      {
+        "id": "121082902",
+        "kind": "runway",
+        "width_m": 20.0,
+        "estimated_dimensions": false,
+        "source": "https://www.openstreetmap.org/way/121082902"
+      },
+      {
+        "id": "180668232",
+        "kind": "helipad",
+        "width_m": null,
+        "estimated_dimensions": false,
+        "source": "https://www.openstreetmap.org/way/180668232"
+      },
+      {
+        "id": "180668233",
+        "kind": "apron",
+        "width_m": null,
+        "estimated_dimensions": false,
+        "source": "https://www.openstreetmap.org/way/180668233"
+      },
+      {
+        "id": "180668234",
+        "kind": "taxiway",
+        "width_m": 15,
+        "estimated_dimensions": true,
+        "source": "https://www.openstreetmap.org/way/180668234"
+      },
+      {
+        "id": "180668235",
+        "kind": "taxiway",
+        "width_m": 15,
+        "estimated_dimensions": true,
+        "source": "https://www.openstreetmap.org/way/180668235"
+      },
+      {
+        "id": "180668237",
+        "kind": "apron",
+        "width_m": null,
+        "estimated_dimensions": false,
+        "source": "https://www.openstreetmap.org/way/180668237"
+      },
+      {
+        "id": "180668238",
+        "kind": "taxiway",
+        "width_m": 15,
+        "estimated_dimensions": true,
+        "source": "https://www.openstreetmap.org/way/180668238"
+      },
+      {
+        "id": "976102458",
+        "kind": "helipad",
+        "width_m": null,
+        "estimated_dimensions": false,
+        "source": "https://www.openstreetmap.org/way/976102458"
+      },
+      {
+        "id": "1181891826",
+        "kind": "apron",
+        "width_m": null,
+        "estimated_dimensions": false,
+        "source": "https://www.openstreetmap.org/way/1181891826"
+      },
+      {
+        "id": "1181891830",
+        "kind": "apron",
+        "width_m": null,
+        "estimated_dimensions": false,
+        "source": "https://www.openstreetmap.org/way/1181891830"
+      },
+      {
+        "id": "1181891831",
+        "kind": "apron",
+        "width_m": null,
+        "estimated_dimensions": false,
+        "source": "https://www.openstreetmap.org/way/1181891831"
+      },
+      {
+        "id": "1181891832",
+        "kind": "taxiway",
+        "width_m": 15,
+        "estimated_dimensions": true,
+        "source": "https://www.openstreetmap.org/way/1181891832"
+      },
+      {
+        "id": "1181891833",
+        "kind": "taxiway",
+        "width_m": 15,
+        "estimated_dimensions": true,
+        "source": "https://www.openstreetmap.org/way/1181891833"
+      },
+      {
+        "id": "1181891834",
+        "kind": "taxiway",
+        "width_m": 15,
+        "estimated_dimensions": true,
+        "source": "https://www.openstreetmap.org/way/1181891834"
+      },
+      {
+        "id": "1181894344",
+        "kind": "taxiway",
+        "width_m": 15,
+        "estimated_dimensions": true,
+        "source": "https://www.openstreetmap.org/way/1181894344"
+      },
+      {
+        "id": "1181894345",
+        "kind": "taxiway",
+        "width_m": 15,
+        "estimated_dimensions": true,
+        "source": "https://www.openstreetmap.org/way/1181894345"
+      },
+      {
+        "id": "1181894346",
+        "kind": "apron",
+        "width_m": null,
+        "estimated_dimensions": false,
+        "source": "https://www.openstreetmap.org/way/1181894346"
+      },
+      {
+        "id": "1181894347",
+        "kind": "apron",
+        "width_m": null,
+        "estimated_dimensions": false,
+        "source": "https://www.openstreetmap.org/way/1181894347"
+      },
+      {
+        "id": "1245555271",
+        "kind": "runway",
+        "width_m": 30.0,
+        "estimated_dimensions": false,
+        "source": "https://www.openstreetmap.org/way/1245555271"
+      },
+      {
+        "id": "1245555272",
+        "kind": "runway",
+        "width_m": 30.0,
+        "estimated_dimensions": false,
+        "source": "https://www.openstreetmap.org/way/1245555272"
+      },
+      {
+        "id": "1339117799",
+        "kind": "helipad",
+        "width_m": null,
+        "estimated_dimensions": false,
+        "source": "https://www.openstreetmap.org/way/1339117799"
+      },
+      {
+        "id": "1339117800",
+        "kind": "helipad",
+        "width_m": null,
+        "estimated_dimensions": false,
+        "source": "https://www.openstreetmap.org/way/1339117800"
+      },
+      {
+        "id": "1339117801",
+        "kind": "helipad",
+        "width_m": null,
+        "estimated_dimensions": false,
+        "source": "https://www.openstreetmap.org/way/1339117801"
+      },
+      {
+        "id": "1339117802",
+        "kind": "apron",
+        "width_m": null,
+        "estimated_dimensions": false,
+        "source": "https://www.openstreetmap.org/way/1339117802"
+      },
+      {
+        "id": "1490152569",
+        "kind": "helipad",
+        "width_m": null,
+        "estimated_dimensions": false,
+        "source": "https://www.openstreetmap.org/way/1490152569"
+      }
+    ]
+  },
+  {
+    "id": "LSZR_pavement_5521_2522",
+    "name": "Airport pavement",
+    "kind": "pavement",
+    "east": 2760618.6409767456,
+    "north": 1261446.342342982,
+    "ground_ln02": 398.1188,
+    "height": 0,
+    "estimated_dimensions": true,
+    "elevation_method": "nearest runway endpoint interpolation",
+    "source": "https://www.openstreetmap.org/copyright",
+    "source_features": [
+      {
+        "id": "82465454",
+        "kind": "taxiway",
+        "width_m": 15,
+        "estimated_dimensions": true,
+        "source": "https://www.openstreetmap.org/way/82465454"
+      },
+      {
+        "id": "82465459",
+        "kind": "runway",
+        "width_m": 30.0,
+        "estimated_dimensions": false,
+        "source": "https://www.openstreetmap.org/way/82465459"
+      },
+      {
+        "id": "82465463",
+        "kind": "taxiway",
+        "width_m": 15,
+        "estimated_dimensions": true,
+        "source": "https://www.openstreetmap.org/way/82465463"
+      },
+      {
+        "id": "82465480",
+        "kind": "taxiway",
+        "width_m": 15,
+        "estimated_dimensions": true,
+        "source": "https://www.openstreetmap.org/way/82465480"
+      },
+      {
+        "id": "82465508",
+        "kind": "taxiway",
+        "width_m": 15,
+        "estimated_dimensions": true,
+        "source": "https://www.openstreetmap.org/way/82465508"
+      },
+      {
+        "id": "82465513",
+        "kind": "taxiway",
+        "width_m": 15,
+        "estimated_dimensions": true,
+        "source": "https://www.openstreetmap.org/way/82465513"
+      },
+      {
+        "id": "82465521",
+        "kind": "taxiway",
+        "width_m": 15,
+        "estimated_dimensions": true,
+        "source": "https://www.openstreetmap.org/way/82465521"
+      },
+      {
+        "id": "121082902",
+        "kind": "runway",
+        "width_m": 20.0,
+        "estimated_dimensions": false,
+        "source": "https://www.openstreetmap.org/way/121082902"
+      },
+      {
+        "id": "180668232",
+        "kind": "helipad",
+        "width_m": null,
+        "estimated_dimensions": false,
+        "source": "https://www.openstreetmap.org/way/180668232"
+      },
+      {
+        "id": "180668233",
+        "kind": "apron",
+        "width_m": null,
+        "estimated_dimensions": false,
+        "source": "https://www.openstreetmap.org/way/180668233"
+      },
+      {
+        "id": "180668234",
+        "kind": "taxiway",
+        "width_m": 15,
+        "estimated_dimensions": true,
+        "source": "https://www.openstreetmap.org/way/180668234"
+      },
+      {
+        "id": "180668235",
+        "kind": "taxiway",
+        "width_m": 15,
+        "estimated_dimensions": true,
+        "source": "https://www.openstreetmap.org/way/180668235"
+      },
+      {
+        "id": "180668237",
+        "kind": "apron",
+        "width_m": null,
+        "estimated_dimensions": false,
+        "source": "https://www.openstreetmap.org/way/180668237"
+      },
+      {
+        "id": "180668238",
+        "kind": "taxiway",
+        "width_m": 15,
+        "estimated_dimensions": true,
+        "source": "https://www.openstreetmap.org/way/180668238"
+      },
+      {
+        "id": "976102458",
+        "kind": "helipad",
+        "width_m": null,
+        "estimated_dimensions": false,
+        "source": "https://www.openstreetmap.org/way/976102458"
+      },
+      {
+        "id": "1181891826",
+        "kind": "apron",
+        "width_m": null,
+        "estimated_dimensions": false,
+        "source": "https://www.openstreetmap.org/way/1181891826"
+      },
+      {
+        "id": "1181891830",
+        "kind": "apron",
+        "width_m": null,
+        "estimated_dimensions": false,
+        "source": "https://www.openstreetmap.org/way/1181891830"
+      },
+      {
+        "id": "1181891831",
+        "kind": "apron",
+        "width_m": null,
+        "estimated_dimensions": false,
+        "source": "https://www.openstreetmap.org/way/1181891831"
+      },
+      {
+        "id": "1181891832",
+        "kind": "taxiway",
+        "width_m": 15,
+        "estimated_dimensions": true,
+        "source": "https://www.openstreetmap.org/way/1181891832"
+      },
+      {
+        "id": "1181891833",
+        "kind": "taxiway",
+        "width_m": 15,
+        "estimated_dimensions": true,
+        "source": "https://www.openstreetmap.org/way/1181891833"
+      },
+      {
+        "id": "1181891834",
+        "kind": "taxiway",
+        "width_m": 15,
+        "estimated_dimensions": true,
+        "source": "https://www.openstreetmap.org/way/1181891834"
+      },
+      {
+        "id": "1181894344",
+        "kind": "taxiway",
+        "width_m": 15,
+        "estimated_dimensions": true,
+        "source": "https://www.openstreetmap.org/way/1181894344"
+      },
+      {
+        "id": "1181894345",
+        "kind": "taxiway",
+        "width_m": 15,
+        "estimated_dimensions": true,
+        "source": "https://www.openstreetmap.org/way/1181894345"
+      },
+      {
+        "id": "1181894346",
+        "kind": "apron",
+        "width_m": null,
+        "estimated_dimensions": false,
+        "source": "https://www.openstreetmap.org/way/1181894346"
+      },
+      {
+        "id": "1181894347",
+        "kind": "apron",
+        "width_m": null,
+        "estimated_dimensions": false,
+        "source": "https://www.openstreetmap.org/way/1181894347"
+      },
+      {
+        "id": "1245555271",
+        "kind": "runway",
+        "width_m": 30.0,
+        "estimated_dimensions": false,
+        "source": "https://www.openstreetmap.org/way/1245555271"
+      },
+      {
+        "id": "1245555272",
+        "kind": "runway",
+        "width_m": 30.0,
+        "estimated_dimensions": false,
+        "source": "https://www.openstreetmap.org/way/1245555272"
+      },
+      {
+        "id": "1339117799",
+        "kind": "helipad",
+        "width_m": null,
+        "estimated_dimensions": false,
+        "source": "https://www.openstreetmap.org/way/1339117799"
+      },
+      {
+        "id": "1339117800",
+        "kind": "helipad",
+        "width_m": null,
+        "estimated_dimensions": false,
+        "source": "https://www.openstreetmap.org/way/1339117800"
+      },
+      {
+        "id": "1339117801",
+        "kind": "helipad",
+        "width_m": null,
+        "estimated_dimensions": false,
+        "source": "https://www.openstreetmap.org/way/1339117801"
+      },
+      {
+        "id": "1339117802",
+        "kind": "apron",
+        "width_m": null,
+        "estimated_dimensions": false,
+        "source": "https://www.openstreetmap.org/way/1339117802"
+      },
+      {
+        "id": "1490152569",
+        "kind": "helipad",
+        "width_m": null,
+        "estimated_dimensions": false,
+        "source": "https://www.openstreetmap.org/way/1490152569"
+      }
+    ]
+  },
+  {
+    "id": "LSZR_pavement_5521_2523",
+    "name": "Airport pavement",
+    "kind": "pavement",
+    "east": 2760658.305358226,
+    "north": 1261582.0430726807,
+    "ground_ln02": 398.1188,
+    "height": 0,
+    "estimated_dimensions": true,
+    "elevation_method": "nearest runway endpoint interpolation",
+    "source": "https://www.openstreetmap.org/copyright",
+    "source_features": [
+      {
+        "id": "82465454",
+        "kind": "taxiway",
+        "width_m": 15,
+        "estimated_dimensions": true,
+        "source": "https://www.openstreetmap.org/way/82465454"
+      },
+      {
+        "id": "82465459",
+        "kind": "runway",
+        "width_m": 30.0,
+        "estimated_dimensions": false,
+        "source": "https://www.openstreetmap.org/way/82465459"
+      },
+      {
+        "id": "82465463",
+        "kind": "taxiway",
+        "width_m": 15,
+        "estimated_dimensions": true,
+        "source": "https://www.openstreetmap.org/way/82465463"
+      },
+      {
+        "id": "82465480",
+        "kind": "taxiway",
+        "width_m": 15,
+        "estimated_dimensions": true,
+        "source": "https://www.openstreetmap.org/way/82465480"
+      },
+      {
+        "id": "82465508",
+        "kind": "taxiway",
+        "width_m": 15,
+        "estimated_dimensions": true,
+        "source": "https://www.openstreetmap.org/way/82465508"
+      },
+      {
+        "id": "82465513",
+        "kind": "taxiway",
+        "width_m": 15,
+        "estimated_dimensions": true,
+        "source": "https://www.openstreetmap.org/way/82465513"
+      },
+      {
+        "id": "82465521",
+        "kind": "taxiway",
+        "width_m": 15,
+        "estimated_dimensions": true,
+        "source": "https://www.openstreetmap.org/way/82465521"
+      },
+      {
+        "id": "121082902",
+        "kind": "runway",
+        "width_m": 20.0,
+        "estimated_dimensions": false,
+        "source": "https://www.openstreetmap.org/way/121082902"
+      },
+      {
+        "id": "180668232",
+        "kind": "helipad",
+        "width_m": null,
+        "estimated_dimensions": false,
+        "source": "https://www.openstreetmap.org/way/180668232"
+      },
+      {
+        "id": "180668233",
+        "kind": "apron",
+        "width_m": null,
+        "estimated_dimensions": false,
+        "source": "https://www.openstreetmap.org/way/180668233"
+      },
+      {
+        "id": "180668234",
+        "kind": "taxiway",
+        "width_m": 15,
+        "estimated_dimensions": true,
+        "source": "https://www.openstreetmap.org/way/180668234"
+      },
+      {
+        "id": "180668235",
+        "kind": "taxiway",
+        "width_m": 15,
+        "estimated_dimensions": true,
+        "source": "https://www.openstreetmap.org/way/180668235"
+      },
+      {
+        "id": "180668237",
+        "kind": "apron",
+        "width_m": null,
+        "estimated_dimensions": false,
+        "source": "https://www.openstreetmap.org/way/180668237"
+      },
+      {
+        "id": "180668238",
+        "kind": "taxiway",
+        "width_m": 15,
+        "estimated_dimensions": true,
+        "source": "https://www.openstreetmap.org/way/180668238"
+      },
+      {
+        "id": "976102458",
+        "kind": "helipad",
+        "width_m": null,
+        "estimated_dimensions": false,
+        "source": "https://www.openstreetmap.org/way/976102458"
+      },
+      {
+        "id": "1181891826",
+        "kind": "apron",
+        "width_m": null,
+        "estimated_dimensions": false,
+        "source": "https://www.openstreetmap.org/way/1181891826"
+      },
+      {
+        "id": "1181891830",
+        "kind": "apron",
+        "width_m": null,
+        "estimated_dimensions": false,
+        "source": "https://www.openstreetmap.org/way/1181891830"
+      },
+      {
+        "id": "1181891831",
+        "kind": "apron",
+        "width_m": null,
+        "estimated_dimensions": false,
+        "source": "https://www.openstreetmap.org/way/1181891831"
+      },
+      {
+        "id": "1181891832",
+        "kind": "taxiway",
+        "width_m": 15,
+        "estimated_dimensions": true,
+        "source": "https://www.openstreetmap.org/way/1181891832"
+      },
+      {
+        "id": "1181891833",
+        "kind": "taxiway",
+        "width_m": 15,
+        "estimated_dimensions": true,
+        "source": "https://www.openstreetmap.org/way/1181891833"
+      },
+      {
+        "id": "1181891834",
+        "kind": "taxiway",
+        "width_m": 15,
+        "estimated_dimensions": true,
+        "source": "https://www.openstreetmap.org/way/1181891834"
+      },
+      {
+        "id": "1181894344",
+        "kind": "taxiway",
+        "width_m": 15,
+        "estimated_dimensions": true,
+        "source": "https://www.openstreetmap.org/way/1181894344"
+      },
+      {
+        "id": "1181894345",
+        "kind": "taxiway",
+        "width_m": 15,
+        "estimated_dimensions": true,
+        "source": "https://www.openstreetmap.org/way/1181894345"
+      },
+      {
+        "id": "1181894346",
+        "kind": "apron",
+        "width_m": null,
+        "estimated_dimensions": false,
+        "source": "https://www.openstreetmap.org/way/1181894346"
+      },
+      {
+        "id": "1181894347",
+        "kind": "apron",
+        "width_m": null,
+        "estimated_dimensions": false,
+        "source": "https://www.openstreetmap.org/way/1181894347"
+      },
+      {
+        "id": "1245555271",
+        "kind": "runway",
+        "width_m": 30.0,
+        "estimated_dimensions": false,
+        "source": "https://www.openstreetmap.org/way/1245555271"
+      },
+      {
+        "id": "1245555272",
+        "kind": "runway",
+        "width_m": 30.0,
+        "estimated_dimensions": false,
+        "source": "https://www.openstreetmap.org/way/1245555272"
+      },
+      {
+        "id": "1339117799",
+        "kind": "helipad",
+        "width_m": null,
+        "estimated_dimensions": false,
+        "source": "https://www.openstreetmap.org/way/1339117799"
+      },
+      {
+        "id": "1339117800",
+        "kind": "helipad",
+        "width_m": null,
+        "estimated_dimensions": false,
+        "source": "https://www.openstreetmap.org/way/1339117800"
+      },
+      {
+        "id": "1339117801",
+        "kind": "helipad",
+        "width_m": null,
+        "estimated_dimensions": false,
+        "source": "https://www.openstreetmap.org/way/1339117801"
+      },
+      {
+        "id": "1339117802",
+        "kind": "apron",
+        "width_m": null,
+        "estimated_dimensions": false,
+        "source": "https://www.openstreetmap.org/way/1339117802"
+      },
+      {
+        "id": "1490152569",
+        "kind": "helipad",
+        "width_m": null,
+        "estimated_dimensions": false,
+        "source": "https://www.openstreetmap.org/way/1490152569"
+      }
+    ]
+  }
+]

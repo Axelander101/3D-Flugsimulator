@@ -1,0 +1,151 @@
+{
+  "icao": "LSGS",
+  "name": "Sion",
+  "status": "Geodata foundation; not a finished photorealistic replica",
+  "origin_lv95_ln02": [
+    2591380.413941994,
+    1118641.9602069058,
+    482
+  ],
+  "worldTranslation_jme": [
+    -30119.586058006156,
+    482,
+    -26141.960206905846
+  ],
+  "world_origin_lv95": [
+    2621500,
+    1092500
+  ],
+  "units": "metres",
+  "building_parts": 74,
+  "osm_buildings": 0,
+  "surfaces": 10,
+  "full_model": "Models/LSGS_Airport.glb",
+  "chunks": [
+    {
+      "file": "Chunks/LSGS_2_0.glb",
+      "localTranslation_jme": [
+        1250.0,
+        0,
+        -250.0
+      ],
+      "objects": 12
+    },
+    {
+      "file": "Chunks/LSGS_1_-1.glb",
+      "localTranslation_jme": [
+        750.0,
+        0,
+        250.0
+      ],
+      "objects": 2
+    },
+    {
+      "file": "Chunks/LSGS_1_0.glb",
+      "localTranslation_jme": [
+        750.0,
+        0,
+        -250.0
+      ],
+      "objects": 22
+    },
+    {
+      "file": "Chunks/LSGS_0_-1.glb",
+      "localTranslation_jme": [
+        250.0,
+        0,
+        250.0
+      ],
+      "objects": 6
+    },
+    {
+      "file": "Chunks/LSGS_-1_-1.glb",
+      "localTranslation_jme": [
+        -250.0,
+        0,
+        250.0
+      ],
+      "objects": 11
+    },
+    {
+      "file": "Chunks/LSGS_0_0.glb",
+      "localTranslation_jme": [
+        250.0,
+        0,
+        -250.0
+      ],
+      "objects": 11
+    },
+    {
+      "file": "Chunks/LSGS_-3_-1.glb",
+      "localTranslation_jme": [
+        -1250.0,
+        0,
+        250.0
+      ],
+      "objects": 2
+    },
+    {
+      "file": "Chunks/LSGS_-2_-1.glb",
+      "localTranslation_jme": [
+        -750.0,
+        0,
+        250.0
+      ],
+      "objects": 4
+    },
+    {
+      "file": "Chunks/LSGS_-2_0.glb",
+      "localTranslation_jme": [
+        -750.0,
+        0,
+        -250.0
+      ],
+      "objects": 2
+    },
+    {
+      "file": "Chunks/LSGS_-1_0.glb",
+      "localTranslation_jme": [
+        -250.0,
+        0,
+        -250.0
+      ],
+      "objects": 6
+    },
+    {
+      "file": "Chunks/LSGS_1_1.glb",
+      "localTranslation_jme": [
+        750.0,
+        0,
+        -750.0
+      ],
+      "objects": 2
+    },
+    {
+      "file": "Chunks/LSGS_3_0.glb",
+      "localTranslation_jme": [
+        1750.0,
+        0,
+        -250.0
+      ],
+      "objects": 2
+    },
+    {
+      "file": "Chunks/LSGS_2_1.glb",
+      "localTranslation_jme": [
+        1250.0,
+        0,
+        -750.0
+      ],
+      "objects": 2
+    }
+  ],
+  "known_limits": [
+    "No surveyed facades",
+    "Pavement elevations use approximate runway profiles or nominal airport elevation; not terrain-conforming",
+    "IGN objects with unavailable height attributes are marked estimated",
+    "No automatic streaming, LOD selection or collision controls"
+  ],
+  "source_date": "2026-11-12",
+  "source_credits": "© swisstopo; © OpenStreetMap contributors"
+}

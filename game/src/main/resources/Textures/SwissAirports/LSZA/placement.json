@@ -1,0 +1,88 @@
+{
+  "icao": "LSZA",
+  "name": "Lugano-Agno",
+  "status": "Geodata foundation; not a finished photorealistic replica",
+  "origin_lv95_ln02": [
+    2713999.6642039046,
+    1095741.402085471,
+    279
+  ],
+  "worldTranslation_jme": [
+    92499.66420390457,
+    279,
+    -3241.402085470967
+  ],
+  "world_origin_lv95": [
+    2621500,
+    1092500
+  ],
+  "units": "metres",
+  "building_parts": 30,
+  "osm_buildings": 0,
+  "surfaces": 5,
+  "full_model": "Models/LSZA_Airport.glb",
+  "chunks": [
+    {
+      "file": "Chunks/LSZA_-1_-2.glb",
+      "localTranslation_jme": [
+        -250.0,
+        0,
+        750.0
+      ],
+      "objects": 4
+    },
+    {
+      "file": "Chunks/LSZA_0_-1.glb",
+      "localTranslation_jme": [
+        250.0,
+        0,
+        250.0
+      ],
+      "objects": 4
+    },
+    {
+      "file": "Chunks/LSZA_-1_0.glb",
+      "localTranslation_jme": [
+        -250.0,
+        0,
+        -250.0
+      ],
+      "objects": 5
+    },
+    {
+      "file": "Chunks/LSZA_-1_-1.glb",
+      "localTranslation_jme": [
+        -250.0,
+        0,
+        250.0
+      ],
+      "objects": 8
+    },
+    {
+      "file": "Chunks/LSZA_0_0.glb",
+      "localTranslation_jme": [
+        250.0,
+        0,
+        -250.0
+      ],
+      "objects": 4
+    },
+    {
+      "file": "Chunks/LSZA_0_1.glb",
+      "localTranslation_jme": [
+        250.0,
+        0,
+        -750.0
+      ],
+      "objects": 10
+    }
+  ],
+  "known_limits": [
+    "No surveyed facades",
+    "Pavement elevations use approximate runway profiles or nominal airport elevation; not terrain-conforming",
+    "IGN objects with unavailable height attributes are marked estimated",
+    "No automatic streaming, LOD selection or collision controls"
+  ],
+  "source_date": "2026-11-12",
+  "source_credits": "© swisstopo; © OpenStreetMap contributors"
+}

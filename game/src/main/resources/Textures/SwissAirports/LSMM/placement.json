@@ -1,0 +1,133 @@
+{
+  "icao": "LSMM",
+  "name": "Meiringen",
+  "status": "Geodata foundation; not a finished photorealistic replica",
+  "origin_lv95_ln02": [
+    2651243.00265761,
+    1176999.4542711163,
+    577
+  ],
+  "worldTranslation_jme": [
+    29743.00265760999,
+    577,
+    -84499.4542711163
+  ],
+  "world_origin_lv95": [
+    2621500,
+    1092500
+  ],
+  "units": "metres",
+  "building_parts": 50,
+  "osm_buildings": 0,
+  "surfaces": 10,
+  "full_model": "Models/LSMM_Airport.glb",
+  "chunks": [
+    {
+      "file": "Chunks/LSMM_1_-1.glb",
+      "localTranslation_jme": [
+        750.0,
+        0,
+        250.0
+      ],
+      "objects": 18
+    },
+    {
+      "file": "Chunks/LSMM_2_-1.glb",
+      "localTranslation_jme": [
+        1250.0,
+        0,
+        250.0
+      ],
+      "objects": 4
+    },
+    {
+      "file": "Chunks/LSMM_0_-1.glb",
+      "localTranslation_jme": [
+        250.0,
+        0,
+        250.0
+      ],
+      "objects": 13
+    },
+    {
+      "file": "Chunks/LSMM_-1_-1.glb",
+      "localTranslation_jme": [
+        -250.0,
+        0,
+        250.0
+      ],
+      "objects": 3
+    },
+    {
+      "file": "Chunks/LSMM_1_0.glb",
+      "localTranslation_jme": [
+        750.0,
+        0,
+        -250.0
+      ],
+      "objects": 4
+    },
+    {
+      "file": "Chunks/LSMM_0_0.glb",
+      "localTranslation_jme": [
+        250.0,
+        0,
+        -250.0
+      ],
+      "objects": 3
+    },
+    {
+      "file": "Chunks/LSMM_-2_-1.glb",
+      "localTranslation_jme": [
+        -750.0,
+        0,
+        250.0
+      ],
+      "objects": 3
+    },
+    {
+      "file": "Chunks/LSMM_-3_-1.glb",
+      "localTranslation_jme": [
+        -1250.0,
+        0,
+        250.0
+      ],
+      "objects": 4
+    },
+    {
+      "file": "Chunks/LSMM_-3_0.glb",
+      "localTranslation_jme": [
+        -1250.0,
+        0,
+        -250.0
+      ],
+      "objects": 6
+    },
+    {
+      "file": "Chunks/LSMM_-2_0.glb",
+      "localTranslation_jme": [
+        -750.0,
+        0,
+        -250.0
+      ],
+      "objects": 1
+    },
+    {
+      "file": "Chunks/LSMM_-1_0.glb",
+      "localTranslation_jme": [
+        -250.0,
+        0,
+        -250.0
+      ],
+      "objects": 1
+    }
+  ],
+  "known_limits": [
+    "No surveyed facades",
+    "Pavement elevations use approximate runway profiles or nominal airport elevation; not terrain-conforming",
+    "IGN objects with unavailable height attributes are marked estimated",
+    "No automatic streaming, LOD selection or collision controls"
+  ],
+  "source_date": "2026-11-12",
+  "source_credits": "© swisstopo; © OpenStreetMap contributors"
+}
