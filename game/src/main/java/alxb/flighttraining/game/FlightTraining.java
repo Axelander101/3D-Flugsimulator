@@ -102,6 +102,11 @@ public class FlightTraining extends SimpleApplication {
     }
 
     @Override
+    public void simpleRender(RenderManager manager) {
+        if (terrain != null) terrain.prewarm(manager);
+    }
+
+    @Override
     public void destroy() {
         if (terrain != null) {
             terrain.close();
