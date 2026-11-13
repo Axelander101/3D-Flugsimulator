@@ -26,6 +26,9 @@ public class FlightTraining extends SimpleApplication {
     private FlightHud hud;
     private TerrainStreaming terrain;
     private Guns guns;
+    private float shotCooldown;
+    private float cannonFlashTimer = 1f;
+    private Node targets;
     private AnimComposer composer;
     private Spatial planeModel;
     private FlightSurfaces surfaces;
@@ -77,7 +80,9 @@ public class FlightTraining extends SimpleApplication {
         if (composer == null) {
             throw new IllegalStateException("Das Flugzeugmodell enthält keinen AnimComposer.");
         }
-        guns = new Guns(plane, input, rootNode, composer, assetManager);
+        targets = new Node("Targets");
+        rootNode.attachChild(targets);
+        guns = new Cannon(targets);
 
         surfaces = new FlightSurfaces(plane, input, composer, physics, assetManager, plane);
         // Procedural surfaces must run after clips have set the pose.
@@ -127,12 +132,42 @@ public class FlightTraining extends SimpleApplication {
             physics.update(tpf);
             updateCamera();
 
-            guns.shoot(tpf);
+            updateGuns(tpf);
 
             Vector3f position = plane.getLocalTranslation();
             terrain.update(position, cam);
             physics.resolveGroundCollision(terrain.getGroundHeight(position));
             hud.update(physics, plane.getLocalTranslation().y);
+        }
+    }
+
+    private void updateGuns(float tpf) {
+        // Auch nach dem Loslassen fliegen bestehende Geschosse weiter.
+        guns.update(tpf);
+        cannonFlashTimer += tpf;
+        if (!input.shoot) {
+            shotCooldown = 0f;
+            return;
+        }
+
+        shotCooldown -= tpf;
+        Vector3f direction = plane.getWorldRotation()
+                .mult(Vector3f.UNIT_Z.negate()).normalizeLocal();
+        // Vorläufiger Mündungspunkt vor der Nase; später durch den echten Mündungsknoten ersetzen.
+        Vector3f muzzle = plane.getWorldTranslation().add(direction.mult(8f));
+        int shots = 0;
+        while (shotCooldown <= 0f && shots < 16) {
+            guns.fire(muzzle, direction, physics.getVelocity());
+            shotCooldown += 1f / 100f;
+            shots++;
+        }
+        // Nach einem langen Hänger keine aufgestauten Salven nachholen.
+        if (shotCooldown < 0f) shotCooldown = 0f;
+
+        if (cannonFlashTimer >= 0.1f && composer != null
+                && composer.hasAnimClip("07_Cannon_Burst")) {
+            composer.setCurrentAction("07_Cannon_Burst", AnimComposer.DEFAULT_LAYER, false);
+            cannonFlashTimer = 0f;
         }
     }
 

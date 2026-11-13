@@ -71,6 +71,10 @@ final class FlightPhysics {
         plane.move(velocity.mult(tpf));
     }
 
+    Vector3f getVelocity() {
+        return velocity.clone();
+    }
+
     float getSpeed() {
         return velocity.length();
     }
