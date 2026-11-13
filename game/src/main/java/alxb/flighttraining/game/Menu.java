@@ -3,6 +3,7 @@ package alxb.flighttraining.game;
 import com.jme3.asset.AssetManager;
 import com.jme3.input.InputManager;
 import com.jme3.input.MouseInput;
+import com.jme3.input.controls.MouseAxisTrigger;
 import com.jme3.input.controls.MouseButtonTrigger;
 import com.jme3.math.Vector2f;
 import com.jme3.scene.Node;
@@ -13,6 +14,10 @@ import com.jme3.ui.Picture;
 import java.awt.*;
 
 import com.jme3.input.controls.ActionListener;
+import com.jme3.input.controls.AnalogListener;
+import com.jme3.scene.control.AbstractControl;
+import com.jme3.renderer.RenderManager;
+import com.jme3.renderer.ViewPort;
 import java.awt.image.BufferedImage;
 
 
@@ -57,6 +62,22 @@ public class Menu{
             "Begleite ein verbündetes Flugzeug."
     };
 
+    private static final String[] GRAPHICS_SETTING = {
+            "Resolution", "Fullscreen", "VSync",
+            "FPS limit", "Anti-aliasing", "Texture quality",
+            "Terrain quality", "Render distance", "Shadow quality",
+            "Vegetation density", "Building quality", "Cloud quality",
+            "Particle quality", "Water quality", "Anisotropic filtering"
+    };
+
+    private static final String[] RESOLUTIONS = {
+            "1280x720",
+            "1600x900",
+            "1920x1080",
+            "2560x1440",
+            "3840x2160"
+    };
+
     private final java.util.List<java.awt.Rectangle> missionBounds =
             new java.util.ArrayList<>();
 
@@ -66,16 +87,57 @@ public class Menu{
     private final java.util.List<java.awt.Rectangle> airportBounds =
             new java.util.ArrayList<>();
 
+    private final java.util.List<java.awt.Rectangle> settingsBounds =
+            new java.util.ArrayList<>();
+
+    private final java.util.List<java.awt.Rectangle> graphicsBounds =
+            new java.util.ArrayList<>();
+
     private final java.awt.Rectangle backBounds =
             new java.awt.Rectangle();
 
     private boolean showFps = false;
 
+    private float scrollOffset = 0;
+    private static final int GRAPHICS_ROW_HEIGHT = 60;
+    private static final int GRAPHICS_ROW_GAP = 16;
+    private static final int GRAPHICS_TOP = 125;
+    private static final int GRAPHICS_BOTTOM = 40;
+    private final Rectangle graphicsViewport = new Rectangle();
+    private boolean graphicsRedrawPending;
+
+
+    private String currenRes = "1920x1080";
+
     private enum Screen {
         MAIN,
         MISSIONS,
         SETTINGS,
+        GRAPHICS_SETTINGS,
+        STEERING_SETTINGS,
+        GAMEPLAY_SETTINGS,
+        AUDIO_SETTINGS,
+        INTERFACE_SETTING,
+        MULTIPLAYER,
         FREE_PLAY
+    }
+
+    private enum GraphicsSettings {
+        RESOLUTION,
+        FULLSCREEN,
+        VSYNC,
+        FPS_LIMIT,
+        ANTIALIASING,
+        TEXTURE_QUALITY,
+        TERRAIN_QUALITY,
+        RENDER_DISTANCE,
+        SHADOW_QUALITY,
+        VEGETATION_DENSITY,
+        BUILDING_QUALITY,
+        CLOUD_QUALITY,
+        PARTICLE_QUALITY,
+        WATER_QUALITY,
+        ANISOTOPIC_FILTERING
     }
 
     private Screen screen = Screen.MAIN;
@@ -103,6 +165,22 @@ public class Menu{
         app.getInputManager().addMapping(
                 "MenuClick",
                 new MouseButtonTrigger(MouseInput.BUTTON_LEFT)
+        );
+
+        app.getInputManager().addMapping(
+                "ScrollUp",
+                new MouseAxisTrigger(
+                        MouseInput.AXIS_WHEEL,
+                        false
+                )
+        );
+
+        app.getInputManager().addMapping(
+                "ScrollDown",
+                new MouseAxisTrigger(
+                        MouseInput.AXIS_WHEEL,
+                        true
+                )
         );
 
         ActionListener clickListener = (name, isPressed, tpf) -> {
@@ -149,7 +227,6 @@ public class Menu{
 
                     for (int i = 0; i < airportBounds.size(); i++) {
                         if (airportBounds.get(i).contains(mouseX, mouseY)) {
-                            System.out.println("Flugplatz: " + AIRPORTS[i]);
 
                             startGame(AIRPORTS[i]);
                         }
@@ -174,26 +251,82 @@ public class Menu{
                 }
 
                 case SETTINGS -> {
+                    if (mouseY >= 180 && mouseY <= 250) {
+                        screen = Screen.GRAPHICS_SETTINGS;
+                        scrollOffset = 0;
+                        drawMenu(width, height, assets);
+
+                    } else if (mouseY >= 270 && mouseY <= 340) {
+                        screen = Screen.STEERING_SETTINGS;
+                        drawMenu(width, height, assets);
+
+                    } else if (mouseY >= 360 && mouseY <= 430) {
+                        screen = Screen.GAMEPLAY_SETTINGS;
+                        drawMenu(width, height, assets);
+                    }
+                    else if (mouseY >= 450 && mouseY <= 520) {
+                        screen = Screen.AUDIO_SETTINGS;
+                        drawMenu(width, height, assets);
+                    }
+                    else if (mouseY >= 540 && mouseY <= 610) {
+                        screen = Screen.INTERFACE_SETTING;
+                        drawMenu(width, height, assets);
+                    }
+                }
+
+
+                case GRAPHICS_SETTINGS -> {
                     if (backBounds.contains(mouseX, mouseY)) {
-                        screen = Screen.MAIN;
+                        screen = Screen.SETTINGS;
                         drawMenu(width, height, assets);
                         return;
                     }
-
-                    if (fpsBounds.contains(mouseX, mouseY)) {
-                        showFps = !showFps;
-                        app.setDisplayFps(showFps);
-                        drawMenu(width, height, assets);
+                    if (!graphicsViewport.contains(mouseX, mouseY)) return;
+                    for (int i = 0; i < graphicsBounds.size(); i++) {
+                        if (graphicsBounds.get(i).contains(mouseX, mouseY)) {
+                            System.out.println("Grafikeinstellung: " + GRAPHICS_SETTING[i]);
+                            // Hier später die ausgewählte Einstellung ändern.
+                            return;
+                        }
                     }
                 }
             }
 
         };
 
+
         app.getInputManager().addListener(
                 clickListener,
                 "MenuClick"
         );
+
+        AnalogListener scrollListener = (name, value, tpf) -> {
+            if (!menuOffen || screen != Screen.GRAPHICS_SETTINGS) return;
+            Vector2f cursor = input.getCursorPosition();
+            float mouseY = app.getCamera().getHeight() - cursor.y;
+            if (!graphicsViewport.contains(cursor.x, mouseY)) return;
+            float direction = name.equals("ScrollDown") ? 1f : -1f;
+            float previous = scrollOffset;
+            scrollOffset = Math.max(0, Math.min(maxGraphicsScroll(height),
+                    scrollOffset + direction * value * 40f));
+            if (scrollOffset != previous) graphicsRedrawPending = true;
+        };
+        input.addListener(scrollListener, "ScrollUp", "ScrollDown");
+
+        // Mehrere Rad-/Trackpad-Ereignisse pro Frame zusammenfassen.
+        picture.addControl(new AbstractControl() {
+            private float elapsed;
+            @Override protected void controlUpdate(float tpf) {
+                elapsed += tpf;
+                if (graphicsRedrawPending && elapsed >= 1f / 30f) {
+                    elapsed = 0;
+                    graphicsRedrawPending = false;
+                    if (menuOffen && screen == Screen.GRAPHICS_SETTINGS)
+                        drawMenu(width, height, assets);
+                }
+            }
+            @Override protected void controlRender(RenderManager rm, ViewPort vp) {}
+        });
     }
 
     private void drawMenu(int width, int height, AssetManager assets) {
@@ -222,7 +355,8 @@ public class Menu{
                 }
                 case FREE_PLAY -> drawFreePlay(g, width, height);
                 case MISSIONS -> drawMissions(g, width, height);
-                case SETTINGS -> drawSettings(g, width, height);
+                case SETTINGS -> drawSettings(g);
+                case GRAPHICS_SETTINGS -> drawGraphicSetting(g, width, height);
 
             }
         } finally {
@@ -307,6 +441,169 @@ public class Menu{
                     "Unbekannter Flugplatz: " + flughafen
             );
         }
+    }
+
+    private void drawMissions(Graphics2D g, int width, int height) {
+        drawPageHeader(
+                g, "Missionen",
+                "Wähle deinen nächsten Einsatz", width
+        );
+
+        int margin = 40;
+        int gap = 18;
+        int columns = 3;
+        int cardWidth = (width - 2 * margin - 2 * gap) / columns;
+        int cardHeight = Math.min(250, (height - 125 - margin - gap) / 2);
+
+        missionBounds.clear();
+
+        for (int i = 0; i < MISSIONS.length; i++) {
+            int x = margin + (i % columns) * (cardWidth + gap);
+            int y = 125 + (i / columns) * (cardHeight + gap);
+
+            java.awt.Rectangle bounds = new java.awt.Rectangle(
+                    x, y, cardWidth, cardHeight
+            );
+            missionBounds.add(bounds);
+
+            // Kartenhintergrund
+            g.setColor(new Color(35, 49, 68));
+            g.fillRoundRect(x, y, cardWidth, cardHeight, 18, 18);
+
+            // Platz für ein späteres Missionsbild
+            int imageHeight = cardHeight - 100;
+
+            g.setColor(new Color(48, 68, 91));
+            g.fillRoundRect(
+                    x + 10, y + 10,
+                    cardWidth - 20, imageHeight,
+                    12, 12
+            );
+
+            g.setColor(new Color(160, 180, 200));
+            g.setFont(new Font("SansSerif", Font.PLAIN, 14));
+            drawCenteredText(
+                    g, "Missionsvorschau",
+                    new java.awt.Rectangle(
+                            x + 10, y + 10,
+                            cardWidth - 20, imageHeight
+                    ),
+                    0
+            );
+
+            g.setColor(Color.WHITE);
+            g.setFont(new Font("SansSerif", Font.BOLD, 22));
+            g.drawString(MISSIONS[i], x + 18, y + cardHeight - 58);
+
+            g.setColor(new Color(180, 195, 212));
+            g.setFont(new Font("SansSerif", Font.PLAIN, 15));
+            g.drawString(
+                    MISSION_DESCRIPTIONS[i],
+                    x + 18, y + cardHeight - 30
+            );
+        }
+    }
+
+    private void drawSettings(Graphics2D g) {
+        g.drawString("Flight Training", 80, 120);
+
+        drawButton(g, "Graphics", 180, 80, hellBlau);
+        drawButton(g, "Steering", 270, 80, hellBlau);
+        drawButton(g, "Gameplay", 360, 80, hellBlau);
+        drawButton(g, "Audio", 450, 80, hellBlau);
+        drawButton(g, "Interface", 540, 80, hellBlau);
+
+
+    }
+
+    private void drawGraphicSetting(Graphics2D g, int width, int height) {
+        drawPageHeader(g, "Grafik", "Mit Mausrad oder Trackpad scrollen", width);
+        int margin = 40;
+        graphicsViewport.setBounds(margin, GRAPHICS_TOP,
+                Math.max(1, width - margin * 2),
+                Math.max(1, height - GRAPHICS_TOP - GRAPHICS_BOTTOM));
+        scrollOffset = Math.max(0, Math.min(maxGraphicsScroll(height), scrollOffset));
+        graphicsBounds.clear();
+
+        Graphics2D content = (Graphics2D) g.create();
+        try {
+            content.clip(graphicsViewport);
+            content.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                    RenderingHints.VALUE_ANTIALIAS_ON);
+            int cardWidth = Math.max(1, graphicsViewport.width - 24);
+            for (int i = 0; i < GRAPHICS_SETTING.length; i++) {
+                int y = GRAPHICS_TOP + i * (GRAPHICS_ROW_HEIGHT + GRAPHICS_ROW_GAP)
+                        - Math.round(scrollOffset);
+                Rectangle row = new Rectangle(margin, y, cardWidth, GRAPHICS_ROW_HEIGHT);
+                // Index bleibt gleich; unsichtbare Bereiche sind nicht anklickbar.
+                Rectangle hit = row.intersection(graphicsViewport);
+                graphicsBounds.add(hit.isEmpty() ? new Rectangle() : hit);
+
+                if (!row.intersects(graphicsViewport)) continue;
+                content.setColor(hellBlau);
+                content.fillRoundRect(row.x, row.y, row.width, row.height, 16, 16);
+                content.setColor(Color.WHITE);
+                content.setFont(new Font("SansSerif", Font.PLAIN, 24));
+                content.drawString(GRAPHICS_SETTING[i], row.x + 18, row.y + 39);
+            }
+        } finally {
+            content.dispose();
+        }
+
+        // Scrollbalken außerhalb der Karten; Kopfbereich bleibt stehen.
+        int maximum = maxGraphicsScroll(height);
+        if (maximum > 0) {
+            int x = graphicsViewport.x + graphicsViewport.width - 8;
+            int trackHeight = graphicsViewport.height;
+            int thumbHeight = Math.min(trackHeight, Math.max(28,
+                    Math.round((float) trackHeight * trackHeight / graphicsContentHeight())));
+            int thumbY = graphicsViewport.y + Math.round(
+                    scrollOffset / maximum * (trackHeight - thumbHeight));
+            g.setColor(new Color(35, 49, 68));
+            g.fillRoundRect(x, graphicsViewport.y, 8, trackHeight, 8, 8);
+            g.setColor(new Color(130, 185, 220));
+            g.fillRoundRect(x, thumbY, 8, thumbHeight, 8, 8);
+        }
+    }
+
+
+
+
+    private void drawSettingsBox(Graphics2D g, String text, int y, int x, Color color){
+        g.setColor(color);
+        g.fillRoundRect(x, y, 300, 70, 16, 16);
+
+        g.setColor(Color.WHITE);
+        g.setFont(new Font("SansSerif", Font.PLAIN, 28));
+        g.drawString(text, x+15, y + 45);
+    }
+
+    private int graphicsContentHeight() {
+        return GRAPHICS_SETTING.length * GRAPHICS_ROW_HEIGHT
+                + Math.max(0, GRAPHICS_SETTING.length - 1) * GRAPHICS_ROW_GAP;
+    }
+
+    private int maxGraphicsScroll(int height) {
+        int viewportHeight = Math.max(1, height - GRAPHICS_TOP - GRAPHICS_BOTTOM);
+        return Math.max(0, graphicsContentHeight() - viewportHeight);
+    }
+
+    private void drawSettingsButton(Graphics2D g, String text, int y, int x, Color color){
+        g.setColor(color);
+        g.fillRoundRect(x, y, 1000, 60, 16, 16);
+
+        g.setColor(Color.WHITE);
+        g.setFont(new Font("SansSerif", Font.PLAIN, 28));
+        g.drawString(text, x+15, y + 45);
+    }
+
+    private void drawButton(Graphics2D g, String text, int y, int x, Color color) {
+        g.setColor(color);
+        g.fillRoundRect(x, y, 300, 70, 16, 16);
+
+        g.setColor(Color.WHITE);
+        g.setFont(new Font("SansSerif", Font.PLAIN, 28));
+        g.drawString(text, x+15, y + 45);
     }
 
     private void drawCoverImage(Graphics2D g, BufferedImage image, int x, int y, int width, int height) {
@@ -437,127 +734,6 @@ public class Menu{
         g.setColor(Color.WHITE);
         g.setFont(new Font("SansSerif", Font.BOLD, 17));
         drawCenteredText(g, "Zurück", backBounds, 0);
-    }
-
-    private void drawMissions(Graphics2D g, int width, int height) {
-        drawPageHeader(
-                g, "Missionen",
-                "Wähle deinen nächsten Einsatz", width
-        );
-
-        int margin = 40;
-        int gap = 18;
-        int columns = 3;
-        int cardWidth = (width - 2 * margin - 2 * gap) / columns;
-        int cardHeight = Math.min(250, (height - 125 - margin - gap) / 2);
-
-        missionBounds.clear();
-
-        for (int i = 0; i < MISSIONS.length; i++) {
-            int x = margin + (i % columns) * (cardWidth + gap);
-            int y = 125 + (i / columns) * (cardHeight + gap);
-
-            java.awt.Rectangle bounds = new java.awt.Rectangle(
-                    x, y, cardWidth, cardHeight
-            );
-            missionBounds.add(bounds);
-
-            // Kartenhintergrund
-            g.setColor(new Color(35, 49, 68));
-            g.fillRoundRect(x, y, cardWidth, cardHeight, 18, 18);
-
-            // Platz für ein späteres Missionsbild
-            int imageHeight = cardHeight - 100;
-
-            g.setColor(new Color(48, 68, 91));
-            g.fillRoundRect(
-                    x + 10, y + 10,
-                    cardWidth - 20, imageHeight,
-                    12, 12
-            );
-
-            g.setColor(new Color(160, 180, 200));
-            g.setFont(new Font("SansSerif", Font.PLAIN, 14));
-            drawCenteredText(
-                    g, "Missionsvorschau",
-                    new java.awt.Rectangle(
-                            x + 10, y + 10,
-                            cardWidth - 20, imageHeight
-                    ),
-                    0
-            );
-
-            g.setColor(Color.WHITE);
-            g.setFont(new Font("SansSerif", Font.BOLD, 22));
-            g.drawString(MISSIONS[i], x + 18, y + cardHeight - 58);
-
-            g.setColor(new Color(180, 195, 212));
-            g.setFont(new Font("SansSerif", Font.PLAIN, 15));
-            g.drawString(
-                    MISSION_DESCRIPTIONS[i],
-                    x + 18, y + cardHeight - 30
-            );
-        }
-    }
-
-    private void drawSettings(Graphics2D g, int width, int height) {
-        drawPageHeader(
-                g, "Einstellungen",
-                "Anzeige und Steuerung", width
-        );
-
-
-        drawCenteredText(g, "Zurück", backBounds, 0);
-        drawButton(g, "Graphics", 180, 80, hellBlau);
-        drawButton(g, "Steering", 270, 80, hellBlau);
-        drawButton(g, "Gameplay", 360, 80, hellBlau);
-        drawButton(g, "Audio", 450, 80, hellBlau);
-        drawButton(g, "Interface", 540, 80, hellBlau);
-
-
-    }
-
-    private void drawGrafikSetting(Graphics2D g, int width, int height){
-
-        //g.
-    }
-
-    private void drawSettingRow(Graphics2D g, int x, int y, int width, String label, String value) {
-        g.setColor(new Color(44, 61, 82));
-        g.fillRoundRect(x, y, width, 64, 12, 12);
-
-        g.setColor(Color.WHITE);
-        g.setFont(new Font("SansSerif", Font.PLAIN, 18));
-        g.drawString(label, x + 18, y + 39);
-
-        g.setColor(new Color(130, 205, 250));
-        g.setFont(new Font("SansSerif", Font.BOLD, 17));
-
-        int textWidth = g.getFontMetrics().stringWidth(value);
-        g.drawString(value, x + width - textWidth - 18, y + 39);
-    }
-
-    private void drawButton(Graphics2D g, String text, int y, int x, Color color) {
-        g.setColor(color);
-        g.fillRoundRect(x, y, 300, 70, 16, 16);
-
-        g.setColor(Color.WHITE);
-        g.setFont(new Font("SansSerif", Font.PLAIN, 28));
-        g.drawString(text, x+15, y + 45);
-    }
-
-    void freePlayMenu(Graphics2D g){
-        g.setColor(Color.WHITE);
-        g.setFont(new Font("SansSerif", Font.BOLD, 48));
-        g.drawString("Free Play", 80, 120);
-
-
-        g.setColor(new Color(50, 100, 160));
-        g.fillRoundRect(80, 270, 300, 70, 16, 16);
-
-        g.setColor(Color.WHITE);
-        g.setFont(new Font("SansSerif", Font.PLAIN, 28));
-        g.drawString("Zürich", 115, 315);
     }
 
     public void show(Node guiNode) {

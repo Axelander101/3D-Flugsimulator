@@ -46,6 +46,7 @@ final class TerrainStreaming implements AutoCloseable {
     private final AssetManager assetManager;
     private final Node rootNode;
     private final TerrainDownloader downloader;
+    private final WorldObjectStreaming worldObjects;
     private static final int PREPARATION_THREADS = 2;
     private final ExecutorService preparation = Executors.newFixedThreadPool(
             PREPARATION_THREADS, Thread.ofPlatform().daemon().name("terrain-prepare-", 0).factory()
@@ -72,6 +73,7 @@ final class TerrainStreaming implements AutoCloseable {
         this.assetManager = assetManager;
         this.rootNode = rootNode;
         this.downloader = downloader;
+        this.worldObjects = new WorldObjectStreaming(assetManager, rootNode, this::getGroundHeight);
     }
 
     float getGroundHeight(Vector3f position) {
@@ -141,6 +143,7 @@ final class TerrainStreaming implements AutoCloseable {
         // bevor die nächste Geometrie denselben Platz belegt.
         prepareNextTexture(ordered);
         prepareNextTile(ordered);
+        worldObjects.update(position, cam);
     }
 
     private void changeWindow(TerrainTile center) {
@@ -415,12 +418,17 @@ final class TerrainStreaming implements AutoCloseable {
 
     }
 
+    void prewarm(com.jme3.renderer.RenderManager manager) {
+        worldObjects.prewarm(manager);
+    }
+
     @Override
     public void close() {
         if (closed) {
             return;
         }
         closed = true;
+        worldObjects.close();
         for (Future<TerrainQuad> future : prepared.values()) {
             future.cancel(true);
         }
