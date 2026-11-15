@@ -18,11 +18,7 @@ public abstract class Guns {
 
     protected abstract float getMuzzleSpeed();
 
-    public void fire(
-            Vector3f muzzleWorldPosition,
-            Vector3f direction,
-            Vector3f planeVelocity
-    ) {
+    public void fire(Vector3f muzzleWorldPosition, Vector3f direction, Vector3f planeVelocity) {
         Vector3f velocity = direction.normalize()
                 .mult(getMuzzleSpeed())
                 .addLocal(planeVelocity);

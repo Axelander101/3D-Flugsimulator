@@ -17,6 +17,8 @@ import com.jme3.scene.Spatial;
 import com.jme3.util.SkyFactory;
 
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.List;
 
 public class FlightTraining extends SimpleApplication {
     private boolean spawnReady;
@@ -32,6 +34,14 @@ public class FlightTraining extends SimpleApplication {
     private AnimComposer composer;
     private Spatial planeModel;
     private FlightSurfaces surfaces;
+    private InfraredMissile infraredMissile;
+    private Radar radar;
+    private RadarDisplay radarDisplay;
+
+    private Enemy enemies;
+    private int enemyCount = 3;
+
+    private final List<InfraredMissile> missiles = new ArrayList<>();
 
     private Menu menu;
     private SpawnSettings spawnSettings = new SpawnSettings(-6548f, -9563f, 0f);
@@ -67,6 +77,7 @@ public class FlightTraining extends SimpleApplication {
         input = new FlightInput(inputManager);
         hud = new FlightHud(guiFont, guiNode, cam.getHeight());
 
+
         viewPort.setBackgroundColor(new ColorRGBA(0.5f, 0.7f, 1f, 1f));
         initializePlane();
         configureCamera();
@@ -83,6 +94,10 @@ public class FlightTraining extends SimpleApplication {
         targets = new Node("Targets");
         rootNode.attachChild(targets);
         guns = new Cannon(targets);
+        enemies = new Enemy(assetManager, targets);
+        radar = new Radar(5000f, plane, enemies);
+        radarDisplay = new RadarDisplay(assetManager, guiNode, plane, enemies);
+
 
         surfaces = new FlightSurfaces(plane, input, composer, physics, assetManager, plane);
         // Procedural surfaces must run after clips have set the pose.
@@ -129,10 +144,15 @@ public class FlightTraining extends SimpleApplication {
                 return;
             }
 
+            enemies.spawn(enemyCount, plane);
+
             physics.update(tpf);
+            radar.update();
+            radarDisplay.update(cam.getWidth(), cam.getHeight());
             updateCamera();
 
             updateGuns(tpf);
+            missiles.removeIf(missile -> missile.update(tpf));
 
             Vector3f position = plane.getLocalTranslation();
             terrain.update(position, cam);
