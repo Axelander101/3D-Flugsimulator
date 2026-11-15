@@ -37,9 +37,10 @@ public class FlightTraining extends SimpleApplication {
     private InfraredMissile infraredMissile;
     private Radar radar;
     private RadarDisplay radarDisplay;
+    private EnemyAircraft enemyAircraft;
 
     private Enemy enemies;
-    private int enemyCount = 3;
+    private int enemyCount = 1;
 
     private final List<InfraredMissile> missiles = new ArrayList<>();
 
@@ -150,6 +151,8 @@ public class FlightTraining extends SimpleApplication {
             radar.update();
             radarDisplay.update(cam.getWidth(), cam.getHeight());
             updateCamera();
+
+            enemyAircraft.update(tpf);
 
             updateGuns(tpf);
             missiles.removeIf(missile -> missile.update(tpf));

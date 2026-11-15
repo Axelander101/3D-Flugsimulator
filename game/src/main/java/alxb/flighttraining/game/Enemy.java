@@ -11,7 +11,13 @@ import java.util.List;
 public final class Enemy {
     private final AssetManager assets;
     private final Node targets;
+    private EnemyAI enemyAI;
+    private FlightCommandAi flightCommandAi;
+    private FlightPhysics physics;
+    private EnemyAircraft enemyAircraft;
     private final List<Node> enemies = new ArrayList<>();
+
+
 
     public Enemy(AssetManager assets, Node targets) {
         this.assets = assets;
@@ -39,6 +45,17 @@ public final class Enemy {
             enemy.setLocalTranslation(targets.worldToLocal(position, new Vector3f()));
             enemy.setLocalRotation(targets.getWorldRotation().inverse()
                     .mult(player.getWorldRotation()));
+
+
+            FlightCommandAi commands = new FlightCommandAi();
+            FlightPhysics enemyPhysics = new FlightPhysics(enemy, commands);
+
+            enemyPhysics.setVelocity(forward.mult(150f));
+            commands.setThrottle(0.6f);
+            EnemyAI enemyAI = new EnemyAI(commands);
+            enemyAircraft = new EnemyAircraft(enemy, flightCommandAi, enemyAI, physics);
+
+
             enemies.add(enemy);
         }
     }

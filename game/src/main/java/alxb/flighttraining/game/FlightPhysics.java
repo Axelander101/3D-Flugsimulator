@@ -6,6 +6,7 @@ import com.jme3.scene.Node;
 final class FlightPhysics {
     private final Node plane;
     private final FlightInput input;
+    private final FlightCommandAi aiInput;
     private Vector3f velocity = new Vector3f();
 
     private float pitchSpeed;
@@ -33,7 +34,51 @@ final class FlightPhysics {
 
     FlightPhysics(Node plane, FlightInput input) {
         this.plane = plane;
-        this.input = input;
+        this.input = java.util.Objects.requireNonNull(input);
+        this.aiInput = null;
+    }
+
+    FlightPhysics(Node plane, FlightCommandAi commands) {
+        this.plane = java.util.Objects.requireNonNull(plane);
+        this.input = null;
+        this.aiInput = java.util.Objects.requireNonNull(commands);
+    }
+
+    public void setVelocity(Vector3f initialVelocity) {
+        if (initialVelocity == null || !Float.isFinite(initialVelocity.x)
+                || !Float.isFinite(initialVelocity.y) || !Float.isFinite(initialVelocity.z)) {
+            throw new IllegalArgumentException("Ungültige Geschwindigkeit");
+        }
+        velocity.set(initialVelocity);
+    }
+
+    private static float clamp(float value, float min, float max) {
+        return Float.isFinite(value) ? Math.max(min, Math.min(max, value)) : 0f;
+    }
+
+    private static float stick(float value) {
+        value = clamp(value, -1f, 1f);
+        float magnitude = Math.abs(value);
+        return magnitude <= 0.05f ? 0f
+                : Math.signum(value) * (magnitude - 0.05f) / 0.95f;
+    }
+
+    private float requestedPitch() {
+        if (aiInput != null) return clamp(aiInput.getPitch(), -1f, 1f);
+        float keyboard = (input.pitchUp ? 1f : 0f) - (input.pitchDown ? 1f : 0f);
+        return keyboard != 0f ? keyboard : stick(input.pitchInput);
+    }
+
+    private float requestedRoll() {
+        if (aiInput != null) return clamp(aiInput.getRoll(), -1f, 1f);
+        float keyboard = (input.rollLeft ? 1f : 0f) - (input.rollRight ? 1f : 0f);
+        return keyboard != 0f ? keyboard : stick(input.rollInput);
+    }
+
+    private float requestedYaw() {
+        if (aiInput != null) return clamp(aiInput.getYaw(), -1f, 1f);
+        float keyboard = (input.yawLeft ? 1f : 0f) - (input.yawRight ? 1f : 0f);
+        return keyboard != 0f ? keyboard : stick(input.yawInput);
     }
 
     float getNormalG() {
@@ -245,24 +290,17 @@ final class FlightPhysics {
 
         float throttleForce = 0f;
 
-        if (input.throttleUp) {
-            throttle += tpf;
+        if (aiInput != null) {
+            throttle = clamp(aiInput.getThrottle(), 0f, 1f);
+        } else {
+            float change = (input.throttleUp ? 1f : 0f)
+                    - (input.throttleDown ? 1f : 0f);
+            if (Math.abs(input.throttleUpInput) > 0.05f)
+                change += input.throttleUpInput;
+            if (Math.abs(input.throttleDownInput) > 0.05f)
+                change -= input.throttleDownInput;
+            throttle = clamp(throttle + change * tpf, 0f, 1f);
         }
-
-        if (input.throttleDown) {
-            throttle -= tpf;
-        }
-
-        if (Math.abs(input.throttleDownInput) > 0.05f) {
-            throttle -= input.throttleDownInput * tpf;
-        }
-
-        if (Math.abs(input.throttleUpInput) > 0.05f) {
-            throttle += input.throttleUpInput * tpf;
-        }
-
-        if (throttle > 1) throttle = 1;
-        if (throttle < 0) throttle = 0;
 
         throttleForce = maxThrust * throttle;
 
@@ -334,7 +372,7 @@ final class FlightPhysics {
         }
 
 
-        float targetCommand = (input.pitchUp ? 1f : 0f) - (input.pitchDown ? 1f : 0f);
+        float targetCommand = requestedPitch();
 
 
         float controlResponse = 7f;
@@ -391,26 +429,7 @@ final class FlightPhysics {
             return;
         }
 
-        float deadzone = 0.05f;
-        float stick = input.rollInput;
-
-
-        if (Math.abs(stick) <= deadzone) {
-            stick = 0f;
-        } else {
-            stick = Math.signum(stick)
-                    * (Math.abs(stick) - deadzone)
-                    / (1f - deadzone);
-        }
-
-
-        float keyboard = (input.rollLeft ? 1f : 0f) - (input.rollRight ? 1f : 0f);
-
-        // Tastatur hat bei Betätigung Vorrang.
-        float targetCommand = keyboard != 0f ? keyboard : stick;
-
-        targetCommand = Math.max(-1f, Math.min(1f, targetCommand));
-
+        float targetCommand = requestedRoll();
 
         float controlResponse = 8f;
         float blend = 1f - (float) Math.exp(-controlResponse * tpf);
@@ -470,7 +489,7 @@ final class FlightPhysics {
         float maxYawSpeed = Math.min(0.15f, maxAerodynamicTurnRate * 0.3f);
 
         // Dämpfung
-        if (!input.yawLeft && !input.yawRight && Math.abs(input.yawInput) < 0.05f) {
+        if (Math.abs(requestedYaw()) < 0.0001f) {
             if (yawSpeed > 0) {
                 yawSpeed = Math.max(0, yawSpeed - abbremsen * tpf);
             }
@@ -482,22 +501,7 @@ final class FlightPhysics {
             yawSpeed -= yawSpeed * yawDamping * tpf;
         }
 
-        // Tastatur
-        if (input.yawLeft) {
-            yawSpeed += rotationSpeed * tpf * aoaControlFactor;
-        }
-
-        if (input.yawRight) {
-            yawSpeed -= rotationSpeed * tpf * aoaControlFactor;
-        }
-
-        // Controller
-        if (Math.abs(input.yawInput) > 0.05f) {
-            yawSpeed += input.yawInput
-                            * rotationSpeed
-                            * tpf
-                            * aoaControlFactor;
-        }
+        yawSpeed += requestedYaw() * rotationSpeed * tpf * aoaControlFactor;
 
         yawSpeed += restoringYawAcceleration * tpf;
         // Begrenzen
