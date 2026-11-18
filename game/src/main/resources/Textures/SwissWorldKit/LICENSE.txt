@@ -1,0 +1,8 @@
+Swiss World Kit v1 — Original generated geometry and procedural color textures.
+
+To the extent permitted by applicable law, these original assets are dedicated to the public domain under CC0 1.0 Universal:
+https://creativecommons.org/publicdomain/zero/1.0/
+
+Use, modify and redistribute, including commercially. Attribution is not required.
+No affiliation with Swiss airports, aircraft operators or public authorities is implied.
+No warranty is provided.

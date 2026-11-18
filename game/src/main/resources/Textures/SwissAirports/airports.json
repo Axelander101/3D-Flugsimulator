@@ -1,0 +1,1915 @@
+[
+  {
+    "icao": "LFSB",
+    "name": "Basel-Mulhouse",
+    "status": "Geodata foundation; not a finished photorealistic replica",
+    "origin_lv95_ln02": [
+      2606204.1164167807,
+      1272225.0499679924,
+      270
+    ],
+    "worldTranslation_jme": [
+      -15295.883583219256,
+      270,
+      -179725.04996799235
+    ],
+    "world_origin_lv95": [
+      2621500,
+      1092500
+    ],
+    "units": "metres",
+    "building_parts": 205,
+    "osm_buildings": 0,
+    "surfaces": 27,
+    "full_model": "Models/LFSB_Airport.glb",
+    "chunks": [
+      {
+        "file": "Chunks/LFSB_3_-2.glb",
+        "localTranslation_jme": [
+          1750.0,
+          0,
+          750.0
+        ],
+        "objects": 5
+      },
+      {
+        "file": "Chunks/LFSB_1_-5.glb",
+        "localTranslation_jme": [
+          750.0,
+          0,
+          2250.0
+        ],
+        "objects": 3
+      },
+      {
+        "file": "Chunks/LFSB_0_-3.glb",
+        "localTranslation_jme": [
+          250.0,
+          0,
+          1250.0
+        ],
+        "objects": 3
+      },
+      {
+        "file": "Chunks/LFSB_2_-4.glb",
+        "localTranslation_jme": [
+          1250.0,
+          0,
+          1750.0
+        ],
+        "objects": 2
+      },
+      {
+        "file": "Chunks/LFSB_2_-3.glb",
+        "localTranslation_jme": [
+          1250.0,
+          0,
+          1250.0
+        ],
+        "objects": 8
+      },
+      {
+        "file": "Chunks/LFSB_0_-4.glb",
+        "localTranslation_jme": [
+          250.0,
+          0,
+          1750.0
+        ],
+        "objects": 26
+      },
+      {
+        "file": "Chunks/LFSB_1_-2.glb",
+        "localTranslation_jme": [
+          750.0,
+          0,
+          750.0
+        ],
+        "objects": 42
+      },
+      {
+        "file": "Chunks/LFSB_2_-2.glb",
+        "localTranslation_jme": [
+          1250.0,
+          0,
+          750.0
+        ],
+        "objects": 18
+      },
+      {
+        "file": "Chunks/LFSB_3_-3.glb",
+        "localTranslation_jme": [
+          1750.0,
+          0,
+          1250.0
+        ],
+        "objects": 1
+      },
+      {
+        "file": "Chunks/LFSB_1_-1.glb",
+        "localTranslation_jme": [
+          750.0,
+          0,
+          250.0
+        ],
+        "objects": 20
+      },
+      {
+        "file": "Chunks/LFSB_0_1.glb",
+        "localTranslation_jme": [
+          250.0,
+          0,
+          -750.0
+        ],
+        "objects": 27
+      },
+      {
+        "file": "Chunks/LFSB_1_0.glb",
+        "localTranslation_jme": [
+          750.0,
+          0,
+          -250.0
+        ],
+        "objects": 20
+      },
+      {
+        "file": "Chunks/LFSB_0_-5.glb",
+        "localTranslation_jme": [
+          250.0,
+          0,
+          2250.0
+        ],
+        "objects": 1
+      },
+      {
+        "file": "Chunks/LFSB_-3_4.glb",
+        "localTranslation_jme": [
+          -1250.0,
+          0,
+          -2250.0
+        ],
+        "objects": 1
+      },
+      {
+        "file": "Chunks/LFSB_-2_4.glb",
+        "localTranslation_jme": [
+          -750.0,
+          0,
+          -2250.0
+        ],
+        "objects": 2
+      },
+      {
+        "file": "Chunks/LFSB_2_-1.glb",
+        "localTranslation_jme": [
+          1250.0,
+          0,
+          250.0
+        ],
+        "objects": 5
+      },
+      {
+        "file": "Chunks/LFSB_0_0.glb",
+        "localTranslation_jme": [
+          250.0,
+          0,
+          -250.0
+        ],
+        "objects": 31
+      },
+      {
+        "file": "Chunks/LFSB_0_-2.glb",
+        "localTranslation_jme": [
+          250.0,
+          0,
+          750.0
+        ],
+        "objects": 4
+      },
+      {
+        "file": "Chunks/LFSB_-1_2.glb",
+        "localTranslation_jme": [
+          -250.0,
+          0,
+          -1250.0
+        ],
+        "objects": 3
+      },
+      {
+        "file": "Chunks/LFSB_-2_3.glb",
+        "localTranslation_jme": [
+          -750.0,
+          0,
+          -1750.0
+        ],
+        "objects": 3
+      },
+      {
+        "file": "Chunks/LFSB_-1_-3.glb",
+        "localTranslation_jme": [
+          -250.0,
+          0,
+          1250.0
+        ],
+        "objects": 2
+      },
+      {
+        "file": "Chunks/LFSB_-1_1.glb",
+        "localTranslation_jme": [
+          -250.0,
+          0,
+          -750.0
+        ],
+        "objects": 2
+      },
+      {
+        "file": "Chunks/LFSB_-2_2.glb",
+        "localTranslation_jme": [
+          -750.0,
+          0,
+          -1250.0
+        ],
+        "objects": 1
+      },
+      {
+        "file": "Chunks/LFSB_0_-1.glb",
+        "localTranslation_jme": [
+          250.0,
+          0,
+          250.0
+        ],
+        "objects": 2
+      }
+    ],
+    "known_limits": [
+      "No surveyed facades",
+      "Pavement elevations use approximate runway profiles or nominal airport elevation; not terrain-conforming",
+      "IGN objects with unavailable height attributes are marked estimated",
+      "No automatic streaming, LOD selection or collision controls"
+    ],
+    "source_date": "2026-11-12",
+    "source_credits": "© IGN; © OpenStreetMap contributors"
+  },
+  {
+    "icao": "LSGG",
+    "name": "Genf",
+    "status": "Geodata foundation; not a finished photorealistic replica",
+    "origin_lv95_ln02": [
+      2497436.3946795575,
+      1121611.091810699,
+      430
+    ],
+    "worldTranslation_jme": [
+      -124063.60532044247,
+      430,
+      -29111.091810699087
+    ],
+    "world_origin_lv95": [
+      2621500,
+      1092500
+    ],
+    "units": "metres",
+    "building_parts": 164,
+    "osm_buildings": 0,
+    "surfaces": 20,
+    "full_model": "Models/LSGG_Airport.glb",
+    "chunks": [
+      {
+        "file": "Chunks/LSGG_-3_-4.glb",
+        "localTranslation_jme": [
+          -1250.0,
+          0,
+          1750.0
+        ],
+        "objects": 9
+      },
+      {
+        "file": "Chunks/LSGG_-2_-4.glb",
+        "localTranslation_jme": [
+          -750.0,
+          0,
+          1750.0
+        ],
+        "objects": 6
+      },
+      {
+        "file": "Chunks/LSGG_-2_-3.glb",
+        "localTranslation_jme": [
+          -750.0,
+          0,
+          1250.0
+        ],
+        "objects": 19
+      },
+      {
+        "file": "Chunks/LSGG_-3_-3.glb",
+        "localTranslation_jme": [
+          -1250.0,
+          0,
+          1250.0
+        ],
+        "objects": 6
+      },
+      {
+        "file": "Chunks/LSGG_-4_-3.glb",
+        "localTranslation_jme": [
+          -1750.0,
+          0,
+          1250.0
+        ],
+        "objects": 4
+      },
+      {
+        "file": "Chunks/LSGG_-3_-2.glb",
+        "localTranslation_jme": [
+          -1250.0,
+          0,
+          750.0
+        ],
+        "objects": 15
+      },
+      {
+        "file": "Chunks/LSGG_-2_-1.glb",
+        "localTranslation_jme": [
+          -750.0,
+          0,
+          250.0
+        ],
+        "objects": 17
+      },
+      {
+        "file": "Chunks/LSGG_-3_-1.glb",
+        "localTranslation_jme": [
+          -1250.0,
+          0,
+          250.0
+        ],
+        "objects": 6
+      },
+      {
+        "file": "Chunks/LSGG_-2_0.glb",
+        "localTranslation_jme": [
+          -750.0,
+          0,
+          -250.0
+        ],
+        "objects": 4
+      },
+      {
+        "file": "Chunks/LSGG_-1_-3.glb",
+        "localTranslation_jme": [
+          -250.0,
+          0,
+          1250.0
+        ],
+        "objects": 4
+      },
+      {
+        "file": "Chunks/LSGG_-1_-2.glb",
+        "localTranslation_jme": [
+          -250.0,
+          0,
+          750.0
+        ],
+        "objects": 19
+      },
+      {
+        "file": "Chunks/LSGG_0_-2.glb",
+        "localTranslation_jme": [
+          250.0,
+          0,
+          750.0
+        ],
+        "objects": 8
+      },
+      {
+        "file": "Chunks/LSGG_0_-1.glb",
+        "localTranslation_jme": [
+          250.0,
+          0,
+          250.0
+        ],
+        "objects": 13
+      },
+      {
+        "file": "Chunks/LSGG_1_-1.glb",
+        "localTranslation_jme": [
+          750.0,
+          0,
+          250.0
+        ],
+        "objects": 2
+      },
+      {
+        "file": "Chunks/LSGG_1_0.glb",
+        "localTranslation_jme": [
+          750.0,
+          0,
+          -250.0
+        ],
+        "objects": 14
+      },
+      {
+        "file": "Chunks/LSGG_0_1.glb",
+        "localTranslation_jme": [
+          250.0,
+          0,
+          -750.0
+        ],
+        "objects": 2
+      },
+      {
+        "file": "Chunks/LSGG_-1_0.glb",
+        "localTranslation_jme": [
+          -250.0,
+          0,
+          -250.0
+        ],
+        "objects": 3
+      },
+      {
+        "file": "Chunks/LSGG_2_1.glb",
+        "localTranslation_jme": [
+          1250.0,
+          0,
+          -750.0
+        ],
+        "objects": 8
+      },
+      {
+        "file": "Chunks/LSGG_3_2.glb",
+        "localTranslation_jme": [
+          1750.0,
+          0,
+          -1250.0
+        ],
+        "objects": 8
+      },
+      {
+        "file": "Chunks/LSGG_1_2.glb",
+        "localTranslation_jme": [
+          750.0,
+          0,
+          -1250.0
+        ],
+        "objects": 4
+      },
+      {
+        "file": "Chunks/LSGG_2_2.glb",
+        "localTranslation_jme": [
+          1250.0,
+          0,
+          -1250.0
+        ],
+        "objects": 3
+      },
+      {
+        "file": "Chunks/LSGG_2_3.glb",
+        "localTranslation_jme": [
+          1250.0,
+          0,
+          -1750.0
+        ],
+        "objects": 4
+      },
+      {
+        "file": "Chunks/LSGG_3_3.glb",
+        "localTranslation_jme": [
+          1750.0,
+          0,
+          -1750.0
+        ],
+        "objects": 2
+      },
+      {
+        "file": "Chunks/LSGG_-2_-2.glb",
+        "localTranslation_jme": [
+          -750.0,
+          0,
+          750.0
+        ],
+        "objects": 1
+      },
+      {
+        "file": "Chunks/LSGG_-1_-1.glb",
+        "localTranslation_jme": [
+          -250.0,
+          0,
+          250.0
+        ],
+        "objects": 1
+      },
+      {
+        "file": "Chunks/LSGG_0_0.glb",
+        "localTranslation_jme": [
+          250.0,
+          0,
+          -250.0
+        ],
+        "objects": 1
+      },
+      {
+        "file": "Chunks/LSGG_1_1.glb",
+        "localTranslation_jme": [
+          750.0,
+          0,
+          -750.0
+        ],
+        "objects": 1
+      }
+    ],
+    "known_limits": [
+      "No surveyed facades",
+      "Pavement elevations use approximate runway profiles or nominal airport elevation; not terrain-conforming",
+      "IGN objects with unavailable height attributes are marked estimated",
+      "No automatic streaming, LOD selection or collision controls"
+    ],
+    "source_date": "2026-11-12",
+    "source_credits": "© swisstopo; © OpenStreetMap contributors"
+  },
+  {
+    "icao": "LSGS",
+    "name": "Sion",
+    "status": "Geodata foundation; not a finished photorealistic replica",
+    "origin_lv95_ln02": [
+      2591380.413941994,
+      1118641.9602069058,
+      482
+    ],
+    "worldTranslation_jme": [
+      -30119.586058006156,
+      482,
+      -26141.960206905846
+    ],
+    "world_origin_lv95": [
+      2621500,
+      1092500
+    ],
+    "units": "metres",
+    "building_parts": 74,
+    "osm_buildings": 0,
+    "surfaces": 10,
+    "full_model": "Models/LSGS_Airport.glb",
+    "chunks": [
+      {
+        "file": "Chunks/LSGS_2_0.glb",
+        "localTranslation_jme": [
+          1250.0,
+          0,
+          -250.0
+        ],
+        "objects": 12
+      },
+      {
+        "file": "Chunks/LSGS_1_-1.glb",
+        "localTranslation_jme": [
+          750.0,
+          0,
+          250.0
+        ],
+        "objects": 2
+      },
+      {
+        "file": "Chunks/LSGS_1_0.glb",
+        "localTranslation_jme": [
+          750.0,
+          0,
+          -250.0
+        ],
+        "objects": 22
+      },
+      {
+        "file": "Chunks/LSGS_0_-1.glb",
+        "localTranslation_jme": [
+          250.0,
+          0,
+          250.0
+        ],
+        "objects": 6
+      },
+      {
+        "file": "Chunks/LSGS_-1_-1.glb",
+        "localTranslation_jme": [
+          -250.0,
+          0,
+          250.0
+        ],
+        "objects": 11
+      },
+      {
+        "file": "Chunks/LSGS_0_0.glb",
+        "localTranslation_jme": [
+          250.0,
+          0,
+          -250.0
+        ],
+        "objects": 11
+      },
+      {
+        "file": "Chunks/LSGS_-3_-1.glb",
+        "localTranslation_jme": [
+          -1250.0,
+          0,
+          250.0
+        ],
+        "objects": 2
+      },
+      {
+        "file": "Chunks/LSGS_-2_-1.glb",
+        "localTranslation_jme": [
+          -750.0,
+          0,
+          250.0
+        ],
+        "objects": 4
+      },
+      {
+        "file": "Chunks/LSGS_-2_0.glb",
+        "localTranslation_jme": [
+          -750.0,
+          0,
+          -250.0
+        ],
+        "objects": 2
+      },
+      {
+        "file": "Chunks/LSGS_-1_0.glb",
+        "localTranslation_jme": [
+          -250.0,
+          0,
+          -250.0
+        ],
+        "objects": 6
+      },
+      {
+        "file": "Chunks/LSGS_1_1.glb",
+        "localTranslation_jme": [
+          750.0,
+          0,
+          -750.0
+        ],
+        "objects": 2
+      },
+      {
+        "file": "Chunks/LSGS_3_0.glb",
+        "localTranslation_jme": [
+          1750.0,
+          0,
+          -250.0
+        ],
+        "objects": 2
+      },
+      {
+        "file": "Chunks/LSGS_2_1.glb",
+        "localTranslation_jme": [
+          1250.0,
+          0,
+          -750.0
+        ],
+        "objects": 2
+      }
+    ],
+    "known_limits": [
+      "No surveyed facades",
+      "Pavement elevations use approximate runway profiles or nominal airport elevation; not terrain-conforming",
+      "IGN objects with unavailable height attributes are marked estimated",
+      "No automatic streaming, LOD selection or collision controls"
+    ],
+    "source_date": "2026-11-12",
+    "source_credits": "© swisstopo; © OpenStreetMap contributors"
+  },
+  {
+    "icao": "LSME",
+    "name": "Emmen",
+    "status": "Geodata foundation; not a finished photorealistic replica",
+    "origin_lv95_ln02": [
+      2665821.4110255153,
+      1216022.5204531045,
+      427
+    ],
+    "worldTranslation_jme": [
+      44321.41102551529,
+      427,
+      -123522.52045310452
+    ],
+    "world_origin_lv95": [
+      2621500,
+      1092500
+    ],
+    "units": "metres",
+    "building_parts": 44,
+    "osm_buildings": 0,
+    "surfaces": 13,
+    "full_model": "Models/LSME_Airport.glb",
+    "chunks": [
+      {
+        "file": "Chunks/LSME_-2_-2.glb",
+        "localTranslation_jme": [
+          -750.0,
+          0,
+          750.0
+        ],
+        "objects": 4
+      },
+      {
+        "file": "Chunks/LSME_-2_-1.glb",
+        "localTranslation_jme": [
+          -750.0,
+          0,
+          250.0
+        ],
+        "objects": 10
+      },
+      {
+        "file": "Chunks/LSME_-1_-1.glb",
+        "localTranslation_jme": [
+          -250.0,
+          0,
+          250.0
+        ],
+        "objects": 4
+      },
+      {
+        "file": "Chunks/LSME_-2_0.glb",
+        "localTranslation_jme": [
+          -750.0,
+          0,
+          -250.0
+        ],
+        "objects": 2
+      },
+      {
+        "file": "Chunks/LSME_0_-1.glb",
+        "localTranslation_jme": [
+          250.0,
+          0,
+          250.0
+        ],
+        "objects": 2
+      },
+      {
+        "file": "Chunks/LSME_0_0.glb",
+        "localTranslation_jme": [
+          250.0,
+          0,
+          -250.0
+        ],
+        "objects": 7
+      },
+      {
+        "file": "Chunks/LSME_1_0.glb",
+        "localTranslation_jme": [
+          750.0,
+          0,
+          -250.0
+        ],
+        "objects": 4
+      },
+      {
+        "file": "Chunks/LSME_-1_0.glb",
+        "localTranslation_jme": [
+          -250.0,
+          0,
+          -250.0
+        ],
+        "objects": 7
+      },
+      {
+        "file": "Chunks/LSME_1_1.glb",
+        "localTranslation_jme": [
+          750.0,
+          0,
+          -750.0
+        ],
+        "objects": 4
+      },
+      {
+        "file": "Chunks/LSME_0_1.glb",
+        "localTranslation_jme": [
+          250.0,
+          0,
+          -750.0
+        ],
+        "objects": 10
+      },
+      {
+        "file": "Chunks/LSME_-1_-2.glb",
+        "localTranslation_jme": [
+          -250.0,
+          0,
+          750.0
+        ],
+        "objects": 1
+      },
+      {
+        "file": "Chunks/LSME_1_2.glb",
+        "localTranslation_jme": [
+          750.0,
+          0,
+          -1250.0
+        ],
+        "objects": 2
+      }
+    ],
+    "known_limits": [
+      "No surveyed facades",
+      "Pavement elevations use approximate runway profiles or nominal airport elevation; not terrain-conforming",
+      "IGN objects with unavailable height attributes are marked estimated",
+      "No automatic streaming, LOD selection or collision controls"
+    ],
+    "source_date": "2026-11-12",
+    "source_credits": "© swisstopo; © OpenStreetMap contributors"
+  },
+  {
+    "icao": "LSMM",
+    "name": "Meiringen",
+    "status": "Geodata foundation; not a finished photorealistic replica",
+    "origin_lv95_ln02": [
+      2651243.00265761,
+      1176999.4542711163,
+      577
+    ],
+    "worldTranslation_jme": [
+      29743.00265760999,
+      577,
+      -84499.4542711163
+    ],
+    "world_origin_lv95": [
+      2621500,
+      1092500
+    ],
+    "units": "metres",
+    "building_parts": 50,
+    "osm_buildings": 0,
+    "surfaces": 10,
+    "full_model": "Models/LSMM_Airport.glb",
+    "chunks": [
+      {
+        "file": "Chunks/LSMM_1_-1.glb",
+        "localTranslation_jme": [
+          750.0,
+          0,
+          250.0
+        ],
+        "objects": 18
+      },
+      {
+        "file": "Chunks/LSMM_2_-1.glb",
+        "localTranslation_jme": [
+          1250.0,
+          0,
+          250.0
+        ],
+        "objects": 4
+      },
+      {
+        "file": "Chunks/LSMM_0_-1.glb",
+        "localTranslation_jme": [
+          250.0,
+          0,
+          250.0
+        ],
+        "objects": 13
+      },
+      {
+        "file": "Chunks/LSMM_-1_-1.glb",
+        "localTranslation_jme": [
+          -250.0,
+          0,
+          250.0
+        ],
+        "objects": 3
+      },
+      {
+        "file": "Chunks/LSMM_1_0.glb",
+        "localTranslation_jme": [
+          750.0,
+          0,
+          -250.0
+        ],
+        "objects": 4
+      },
+      {
+        "file": "Chunks/LSMM_0_0.glb",
+        "localTranslation_jme": [
+          250.0,
+          0,
+          -250.0
+        ],
+        "objects": 3
+      },
+      {
+        "file": "Chunks/LSMM_-2_-1.glb",
+        "localTranslation_jme": [
+          -750.0,
+          0,
+          250.0
+        ],
+        "objects": 3
+      },
+      {
+        "file": "Chunks/LSMM_-3_-1.glb",
+        "localTranslation_jme": [
+          -1250.0,
+          0,
+          250.0
+        ],
+        "objects": 4
+      },
+      {
+        "file": "Chunks/LSMM_-3_0.glb",
+        "localTranslation_jme": [
+          -1250.0,
+          0,
+          -250.0
+        ],
+        "objects": 6
+      },
+      {
+        "file": "Chunks/LSMM_-2_0.glb",
+        "localTranslation_jme": [
+          -750.0,
+          0,
+          -250.0
+        ],
+        "objects": 1
+      },
+      {
+        "file": "Chunks/LSMM_-1_0.glb",
+        "localTranslation_jme": [
+          -250.0,
+          0,
+          -250.0
+        ],
+        "objects": 1
+      }
+    ],
+    "known_limits": [
+      "No surveyed facades",
+      "Pavement elevations use approximate runway profiles or nominal airport elevation; not terrain-conforming",
+      "IGN objects with unavailable height attributes are marked estimated",
+      "No automatic streaming, LOD selection or collision controls"
+    ],
+    "source_date": "2026-11-12",
+    "source_credits": "© swisstopo; © OpenStreetMap contributors"
+  },
+  {
+    "icao": "LSMP",
+    "name": "Payerne",
+    "status": "Geodata foundation; not a finished photorealistic replica",
+    "origin_lv95_ln02": [
+      2559951.5523081766,
+      1188063.4572583353,
+      447
+    ],
+    "worldTranslation_jme": [
+      -61548.447691823356,
+      447,
+      -95563.45725833531
+    ],
+    "world_origin_lv95": [
+      2621500,
+      1092500
+    ],
+    "units": "metres",
+    "building_parts": 44,
+    "osm_buildings": 0,
+    "surfaces": 16,
+    "full_model": "Models/LSMP_Airport.glb",
+    "chunks": [
+      {
+        "file": "Chunks/LSMP_-3_-2.glb",
+        "localTranslation_jme": [
+          -1250.0,
+          0,
+          750.0
+        ],
+        "objects": 3
+      },
+      {
+        "file": "Chunks/LSMP_0_-1.glb",
+        "localTranslation_jme": [
+          250.0,
+          0,
+          250.0
+        ],
+        "objects": 5
+      },
+      {
+        "file": "Chunks/LSMP_0_0.glb",
+        "localTranslation_jme": [
+          250.0,
+          0,
+          -250.0
+        ],
+        "objects": 3
+      },
+      {
+        "file": "Chunks/LSMP_1_0.glb",
+        "localTranslation_jme": [
+          750.0,
+          0,
+          -250.0
+        ],
+        "objects": 11
+      },
+      {
+        "file": "Chunks/LSMP_1_-1.glb",
+        "localTranslation_jme": [
+          750.0,
+          0,
+          250.0
+        ],
+        "objects": 3
+      },
+      {
+        "file": "Chunks/LSMP_2_0.glb",
+        "localTranslation_jme": [
+          1250.0,
+          0,
+          -250.0
+        ],
+        "objects": 7
+      },
+      {
+        "file": "Chunks/LSMP_2_1.glb",
+        "localTranslation_jme": [
+          1250.0,
+          0,
+          -750.0
+        ],
+        "objects": 3
+      },
+      {
+        "file": "Chunks/LSMP_0_1.glb",
+        "localTranslation_jme": [
+          250.0,
+          0,
+          -750.0
+        ],
+        "objects": 7
+      },
+      {
+        "file": "Chunks/LSMP_1_1.glb",
+        "localTranslation_jme": [
+          750.0,
+          0,
+          -750.0
+        ],
+        "objects": 5
+      },
+      {
+        "file": "Chunks/LSMP_1_2.glb",
+        "localTranslation_jme": [
+          750.0,
+          0,
+          -1250.0
+        ],
+        "objects": 3
+      },
+      {
+        "file": "Chunks/LSMP_2_2.glb",
+        "localTranslation_jme": [
+          1250.0,
+          0,
+          -1250.0
+        ],
+        "objects": 5
+      },
+      {
+        "file": "Chunks/LSMP_-2_-2.glb",
+        "localTranslation_jme": [
+          -750.0,
+          0,
+          750.0
+        ],
+        "objects": 2
+      },
+      {
+        "file": "Chunks/LSMP_-1_-2.glb",
+        "localTranslation_jme": [
+          -250.0,
+          0,
+          750.0
+        ],
+        "objects": 1
+      },
+      {
+        "file": "Chunks/LSMP_-1_-1.glb",
+        "localTranslation_jme": [
+          -250.0,
+          0,
+          250.0
+        ],
+        "objects": 1
+      },
+      {
+        "file": "Chunks/LSMP_-1_0.glb",
+        "localTranslation_jme": [
+          -250.0,
+          0,
+          -250.0
+        ],
+        "objects": 1
+      }
+    ],
+    "known_limits": [
+      "No surveyed facades",
+      "Pavement elevations use approximate runway profiles or nominal airport elevation; not terrain-conforming",
+      "IGN objects with unavailable height attributes are marked estimated",
+      "No automatic streaming, LOD selection or collision controls"
+    ],
+    "source_date": "2026-11-12",
+    "source_credits": "© swisstopo; © OpenStreetMap contributors"
+  },
+  {
+    "icao": "LSZA",
+    "name": "Lugano-Agno",
+    "status": "Geodata foundation; not a finished photorealistic replica",
+    "origin_lv95_ln02": [
+      2713999.6642039046,
+      1095741.402085471,
+      279
+    ],
+    "worldTranslation_jme": [
+      92499.66420390457,
+      279,
+      -3241.402085470967
+    ],
+    "world_origin_lv95": [
+      2621500,
+      1092500
+    ],
+    "units": "metres",
+    "building_parts": 30,
+    "osm_buildings": 0,
+    "surfaces": 5,
+    "full_model": "Models/LSZA_Airport.glb",
+    "chunks": [
+      {
+        "file": "Chunks/LSZA_-1_-2.glb",
+        "localTranslation_jme": [
+          -250.0,
+          0,
+          750.0
+        ],
+        "objects": 4
+      },
+      {
+        "file": "Chunks/LSZA_0_-1.glb",
+        "localTranslation_jme": [
+          250.0,
+          0,
+          250.0
+        ],
+        "objects": 4
+      },
+      {
+        "file": "Chunks/LSZA_-1_0.glb",
+        "localTranslation_jme": [
+          -250.0,
+          0,
+          -250.0
+        ],
+        "objects": 5
+      },
+      {
+        "file": "Chunks/LSZA_-1_-1.glb",
+        "localTranslation_jme": [
+          -250.0,
+          0,
+          250.0
+        ],
+        "objects": 8
+      },
+      {
+        "file": "Chunks/LSZA_0_0.glb",
+        "localTranslation_jme": [
+          250.0,
+          0,
+          -250.0
+        ],
+        "objects": 4
+      },
+      {
+        "file": "Chunks/LSZA_0_1.glb",
+        "localTranslation_jme": [
+          250.0,
+          0,
+          -750.0
+        ],
+        "objects": 10
+      }
+    ],
+    "known_limits": [
+      "No surveyed facades",
+      "Pavement elevations use approximate runway profiles or nominal airport elevation; not terrain-conforming",
+      "IGN objects with unavailable height attributes are marked estimated",
+      "No automatic streaming, LOD selection or collision controls"
+    ],
+    "source_date": "2026-11-12",
+    "source_credits": "© swisstopo; © OpenStreetMap contributors"
+  },
+  {
+    "icao": "LSZB",
+    "name": "Bern-Belp",
+    "status": "Geodata foundation; not a finished photorealistic replica",
+    "origin_lv95_ln02": [
+      2604527.090351227,
+      1195835.800118071,
+      510
+    ],
+    "worldTranslation_jme": [
+      -16972.909648772795,
+      510,
+      -103335.80011807103
+    ],
+    "world_origin_lv95": [
+      2621500,
+      1092500
+    ],
+    "units": "metres",
+    "building_parts": 40,
+    "osm_buildings": 0,
+    "surfaces": 10,
+    "full_model": "Models/LSZB_Airport.glb",
+    "chunks": [
+      {
+        "file": "Chunks/LSZB_0_-2.glb",
+        "localTranslation_jme": [
+          250.0,
+          0,
+          750.0
+        ],
+        "objects": 9
+      },
+      {
+        "file": "Chunks/LSZB_-1_-2.glb",
+        "localTranslation_jme": [
+          -250.0,
+          0,
+          750.0
+        ],
+        "objects": 6
+      },
+      {
+        "file": "Chunks/LSZB_1_-2.glb",
+        "localTranslation_jme": [
+          750.0,
+          0,
+          750.0
+        ],
+        "objects": 4
+      },
+      {
+        "file": "Chunks/LSZB_1_-1.glb",
+        "localTranslation_jme": [
+          750.0,
+          0,
+          250.0
+        ],
+        "objects": 5
+      },
+      {
+        "file": "Chunks/LSZB_0_-1.glb",
+        "localTranslation_jme": [
+          250.0,
+          0,
+          250.0
+        ],
+        "objects": 10
+      },
+      {
+        "file": "Chunks/LSZB_0_0.glb",
+        "localTranslation_jme": [
+          250.0,
+          0,
+          -250.0
+        ],
+        "objects": 8
+      },
+      {
+        "file": "Chunks/LSZB_-1_0.glb",
+        "localTranslation_jme": [
+          -250.0,
+          0,
+          -250.0
+        ],
+        "objects": 5
+      },
+      {
+        "file": "Chunks/LSZB_-2_1.glb",
+        "localTranslation_jme": [
+          -750.0,
+          0,
+          -750.0
+        ],
+        "objects": 2
+      },
+      {
+        "file": "Chunks/LSZB_-1_-1.glb",
+        "localTranslation_jme": [
+          -250.0,
+          0,
+          250.0
+        ],
+        "objects": 1
+      }
+    ],
+    "known_limits": [
+      "No surveyed facades",
+      "Pavement elevations use approximate runway profiles or nominal airport elevation; not terrain-conforming",
+      "IGN objects with unavailable height attributes are marked estimated",
+      "No automatic streaming, LOD selection or collision controls"
+    ],
+    "source_date": "2026-11-12",
+    "source_credits": "© swisstopo; © OpenStreetMap contributors"
+  },
+  {
+    "icao": "LSZG",
+    "name": "Grenchen",
+    "status": "Geodata foundation; not a finished photorealistic replica",
+    "origin_lv95_ln02": [
+      2598314.3499505776,
+      1225604.274772837,
+      430
+    ],
+    "worldTranslation_jme": [
+      -23185.650049422402,
+      430,
+      -133104.27477283706
+    ],
+    "world_origin_lv95": [
+      2621500,
+      1092500
+    ],
+    "units": "metres",
+    "building_parts": 12,
+    "osm_buildings": 0,
+    "surfaces": 5,
+    "full_model": "Models/LSZG_Airport.glb",
+    "chunks": [
+      {
+        "file": "Chunks/LSZG_-1_0.glb",
+        "localTranslation_jme": [
+          -250.0,
+          0,
+          -250.0
+        ],
+        "objects": 13
+      },
+      {
+        "file": "Chunks/LSZG_-1_-1.glb",
+        "localTranslation_jme": [
+          -250.0,
+          0,
+          250.0
+        ],
+        "objects": 3
+      },
+      {
+        "file": "Chunks/LSZG_0_0.glb",
+        "localTranslation_jme": [
+          250.0,
+          0,
+          -250.0
+        ],
+        "objects": 1
+      }
+    ],
+    "known_limits": [
+      "No surveyed facades",
+      "Pavement elevations use approximate runway profiles or nominal airport elevation; not terrain-conforming",
+      "IGN objects with unavailable height attributes are marked estimated",
+      "No automatic streaming, LOD selection or collision controls"
+    ],
+    "source_date": "2026-11-12",
+    "source_credits": "© swisstopo; © OpenStreetMap contributors"
+  },
+  {
+    "icao": "LSZH",
+    "name": "Zürich",
+    "status": "Geodata foundation; not a finished photorealistic replica",
+    "origin_lv95_ln02": [
+      2683656.593991152,
+      1256955.157114035,
+      432
+    ],
+    "worldTranslation_jme": [
+      62156.59399115201,
+      432,
+      -164455.15711403498
+    ],
+    "world_origin_lv95": [
+      2621500,
+      1092500
+    ],
+    "units": "metres",
+    "building_parts": 191,
+    "osm_buildings": 0,
+    "surfaces": 38,
+    "full_model": "Models/LSZH_Airport.glb",
+    "chunks": [
+      {
+        "file": "Chunks/LSZH_2_-5.glb",
+        "localTranslation_jme": [
+          1250.0,
+          0,
+          2250.0
+        ],
+        "objects": 10
+      },
+      {
+        "file": "Chunks/LSZH_2_-4.glb",
+        "localTranslation_jme": [
+          1250.0,
+          0,
+          1750.0
+        ],
+        "objects": 7
+      },
+      {
+        "file": "Chunks/LSZH_3_-4.glb",
+        "localTranslation_jme": [
+          1750.0,
+          0,
+          1750.0
+        ],
+        "objects": 4
+      },
+      {
+        "file": "Chunks/LSZH_3_-3.glb",
+        "localTranslation_jme": [
+          1750.0,
+          0,
+          1250.0
+        ],
+        "objects": 8
+      },
+      {
+        "file": "Chunks/LSZH_2_-3.glb",
+        "localTranslation_jme": [
+          1250.0,
+          0,
+          1250.0
+        ],
+        "objects": 17
+      },
+      {
+        "file": "Chunks/LSZH_1_-4.glb",
+        "localTranslation_jme": [
+          750.0,
+          0,
+          1750.0
+        ],
+        "objects": 10
+      },
+      {
+        "file": "Chunks/LSZH_0_-4.glb",
+        "localTranslation_jme": [
+          250.0,
+          0,
+          1750.0
+        ],
+        "objects": 6
+      },
+      {
+        "file": "Chunks/LSZH_0_-3.glb",
+        "localTranslation_jme": [
+          250.0,
+          0,
+          1250.0
+        ],
+        "objects": 23
+      },
+      {
+        "file": "Chunks/LSZH_1_-2.glb",
+        "localTranslation_jme": [
+          750.0,
+          0,
+          750.0
+        ],
+        "objects": 9
+      },
+      {
+        "file": "Chunks/LSZH_3_-2.glb",
+        "localTranslation_jme": [
+          1750.0,
+          0,
+          750.0
+        ],
+        "objects": 6
+      },
+      {
+        "file": "Chunks/LSZH_2_-2.glb",
+        "localTranslation_jme": [
+          1250.0,
+          0,
+          750.0
+        ],
+        "objects": 14
+      },
+      {
+        "file": "Chunks/LSZH_2_-1.glb",
+        "localTranslation_jme": [
+          1250.0,
+          0,
+          250.0
+        ],
+        "objects": 5
+      },
+      {
+        "file": "Chunks/LSZH_3_-1.glb",
+        "localTranslation_jme": [
+          1750.0,
+          0,
+          250.0
+        ],
+        "objects": 12
+      },
+      {
+        "file": "Chunks/LSZH_4_-1.glb",
+        "localTranslation_jme": [
+          2250.0,
+          0,
+          250.0
+        ],
+        "objects": 2
+      },
+      {
+        "file": "Chunks/LSZH_4_0.glb",
+        "localTranslation_jme": [
+          2250.0,
+          0,
+          -250.0
+        ],
+        "objects": 2
+      },
+      {
+        "file": "Chunks/LSZH_3_0.glb",
+        "localTranslation_jme": [
+          1750.0,
+          0,
+          -250.0
+        ],
+        "objects": 6
+      },
+      {
+        "file": "Chunks/LSZH_-1_-1.glb",
+        "localTranslation_jme": [
+          -250.0,
+          0,
+          250.0
+        ],
+        "objects": 5
+      },
+      {
+        "file": "Chunks/LSZH_-2_-1.glb",
+        "localTranslation_jme": [
+          -750.0,
+          0,
+          250.0
+        ],
+        "objects": 3
+      },
+      {
+        "file": "Chunks/LSZH_-2_0.glb",
+        "localTranslation_jme": [
+          -750.0,
+          0,
+          -250.0
+        ],
+        "objects": 3
+      },
+      {
+        "file": "Chunks/LSZH_-1_2.glb",
+        "localTranslation_jme": [
+          -250.0,
+          0,
+          -1250.0
+        ],
+        "objects": 3
+      },
+      {
+        "file": "Chunks/LSZH_-2_3.glb",
+        "localTranslation_jme": [
+          -750.0,
+          0,
+          -1750.0
+        ],
+        "objects": 3
+      },
+      {
+        "file": "Chunks/LSZH_-3_3.glb",
+        "localTranslation_jme": [
+          -1250.0,
+          0,
+          -1750.0
+        ],
+        "objects": 6
+      },
+      {
+        "file": "Chunks/LSZH_0_0.glb",
+        "localTranslation_jme": [
+          250.0,
+          0,
+          -250.0
+        ],
+        "objects": 5
+      },
+      {
+        "file": "Chunks/LSZH_0_1.glb",
+        "localTranslation_jme": [
+          250.0,
+          0,
+          -750.0
+        ],
+        "objects": 11
+      },
+      {
+        "file": "Chunks/LSZH_1_0.glb",
+        "localTranslation_jme": [
+          750.0,
+          0,
+          -250.0
+        ],
+        "objects": 7
+      },
+      {
+        "file": "Chunks/LSZH_0_3.glb",
+        "localTranslation_jme": [
+          250.0,
+          0,
+          -1750.0
+        ],
+        "objects": 2
+      },
+      {
+        "file": "Chunks/LSZH_-3_4.glb",
+        "localTranslation_jme": [
+          -1250.0,
+          0,
+          -2250.0
+        ],
+        "objects": 8
+      },
+      {
+        "file": "Chunks/LSZH_-2_4.glb",
+        "localTranslation_jme": [
+          -750.0,
+          0,
+          -2250.0
+        ],
+        "objects": 6
+      },
+      {
+        "file": "Chunks/LSZH_-2_5.glb",
+        "localTranslation_jme": [
+          -750.0,
+          0,
+          -2750.0
+        ],
+        "objects": 5
+      },
+      {
+        "file": "Chunks/LSZH_-4_5.glb",
+        "localTranslation_jme": [
+          -1750.0,
+          0,
+          -2750.0
+        ],
+        "objects": 4
+      },
+      {
+        "file": "Chunks/LSZH_-3_6.glb",
+        "localTranslation_jme": [
+          -1250.0,
+          0,
+          -3250.0
+        ],
+        "objects": 2
+      },
+      {
+        "file": "Chunks/LSZH_-2_2.glb",
+        "localTranslation_jme": [
+          -750.0,
+          0,
+          -1250.0
+        ],
+        "objects": 1
+      },
+      {
+        "file": "Chunks/LSZH_-1_-2.glb",
+        "localTranslation_jme": [
+          -250.0,
+          0,
+          750.0
+        ],
+        "objects": 1
+      },
+      {
+        "file": "Chunks/LSZH_-1_0.glb",
+        "localTranslation_jme": [
+          -250.0,
+          0,
+          -250.0
+        ],
+        "objects": 1
+      },
+      {
+        "file": "Chunks/LSZH_-1_1.glb",
+        "localTranslation_jme": [
+          -250.0,
+          0,
+          -750.0
+        ],
+        "objects": 1
+      },
+      {
+        "file": "Chunks/LSZH_-1_3.glb",
+        "localTranslation_jme": [
+          -250.0,
+          0,
+          -1750.0
+        ],
+        "objects": 2
+      },
+      {
+        "file": "Chunks/LSZH_0_-2.glb",
+        "localTranslation_jme": [
+          250.0,
+          0,
+          750.0
+        ],
+        "objects": 1
+      },
+      {
+        "file": "Chunks/LSZH_0_-1.glb",
+        "localTranslation_jme": [
+          250.0,
+          0,
+          250.0
+        ],
+        "objects": 1
+      },
+      {
+        "file": "Chunks/LSZH_0_2.glb",
+        "localTranslation_jme": [
+          250.0,
+          0,
+          -1250.0
+        ],
+        "objects": 2
+      },
+      {
+        "file": "Chunks/LSZH_1_-3.glb",
+        "localTranslation_jme": [
+          750.0,
+          0,
+          1250.0
+        ],
+        "objects": 1
+      },
+      {
+        "file": "Chunks/LSZH_1_-1.glb",
+        "localTranslation_jme": [
+          750.0,
+          0,
+          250.0
+        ],
+        "objects": 1
+      },
+      {
+        "file": "Chunks/LSZH_1_1.glb",
+        "localTranslation_jme": [
+          750.0,
+          0,
+          -750.0
+        ],
+        "objects": 2
+      },
+      {
+        "file": "Chunks/LSZH_2_0.glb",
+        "localTranslation_jme": [
+          1250.0,
+          0,
+          -250.0
+        ],
+        "objects": 1
+      }
+    ],
+    "known_limits": [
+      "No surveyed facades",
+      "Pavement elevations use approximate runway profiles or nominal airport elevation; not terrain-conforming",
+      "IGN objects with unavailable height attributes are marked estimated",
+      "No automatic streaming, LOD selection or collision controls"
+    ],
+    "source_date": "2026-11-12",
+    "source_credits": "© swisstopo; © OpenStreetMap contributors"
+  },
+  {
+    "icao": "LSZR",
+    "name": "St. Gallen-Altenrhein",
+    "status": "Geodata foundation; not a finished photorealistic replica",
+    "origin_lv95_ln02": [
+      2760012.599455701,
+      1261524.488505759,
+      398
+    ],
+    "worldTranslation_jme": [
+      138512.5994557012,
+      398,
+      -169024.48850575904
+    ],
+    "world_origin_lv95": [
+      2621500,
+      1092500
+    ],
+    "units": "metres",
+    "building_parts": 45,
+    "osm_buildings": 0,
+    "surfaces": 6,
+    "full_model": "Models/LSZR_Airport.glb",
+    "chunks": [
+      {
+        "file": "Chunks/LSZR_1_-1.glb",
+        "localTranslation_jme": [
+          750.0,
+          0,
+          250.0
+        ],
+        "objects": 3
+      },
+      {
+        "file": "Chunks/LSZR_0_-1.glb",
+        "localTranslation_jme": [
+          250.0,
+          0,
+          250.0
+        ],
+        "objects": 3
+      },
+      {
+        "file": "Chunks/LSZR_-1_0.glb",
+        "localTranslation_jme": [
+          -250.0,
+          0,
+          -250.0
+        ],
+        "objects": 11
+      },
+      {
+        "file": "Chunks/LSZR_0_0.glb",
+        "localTranslation_jme": [
+          250.0,
+          0,
+          -250.0
+        ],
+        "objects": 9
+      },
+      {
+        "file": "Chunks/LSZR_-2_0.glb",
+        "localTranslation_jme": [
+          -750.0,
+          0,
+          -250.0
+        ],
+        "objects": 17
+      },
+      {
+        "file": "Chunks/LSZR_-3_-1.glb",
+        "localTranslation_jme": [
+          -1250.0,
+          0,
+          250.0
+        ],
+        "objects": 2
+      },
+      {
+        "file": "Chunks/LSZR_-2_-1.glb",
+        "localTranslation_jme": [
+          -750.0,
+          0,
+          250.0
+        ],
+        "objects": 5
+      },
+      {
+        "file": "Chunks/LSZR_1_0.glb",
+        "localTranslation_jme": [
+          750.0,
+          0,
+          -250.0
+        ],
+        "objects": 1
+      }
+    ],
+    "known_limits": [
+      "No surveyed facades",
+      "Pavement elevations use approximate runway profiles or nominal airport elevation; not terrain-conforming",
+      "IGN objects with unavailable height attributes are marked estimated",
+      "No automatic streaming, LOD selection or collision controls"
+    ],
+    "source_date": "2026-11-12",
+    "source_credits": "© swisstopo; © OpenStreetMap contributors"
+  }
+]

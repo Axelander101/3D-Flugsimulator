@@ -1,12 +1,15 @@
 plugins {
     id 'java-library'
-    id "io.github.0ffz.github-packages" version "1.2.1" // Plugin for anonymous inclusion of artifacts hosted in github package registry
+    id 'io.github.0ffz.github-packages' version '1.2.1'
 }
 
 dependencies {
-    implementation "com.google.code.gson:gson:2.14.0"
-    implementation "org.jmonkeyengine:jme3-terrain:3.9.0-stable"
+    implementation 'com.google.code.gson:gson:2.14.0'
+    implementation 'org.jmonkeyengine:jme3-terrain:3.10.0-beta3'
+
+    implementation libs.jmeDesktop
     api libs.jmeCore
+
     runtimeOnly libs.jmeJogg
     runtimeOnly libs.jmePlugins
 }
