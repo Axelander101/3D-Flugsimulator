@@ -29,6 +29,8 @@ public final class InfraredMissile{
     }
 
 
+    public void cancel() { remainingLife = 0; model.removeFromParent(); }
+
     public boolean update(float tpf) {
         if (tpf <= 0f) {
             return false;

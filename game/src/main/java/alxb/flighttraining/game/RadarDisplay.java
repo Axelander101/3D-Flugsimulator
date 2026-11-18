@@ -60,68 +60,70 @@ public class RadarDisplay {
     }
 
     public void update(int screenWidth, int screenHeight) {
-        display.setLocalTranslation(
-                screenWidth - size - 20f,
-                screenHeight - size - 20f,
-                0
-        );
 
-        // Anzahl der Punkte an die Gegnerzahl anpassen.
-        while (dots.size() < enemies.getCount()) {
-            Geometry dot = rectangle(
-                    "EnemyDot", 6f, 6f, ColorRGBA.Red
+            display.setLocalTranslation(
+                    screenWidth - size - 20f,
+                    screenHeight - size - 20f,
+                    0
             );
-            dots.add(dot);
-            display.attachChild(dot);
-        }
 
-        while (dots.size() > enemies.getCount()) {
-            dots.remove(dots.size() - 1).removeFromParent();
-        }
-
-        Vector3f playerPosition = plane.getWorldTranslation();
-
-        // Flugrichtung auf die horizontale Ebene projizieren.
-        Vector3f forward = plane.getWorldRotation()
-                .mult(new Vector3f(0, 0, -1));
-        forward.y = 0;
-
-        if (forward.lengthSquared() < 0.0001f) {
-            forward.set(0, 0, -1);
-        }
-        forward.normalizeLocal();
-
-        Vector3f right = forward.cross(Vector3f.UNIT_Y)
-                .normalizeLocal();
-
-        for (int i = 0; i < dots.size(); i++) {
-            Vector3f offset = enemies.getPosition(i)
-                    .subtract(playerPosition);
-
-            Geometry dot = dots.get(i);
-
-            if (offset.lengthSquared() > range * range) {
-                dot.setCullHint(
-                        com.jme3.scene.Spatial.CullHint.Always
+            // Anzahl der Punkte an die Gegnerzahl anpassen.
+            while (dots.size() < enemies.getCount()) {
+                Geometry dot = rectangle(
+                        "EnemyDot", 6f, 6f, ColorRGBA.Red
                 );
-                continue;
+                dots.add(dot);
+                display.attachChild(dot);
             }
 
-            dot.setCullHint(
-                    com.jme3.scene.Spatial.CullHint.Inherit
-            );
+            while (dots.size() > enemies.getCount()) {
+                dots.remove(dots.size() - 1).removeFromParent();
+            }
 
-            float radarX = offset.dot(right);
-            float radarY = offset.dot(forward);
+            Vector3f playerPosition = plane.getWorldTranslation();
 
-            float scale = (size / 2f - 6f) / range;
+            // Flugrichtung auf die horizontale Ebene projizieren.
+            Vector3f forward = plane.getWorldRotation()
+                    .mult(new Vector3f(0, 0, -1));
+            forward.y = 0;
 
-            dot.setLocalTranslation(
-                    size / 2f + radarX * scale - 3f,
-                    size / 2f + radarY * scale - 3f,
-                    2
-            );
-        }
+            if (forward.lengthSquared() < 0.0001f) {
+                forward.set(0, 0, -1);
+            }
+            forward.normalizeLocal();
+
+            Vector3f right = forward.cross(Vector3f.UNIT_Y)
+                    .normalizeLocal();
+
+            for (int i = 0; i < dots.size(); i++) {
+                Vector3f offset = enemies.getPosition(i)
+                        .subtract(playerPosition);
+
+                Geometry dot = dots.get(i);
+
+                if (offset.lengthSquared() > range * range) {
+                    dot.setCullHint(
+                            com.jme3.scene.Spatial.CullHint.Always
+                    );
+                    continue;
+                }
+
+                dot.setCullHint(
+                        com.jme3.scene.Spatial.CullHint.Inherit
+                );
+
+                float radarX = offset.dot(right);
+                float radarY = offset.dot(forward);
+
+                float scale = (size / 2f - 6f) / range;
+
+                dot.setLocalTranslation(
+                        size / 2f + radarX * scale - 3f,
+                        size / 2f + radarY * scale - 3f,
+                        2
+                );
+            }
+
     }
 
     private Geometry rectangle(String name, float width, float height, ColorRGBA color) {
@@ -136,5 +138,13 @@ public class RadarDisplay {
         geometry.setMaterial(material);
 
         return geometry;
+    }
+
+    public void setVisible(boolean visible) {
+        display.setCullHint(
+                visible
+                        ? com.jme3.scene.Spatial.CullHint.Inherit
+                        : com.jme3.scene.Spatial.CullHint.Always
+        );
     }
 }

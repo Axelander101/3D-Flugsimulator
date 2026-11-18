@@ -1,42 +1,9 @@
 package alxb.flighttraining.game;
-
-public class FlightCommandAi {
-    float pitch = 0f;
-    float yaw = 0f;
-    float roll = 0f;
-    float throttle = 0f;
-
-
-    public float getPitch(){
-        return pitch;
-    }
-
-    public float getYaw(){
-        return yaw;
-    }
-
-    public float getRoll(){
-        return roll;
-    }
-
-    public float getThrottle(){
-        return throttle;
-    }
-
-    public void setPitch(float pitch){
-        this.pitch = pitch;
-    }
-
-    public void setYaw(float yaw){
-        this.yaw = yaw;
-    }
-
-    public void setRoll(float roll){
-        this.roll = roll;
-    }
-
-    public void setThrottle(float throttle){
-        this.throttle = throttle;
-    }
-
+public final class FlightCommandAi {
+ private float pitch, roll, yaw, throttle;
+ private static float limit(float v,float lo,float hi) {return Float.isFinite(v)?Math.max(lo,Math.min(hi,v)):0;}
+ public float getPitch(){return pitch;} public float getRoll(){return roll;}
+ public float getYaw(){return yaw;} public float getThrottle(){return throttle;}
+ public void setPitch(float v){pitch=limit(v,-1,1);} public void setRoll(float v){roll=limit(v,-1,1);}
+ public void setYaw(float v){yaw=limit(v,-1,1);} public void setThrottle(float v){throttle=limit(v,0,1);}
 }

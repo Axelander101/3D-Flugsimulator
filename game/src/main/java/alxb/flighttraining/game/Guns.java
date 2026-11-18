@@ -26,6 +26,8 @@ public abstract class Guns {
         bullets.add(new Bullet(muzzleWorldPosition, velocity));
     }
 
+    public void clear() { bullets.clear(); }
+
     public void update(float tpf) {
         bullets.removeIf(bullet -> bullet.update(tpf, targets));
     }

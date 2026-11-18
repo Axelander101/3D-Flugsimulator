@@ -37,12 +37,15 @@ public class FlightTraining extends SimpleApplication {
     private InfraredMissile infraredMissile;
     private Radar radar;
     private RadarDisplay radarDisplay;
-    private EnemyAircraft enemyAircraft;
+
 
     private Enemy enemies;
     private int enemyCount = 1;
+    private boolean enemyCamera = false;
+    private DogfightSettings dogfightSettings;
 
     private final List<InfraredMissile> missiles = new ArrayList<>();
+
 
     private Menu menu;
     private SpawnSettings spawnSettings = new SpawnSettings(-6548f, -9563f, 0f);
@@ -96,8 +99,10 @@ public class FlightTraining extends SimpleApplication {
         rootNode.attachChild(targets);
         guns = new Cannon(targets);
         enemies = new Enemy(assetManager, targets);
+        enemies.configure(plane, physics, terrain);
         radar = new Radar(5000f, plane, enemies);
         radarDisplay = new RadarDisplay(assetManager, guiNode, plane, enemies);
+        radarDisplay.setVisible(false);
 
 
         surfaces = new FlightSurfaces(plane, input, composer, physics, assetManager, plane);
@@ -109,7 +114,7 @@ public class FlightTraining extends SimpleApplication {
         composer.getSpatial().addControl(new AbstractControl() {
             @Override
             protected void controlUpdate(float tpf) {
-                if (spawnReady) {
+                if (spawnReady && !menu.getMenuOffen()) {
                     surfaces.update(tpf);
                     skin.getArmature().update();
                 }
@@ -137,6 +142,10 @@ public class FlightTraining extends SimpleApplication {
 
     @Override
     public void simpleUpdate(float tpf) {
+        menu.update(tpf);
+        radarDisplay.setVisible(
+                !menu.getMenuOffen() && spawnReady
+        );
         if (!menu.getMenuOffen()) {
 
             if (!spawnReady) {
@@ -145,21 +154,24 @@ public class FlightTraining extends SimpleApplication {
                 return;
             }
 
-            enemies.spawn(enemyCount, plane);
-
             physics.update(tpf);
+            Vector3f position = plane.getLocalTranslation();
+            terrain.update(position, cam);
+            physics.resolveGroundCollision(terrain.getGroundHeight(position));
+            plane.updateGeometricState();
+            enemies.update(tpf);
+
+            plane.updateGeometricState();
+            targets.updateGeometricState();
+
             radar.update();
             radarDisplay.update(cam.getWidth(), cam.getHeight());
             updateCamera();
 
-            enemyAircraft.update(tpf);
 
             updateGuns(tpf);
             missiles.removeIf(missile -> missile.update(tpf));
 
-            Vector3f position = plane.getLocalTranslation();
-            terrain.update(position, cam);
-            physics.resolveGroundCollision(terrain.getGroundHeight(position));
             hud.update(physics, plane.getLocalTranslation().y);
         }
     }
@@ -168,7 +180,7 @@ public class FlightTraining extends SimpleApplication {
         // Auch nach dem Loslassen fliegen bestehende Geschosse weiter.
         guns.update(tpf);
         cannonFlashTimer += tpf;
-        if (!input.shoot) {
+        if (!input.shoot || (dogfightSettings != null && !dogfightSettings.weaponsEnabled)) {
             shotCooldown = 0f;
             return;
         }
@@ -195,14 +207,40 @@ public class FlightTraining extends SimpleApplication {
     }
 
     public void startFreePlay(SpawnSettings settings) {
-        this.spawnSettings = settings;
+        dogfightSettings = null;
+        beginFlight(settings);
+    }
 
-        plane.setLocalTranslation(settings.worldX, 0f, settings.worldZ);
+    public void startDogfight(DogfightSettings settings) {
+        java.util.Objects.requireNonNull(settings);
+        dogfightSettings = settings;
+        enemyCount = settings.enemyCount;
+        beginFlight(settings.spawn());
+    }
 
+    private void beginFlight(SpawnSettings settings) {
+        if (settings == null || !Float.isFinite(settings.worldX) || !Float.isFinite(settings.worldZ)
+                || !Float.isFinite(settings.heightAboveGround) || settings.heightAboveGround < 0)
+            throw new IllegalArgumentException("Ungültige Startposition");
+        spawnSettings = settings;
         spawnReady = false;
-
+        enemyCamera = false;
+        enemies.clear();
+        for (InfraredMissile missile : missiles) missile.cancel();
+        missiles.clear();
+        guns.clear();
+        shotCooldown = 0f;
+        cannonFlashTimer = 1f;
+        plane.setLocalRotation(new com.jme3.math.Quaternion());
+        plane.setLocalTranslation(settings.worldX, settings.heightAboveGround, settings.worldZ);
+        physics.reset(new Vector3f(), 0f);
+        input.shoot = input.pitchUp = input.pitchDown = input.rollLeft = input.rollRight = false;
+        input.yawLeft = input.yawRight = input.throttleUp = input.throttleDown = false;
+        input.resetControllerInput();
         menu.hide();
         inputManager.setCursorVisible(false);
+        hud.showLoading("Starthöhe und Terrain werden geladen …");
+        updateCamera();
     }
 
     private void updateSpawn() {
@@ -219,6 +257,15 @@ public class FlightTraining extends SimpleApplication {
         plane.setLocalTranslation(
                 position.x, groundHeight + spawnSettings.heightAboveGround, position.z
         );
+        plane.updateGeometricState();
+        if (dogfightSettings != null) {
+            Vector3f forward = plane.getLocalRotation().mult(new Vector3f(0, 0, -1));
+            physics.reset(forward.mult(220f), 0.6f);
+            enemies.spawn(enemyCount, plane, dogfightSettings);
+        } else {
+            enemies.spawn(enemyCount, plane);
+        }
+        targets.updateGeometricState();
         spawnReady = true;
         updateCamera();
         hud.update(physics, plane.getLocalTranslation().y);
@@ -262,7 +309,7 @@ public class FlightTraining extends SimpleApplication {
     private void configureCamera() {
         cam.setLocation(new Vector3f(0, 5, 10));
         cam.lookAt(new Vector3f(0, 1, 0), Vector3f.UNIT_Y);
-        cam.setFrustumFar(20000f);
+        cam.setFrustumPerspective(55f, (float)cam.getWidth()/cam.getHeight(), 0.2f, 20000f);
     }
 
     private void initializeLighting() {
@@ -288,24 +335,16 @@ public class FlightTraining extends SimpleApplication {
     }
 
     private void updateCamera() {
-        Vector3f forward = plane.getLocalRotation()
-                .mult(Vector3f.UNIT_Z.negate());
-
-        Vector3f up = plane.getLocalRotation()
-                .mult(Vector3f.UNIT_Y);
-
-        Vector3f planePosition = plane.getLocalTranslation();
-
-        Vector3f cameraPosition = planePosition
-                .subtract(forward.mult(10))
-                .add(up.mult(3));
-
-        cam.setLocation(cameraPosition);
-
-        cam.lookAt(
-                planePosition.add(forward.mult(10)),
-                up
-        );
+        Node cameraTarget = plane;
+        if (enemyCamera && spawnReady && enemies != null && enemies.getCount() > 0)
+            cameraTarget = enemies.getPlane(0);
+        cameraTarget.updateGeometricState();
+        Vector3f position = cameraTarget.getWorldTranslation();
+        Vector3f forward = cameraTarget.getWorldRotation().mult(Vector3f.UNIT_Z.negate());
+        Vector3f up = cameraTarget.getWorldRotation().mult(Vector3f.UNIT_Y);
+        // Ursprüngliche direkte Flugkamera, etwas näher: zuvor 10 m / 3 m.
+        cam.setLocation(position.subtract(forward.mult(8f)).add(up.mult(2.5f)));
+        cam.lookAt(position.add(forward.mult(10f)), up);
     }
 
     private SkinningControl findSkinningControl(Spatial spatial) {

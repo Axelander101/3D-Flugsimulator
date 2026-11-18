@@ -44,6 +44,14 @@ final class FlightPhysics {
         this.aiInput = java.util.Objects.requireNonNull(commands);
     }
 
+    public void reset(Vector3f initialVelocity, float initialThrottle) {
+        setVelocity(initialVelocity);
+        pitchSpeed = yawSpeed = rollSpeed = 0f;
+        pitchCommand = rollCommand = 0f;
+        throttle = clamp(initialThrottle, 0f, 1f);
+        normalG = 0f;
+    }
+
     public void setVelocity(Vector3f initialVelocity) {
         if (initialVelocity == null || !Float.isFinite(initialVelocity.x)
                 || !Float.isFinite(initialVelocity.y) || !Float.isFinite(initialVelocity.z)) {
