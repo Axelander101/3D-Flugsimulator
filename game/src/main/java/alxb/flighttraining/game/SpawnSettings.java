@@ -1,11 +1,18 @@
 package alxb.flighttraining.game;
 
-/** Startposition relativ zum Schweizer Kartenursprung. Alle Angaben in Metern. */
-final class SpawnSettings {
-    static final float WORLD_X = -6548f;
-    static final float WORLD_Z = -9563f;
-    static final float HEIGHT_ABOVE_GROUND = 600f;
 
-    private SpawnSettings() {
+public final class SpawnSettings {
+    public final float worldX;
+    public final float worldZ;
+    public final float heightAboveGround;
+
+    public SpawnSettings(
+            float worldX,
+            float worldZ,
+            float heightAboveGround
+    ) {
+        this.worldX = worldX;
+        this.worldZ = worldZ;
+        this.heightAboveGround = heightAboveGround;
     }
 }

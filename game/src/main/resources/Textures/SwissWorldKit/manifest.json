@@ -1,0 +1,410 @@
+[
+  {
+    "id": "Hangar_36x30",
+    "dimensions_blender_xyz": [
+      36.79999923706055,
+      30.799999237060547,
+      13.5
+    ],
+    "lods": [
+      {
+        "level": 0,
+        "path": "Models/Hangar_36x30_LOD0.glb",
+        "triangles": 2808
+      },
+      {
+        "level": 1,
+        "path": "Models/Hangar_36x30_LOD1.glb",
+        "triangles": 1346
+      },
+      {
+        "level": 2,
+        "path": "Models/Hangar_36x30_LOD2.glb",
+        "triangles": 452
+      }
+    ],
+    "collision": "not supplied",
+    "pivot": "ground center",
+    "front_gltf": "+Z",
+    "dimensions_gltf_xyz": [
+      36.79999923706055,
+      13.5,
+      30.799999237060547
+    ],
+    "lod_selection": "separate GLBs, manual selection in game"
+  },
+  {
+    "id": "ControlTower_23m",
+    "dimensions_blender_xyz": [
+      10.0,
+      10.0,
+      23.100000381469727
+    ],
+    "lods": [
+      {
+        "level": 0,
+        "path": "Models/ControlTower_23m_LOD0.glb",
+        "triangles": 1392
+      },
+      {
+        "level": 1,
+        "path": "Models/ControlTower_23m_LOD1.glb",
+        "triangles": 668
+      },
+      {
+        "level": 2,
+        "path": "Models/ControlTower_23m_LOD2.glb",
+        "triangles": 268
+      }
+    ],
+    "collision": "not supplied",
+    "pivot": "ground center",
+    "front_gltf": "+Z",
+    "dimensions_gltf_xyz": [
+      10.0,
+      23.100000381469727,
+      10.0
+    ],
+    "lod_selection": "separate GLBs, manual selection in game"
+  },
+  {
+    "id": "RegionalTerminal_32x14",
+    "dimensions_blender_xyz": [
+      33.0,
+      17.600000381469727,
+      7.800000190734863
+    ],
+    "lods": [
+      {
+        "level": 0,
+        "path": "Models/RegionalTerminal_32x14_LOD0.glb",
+        "triangles": 1096
+      },
+      {
+        "level": 1,
+        "path": "Models/RegionalTerminal_32x14_LOD1.glb",
+        "triangles": 526
+      },
+      {
+        "level": 2,
+        "path": "Models/RegionalTerminal_32x14_LOD2.glb",
+        "triangles": 208
+      }
+    ],
+    "collision": "not supplied",
+    "pivot": "ground center",
+    "front_gltf": "+Z",
+    "dimensions_gltf_xyz": [
+      33.0,
+      7.800000190734863,
+      17.600000381469727
+    ],
+    "lod_selection": "separate GLBs, manual selection in game"
+  },
+  {
+    "id": "House_Stucco",
+    "dimensions_blender_xyz": [
+      11.0,
+      10.0,
+      9.100000381469727
+    ],
+    "lods": [
+      {
+        "level": 0,
+        "path": "Models/House_Stucco_LOD0.glb",
+        "triangles": 2816
+      },
+      {
+        "level": 1,
+        "path": "Models/House_Stucco_LOD1.glb",
+        "triangles": 1350
+      },
+      {
+        "level": 2,
+        "path": "Models/House_Stucco_LOD2.glb",
+        "triangles": 562
+      }
+    ],
+    "collision": "not supplied",
+    "pivot": "ground center",
+    "front_gltf": "+Z",
+    "dimensions_gltf_xyz": [
+      11.0,
+      9.100000381469727,
+      10.0
+    ],
+    "lod_selection": "separate GLBs, manual selection in game"
+  },
+  {
+    "id": "House_Chalet",
+    "dimensions_blender_xyz": [
+      13.0,
+      12.550000190734863,
+      9.100000381469727
+    ],
+    "lods": [
+      {
+        "level": 0,
+        "path": "Models/House_Chalet_LOD0.glb",
+        "triangles": 3668
+      },
+      {
+        "level": 1,
+        "path": "Models/House_Chalet_LOD1.glb",
+        "triangles": 1760
+      },
+      {
+        "level": 2,
+        "path": "Models/House_Chalet_LOD2.glb",
+        "triangles": 690
+      }
+    ],
+    "collision": "not supplied",
+    "pivot": "ground center",
+    "front_gltf": "+Z",
+    "dimensions_gltf_xyz": [
+      13.0,
+      9.100000381469727,
+      12.550000190734863
+    ],
+    "lod_selection": "separate GLBs, manual selection in game"
+  },
+  {
+    "id": "Apartment_3Floors",
+    "dimensions_blender_xyz": [
+      19.0,
+      13.0,
+      12.0
+    ],
+    "lods": [
+      {
+        "level": 0,
+        "path": "Models/Apartment_3Floors_LOD0.glb",
+        "triangles": 6248
+      },
+      {
+        "level": 1,
+        "path": "Models/Apartment_3Floors_LOD1.glb",
+        "triangles": 2998
+      },
+      {
+        "level": 2,
+        "path": "Models/Apartment_3Floors_LOD2.glb",
+        "triangles": 1248
+      }
+    ],
+    "collision": "not supplied",
+    "pivot": "ground center",
+    "front_gltf": "+Z",
+    "dimensions_gltf_xyz": [
+      19.0,
+      12.0,
+      13.0
+    ],
+    "lod_selection": "separate GLBs, manual selection in game"
+  },
+  {
+    "id": "Tree_Spruce_17m",
+    "dimensions_blender_xyz": [
+      6.040284156799316,
+      5.546940803527832,
+      16.899999618530273
+    ],
+    "lods": [
+      {
+        "level": 0,
+        "path": "Models/Tree_Spruce_17m_LOD0.glb",
+        "triangles": 452
+      },
+      {
+        "level": 1,
+        "path": "Models/Tree_Spruce_17m_LOD1.glb",
+        "triangles": 216
+      },
+      {
+        "level": 2,
+        "path": "Models/Tree_Spruce_17m_LOD2.glb",
+        "triangles": 89
+      }
+    ],
+    "collision": "not supplied",
+    "pivot": "ground center",
+    "front_gltf": "+Z",
+    "dimensions_gltf_xyz": [
+      6.040284156799316,
+      16.899999618530273,
+      5.546940803527832
+    ],
+    "lod_selection": "separate GLBs, manual selection in game"
+  },
+  {
+    "id": "Tree_Broadleaf_12m",
+    "dimensions_blender_xyz": [
+      8.412651062011719,
+      9.021512985229492,
+      11.543720245361328
+    ],
+    "lods": [
+      {
+        "level": 0,
+        "path": "Models/Tree_Broadleaf_12m_LOD0.glb",
+        "triangles": 3016
+      },
+      {
+        "level": 1,
+        "path": "Models/Tree_Broadleaf_12m_LOD1.glb",
+        "triangles": 1444
+      },
+      {
+        "level": 2,
+        "path": "Models/Tree_Broadleaf_12m_LOD2.glb",
+        "triangles": 592
+      }
+    ],
+    "collision": "not supplied",
+    "pivot": "ground center",
+    "front_gltf": "+Z",
+    "dimensions_gltf_xyz": [
+      8.412651062011719,
+      11.543720245361328,
+      9.021512985229492
+    ],
+    "lod_selection": "separate GLBs, manual selection in game"
+  },
+  {
+    "id": "Runway_Straight_45x100",
+    "dimensions_blender_xyz": [
+      45.0,
+      100.0,
+      0.33000001311302185
+    ],
+    "lods": [
+      {
+        "level": 0,
+        "path": "Models/Runway_Straight_45x100_LOD0.glb",
+        "triangles": 60
+      },
+      {
+        "level": 1,
+        "path": "Models/Runway_Straight_45x100_LOD1.glb",
+        "triangles": 60
+      },
+      {
+        "level": 2,
+        "path": "Models/Runway_Straight_45x100_LOD2.glb",
+        "triangles": 60
+      }
+    ],
+    "collision": "not supplied",
+    "pivot": "ground center",
+    "front_gltf": "+Z",
+    "dimensions_gltf_xyz": [
+      45.0,
+      0.33000001311302185,
+      100.0
+    ],
+    "lod_selection": "separate GLBs, manual selection in game"
+  },
+  {
+    "id": "Taxiway_Straight_18x50",
+    "dimensions_blender_xyz": [
+      18.0,
+      50.0,
+      0.33000001311302185
+    ],
+    "lods": [
+      {
+        "level": 0,
+        "path": "Models/Taxiway_Straight_18x50_LOD0.glb",
+        "triangles": 48
+      },
+      {
+        "level": 1,
+        "path": "Models/Taxiway_Straight_18x50_LOD1.glb",
+        "triangles": 48
+      },
+      {
+        "level": 2,
+        "path": "Models/Taxiway_Straight_18x50_LOD2.glb",
+        "triangles": 48
+      }
+    ],
+    "collision": "not supplied",
+    "pivot": "ground center",
+    "front_gltf": "+Z",
+    "dimensions_gltf_xyz": [
+      18.0,
+      0.33000001311302185,
+      50.0
+    ],
+    "lod_selection": "separate GLBs, manual selection in game"
+  },
+  {
+    "id": "Fence_10m",
+    "dimensions_blender_xyz": [
+      10.09000015258789,
+      0.09000000357627869,
+      2.5999999046325684
+    ],
+    "lods": [
+      {
+        "level": 0,
+        "path": "Models/Fence_10m_LOD0.glb",
+        "triangles": 2436
+      },
+      {
+        "level": 1,
+        "path": "Models/Fence_10m_LOD1.glb",
+        "triangles": 1168
+      },
+      {
+        "level": 2,
+        "path": "Models/Fence_10m_LOD2.glb",
+        "triangles": 468
+      }
+    ],
+    "collision": "not supplied",
+    "pivot": "ground center",
+    "front_gltf": "+Z",
+    "dimensions_gltf_xyz": [
+      10.09000015258789,
+      2.5999999046325684,
+      0.09000000357627869
+    ],
+    "lod_selection": "separate GLBs, manual selection in game"
+  },
+  {
+    "id": "ApronLight_8m",
+    "dimensions_blender_xyz": [
+      0.6000000238418579,
+      1.1500000953674316,
+      8.010000228881836
+    ],
+    "lods": [
+      {
+        "level": 0,
+        "path": "Models/ApronLight_8m_LOD0.glb",
+        "triangles": 304
+      },
+      {
+        "level": 1,
+        "path": "Models/ApronLight_8m_LOD1.glb",
+        "triangles": 144
+      },
+      {
+        "level": 2,
+        "path": "Models/ApronLight_8m_LOD2.glb",
+        "triangles": 58
+      }
+    ],
+    "collision": "not supplied",
+    "pivot": "ground center",
+    "front_gltf": "+Z",
+    "dimensions_gltf_xyz": [
+      0.6000000238418579,
+      8.010000228881836,
+      1.1500000953674316
+    ],
+    "lod_selection": "separate GLBs, manual selection in game"
+  }
+]

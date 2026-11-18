@@ -8,8 +8,9 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.imageio.ImageIO;
 
-/** Resampling der 500 × 500 Messzellen auf 513 × 513 Terrain-Stützpunkte. */
+
 final class TerrainHeightLoader {
+
     private TerrainHeightLoader() {
     }
 

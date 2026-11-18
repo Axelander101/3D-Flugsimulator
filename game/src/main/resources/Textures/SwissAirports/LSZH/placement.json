@@ -1,0 +1,421 @@
+{
+  "icao": "LSZH",
+  "name": "Zürich",
+  "status": "Geodata foundation; not a finished photorealistic replica",
+  "origin_lv95_ln02": [
+    2683656.593991152,
+    1256955.157114035,
+    432
+  ],
+  "worldTranslation_jme": [
+    62156.59399115201,
+    432,
+    -164455.15711403498
+  ],
+  "world_origin_lv95": [
+    2621500,
+    1092500
+  ],
+  "units": "metres",
+  "building_parts": 191,
+  "osm_buildings": 0,
+  "surfaces": 38,
+  "full_model": "Models/LSZH_Airport.glb",
+  "chunks": [
+    {
+      "file": "Chunks/LSZH_2_-5.glb",
+      "localTranslation_jme": [
+        1250.0,
+        0,
+        2250.0
+      ],
+      "objects": 10
+    },
+    {
+      "file": "Chunks/LSZH_2_-4.glb",
+      "localTranslation_jme": [
+        1250.0,
+        0,
+        1750.0
+      ],
+      "objects": 7
+    },
+    {
+      "file": "Chunks/LSZH_3_-4.glb",
+      "localTranslation_jme": [
+        1750.0,
+        0,
+        1750.0
+      ],
+      "objects": 4
+    },
+    {
+      "file": "Chunks/LSZH_3_-3.glb",
+      "localTranslation_jme": [
+        1750.0,
+        0,
+        1250.0
+      ],
+      "objects": 8
+    },
+    {
+      "file": "Chunks/LSZH_2_-3.glb",
+      "localTranslation_jme": [
+        1250.0,
+        0,
+        1250.0
+      ],
+      "objects": 17
+    },
+    {
+      "file": "Chunks/LSZH_1_-4.glb",
+      "localTranslation_jme": [
+        750.0,
+        0,
+        1750.0
+      ],
+      "objects": 10
+    },
+    {
+      "file": "Chunks/LSZH_0_-4.glb",
+      "localTranslation_jme": [
+        250.0,
+        0,
+        1750.0
+      ],
+      "objects": 6
+    },
+    {
+      "file": "Chunks/LSZH_0_-3.glb",
+      "localTranslation_jme": [
+        250.0,
+        0,
+        1250.0
+      ],
+      "objects": 23
+    },
+    {
+      "file": "Chunks/LSZH_1_-2.glb",
+      "localTranslation_jme": [
+        750.0,
+        0,
+        750.0
+      ],
+      "objects": 9
+    },
+    {
+      "file": "Chunks/LSZH_3_-2.glb",
+      "localTranslation_jme": [
+        1750.0,
+        0,
+        750.0
+      ],
+      "objects": 6
+    },
+    {
+      "file": "Chunks/LSZH_2_-2.glb",
+      "localTranslation_jme": [
+        1250.0,
+        0,
+        750.0
+      ],
+      "objects": 14
+    },
+    {
+      "file": "Chunks/LSZH_2_-1.glb",
+      "localTranslation_jme": [
+        1250.0,
+        0,
+        250.0
+      ],
+      "objects": 5
+    },
+    {
+      "file": "Chunks/LSZH_3_-1.glb",
+      "localTranslation_jme": [
+        1750.0,
+        0,
+        250.0
+      ],
+      "objects": 12
+    },
+    {
+      "file": "Chunks/LSZH_4_-1.glb",
+      "localTranslation_jme": [
+        2250.0,
+        0,
+        250.0
+      ],
+      "objects": 2
+    },
+    {
+      "file": "Chunks/LSZH_4_0.glb",
+      "localTranslation_jme": [
+        2250.0,
+        0,
+        -250.0
+      ],
+      "objects": 2
+    },
+    {
+      "file": "Chunks/LSZH_3_0.glb",
+      "localTranslation_jme": [
+        1750.0,
+        0,
+        -250.0
+      ],
+      "objects": 6
+    },
+    {
+      "file": "Chunks/LSZH_-1_-1.glb",
+      "localTranslation_jme": [
+        -250.0,
+        0,
+        250.0
+      ],
+      "objects": 5
+    },
+    {
+      "file": "Chunks/LSZH_-2_-1.glb",
+      "localTranslation_jme": [
+        -750.0,
+        0,
+        250.0
+      ],
+      "objects": 3
+    },
+    {
+      "file": "Chunks/LSZH_-2_0.glb",
+      "localTranslation_jme": [
+        -750.0,
+        0,
+        -250.0
+      ],
+      "objects": 3
+    },
+    {
+      "file": "Chunks/LSZH_-1_2.glb",
+      "localTranslation_jme": [
+        -250.0,
+        0,
+        -1250.0
+      ],
+      "objects": 3
+    },
+    {
+      "file": "Chunks/LSZH_-2_3.glb",
+      "localTranslation_jme": [
+        -750.0,
+        0,
+        -1750.0
+      ],
+      "objects": 3
+    },
+    {
+      "file": "Chunks/LSZH_-3_3.glb",
+      "localTranslation_jme": [
+        -1250.0,
+        0,
+        -1750.0
+      ],
+      "objects": 6
+    },
+    {
+      "file": "Chunks/LSZH_0_0.glb",
+      "localTranslation_jme": [
+        250.0,
+        0,
+        -250.0
+      ],
+      "objects": 5
+    },
+    {
+      "file": "Chunks/LSZH_0_1.glb",
+      "localTranslation_jme": [
+        250.0,
+        0,
+        -750.0
+      ],
+      "objects": 11
+    },
+    {
+      "file": "Chunks/LSZH_1_0.glb",
+      "localTranslation_jme": [
+        750.0,
+        0,
+        -250.0
+      ],
+      "objects": 7
+    },
+    {
+      "file": "Chunks/LSZH_0_3.glb",
+      "localTranslation_jme": [
+        250.0,
+        0,
+        -1750.0
+      ],
+      "objects": 2
+    },
+    {
+      "file": "Chunks/LSZH_-3_4.glb",
+      "localTranslation_jme": [
+        -1250.0,
+        0,
+        -2250.0
+      ],
+      "objects": 8
+    },
+    {
+      "file": "Chunks/LSZH_-2_4.glb",
+      "localTranslation_jme": [
+        -750.0,
+        0,
+        -2250.0
+      ],
+      "objects": 6
+    },
+    {
+      "file": "Chunks/LSZH_-2_5.glb",
+      "localTranslation_jme": [
+        -750.0,
+        0,
+        -2750.0
+      ],
+      "objects": 5
+    },
+    {
+      "file": "Chunks/LSZH_-4_5.glb",
+      "localTranslation_jme": [
+        -1750.0,
+        0,
+        -2750.0
+      ],
+      "objects": 4
+    },
+    {
+      "file": "Chunks/LSZH_-3_6.glb",
+      "localTranslation_jme": [
+        -1250.0,
+        0,
+        -3250.0
+      ],
+      "objects": 2
+    },
+    {
+      "file": "Chunks/LSZH_-2_2.glb",
+      "localTranslation_jme": [
+        -750.0,
+        0,
+        -1250.0
+      ],
+      "objects": 1
+    },
+    {
+      "file": "Chunks/LSZH_-1_-2.glb",
+      "localTranslation_jme": [
+        -250.0,
+        0,
+        750.0
+      ],
+      "objects": 1
+    },
+    {
+      "file": "Chunks/LSZH_-1_0.glb",
+      "localTranslation_jme": [
+        -250.0,
+        0,
+        -250.0
+      ],
+      "objects": 1
+    },
+    {
+      "file": "Chunks/LSZH_-1_1.glb",
+      "localTranslation_jme": [
+        -250.0,
+        0,
+        -750.0
+      ],
+      "objects": 1
+    },
+    {
+      "file": "Chunks/LSZH_-1_3.glb",
+      "localTranslation_jme": [
+        -250.0,
+        0,
+        -1750.0
+      ],
+      "objects": 2
+    },
+    {
+      "file": "Chunks/LSZH_0_-2.glb",
+      "localTranslation_jme": [
+        250.0,
+        0,
+        750.0
+      ],
+      "objects": 1
+    },
+    {
+      "file": "Chunks/LSZH_0_-1.glb",
+      "localTranslation_jme": [
+        250.0,
+        0,
+        250.0
+      ],
+      "objects": 1
+    },
+    {
+      "file": "Chunks/LSZH_0_2.glb",
+      "localTranslation_jme": [
+        250.0,
+        0,
+        -1250.0
+      ],
+      "objects": 2
+    },
+    {
+      "file": "Chunks/LSZH_1_-3.glb",
+      "localTranslation_jme": [
+        750.0,
+        0,
+        1250.0
+      ],
+      "objects": 1
+    },
+    {
+      "file": "Chunks/LSZH_1_-1.glb",
+      "localTranslation_jme": [
+        750.0,
+        0,
+        250.0
+      ],
+      "objects": 1
+    },
+    {
+      "file": "Chunks/LSZH_1_1.glb",
+      "localTranslation_jme": [
+        750.0,
+        0,
+        -750.0
+      ],
+      "objects": 2
+    },
+    {
+      "file": "Chunks/LSZH_2_0.glb",
+      "localTranslation_jme": [
+        1250.0,
+        0,
+        -250.0
+      ],
+      "objects": 1
+    }
+  ],
+  "known_limits": [
+    "No surveyed facades",
+    "Pavement elevations use approximate runway profiles or nominal airport elevation; not terrain-conforming",
+    "IGN objects with unavailable height attributes are marked estimated",
+    "No automatic streaming, LOD selection or collision controls"
+  ],
+  "source_date": "2026-11-12",
+  "source_credits": "© swisstopo; © OpenStreetMap contributors"
+}

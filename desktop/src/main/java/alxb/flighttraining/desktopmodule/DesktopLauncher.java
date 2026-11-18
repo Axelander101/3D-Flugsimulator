@@ -9,6 +9,8 @@ import com.jme3.system.AppSettings;
  */
 public class DesktopLauncher {
     public static void main(String[] args) {
+        System.setProperty("java.awt.headless", "true");
+
         final FlightTraining game = new FlightTraining();
 
         final AppSettings appSettings = new AppSettings(true);

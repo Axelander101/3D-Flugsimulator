@@ -1,0 +1,10 @@
+{
+  "airports": 11,
+  "blend_files": 11,
+  "glb_files": 182,
+  "jme_version": "3.10.0-beta3",
+  "import_test": "182 PASS, no rendering context; not a gameplay performance test",
+  "height_samples": "10 Swiss samples, building base versus terrain; all differences < 4 m",
+  "geometry": "weld <= 0.015m; duplicate-face removal; normal repair; nearly planar face dissolve <=1 degree",
+  "source_status": "Geodata foundations. Facades and operational airfield detail are incomplete."
+}
