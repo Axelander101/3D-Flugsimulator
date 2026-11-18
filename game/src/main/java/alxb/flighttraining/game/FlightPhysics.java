@@ -532,6 +532,18 @@ final class FlightPhysics {
         updateRoll(tpf, aoaControlFactor);
         updateYaw(tpf, qFactor, aoaControlFactor);
 
+        // Vereinfachte Kurvenkoordination nur für den KI-Autopiloten.
+        // Schräglage erzeugt eine Kursänderung statt nur seitlichen Drift.
+        if (aiInput != null && speed > 100f) {
+            Vector3f right = plane.getLocalRotation().mult(Vector3f.UNIT_X);
+            Vector3f up = plane.getLocalRotation().mult(Vector3f.UNIT_Y);
+            float bank = (float)Math.atan2(right.y, up.y);
+            bank = Math.max(-1.2f, Math.min(1.2f, bank));
+            float turnRate = G * (float)Math.tan(bank) / speed;
+            com.jme3.math.Quaternion turn = new com.jme3.math.Quaternion()
+                    .fromAngleAxis(turnRate * tpf, Vector3f.UNIT_Y);
+            plane.setLocalRotation(turn.mult(plane.getLocalRotation()));
+        }
         plane.rotate(
                 pitchSpeed * tpf,
                 yawSpeed * tpf,

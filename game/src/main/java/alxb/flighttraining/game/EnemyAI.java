@@ -81,7 +81,10 @@ public final class EnemyAI {
             state = State.INTERCEPT;
             float lead = clamp(distance / 900f, 0, 2f) * difficulty.aimFactor;
             aim = estimate.add(observedVelocity.mult(lead));
-            targetSpeed = distance < 900 ? clamp(observedVelocity.length() + 20, 180, 270) : 310;
+            float targetMotion = observedVelocity.length();
+            boolean following = targetMotion > 1 && forward.dot(observedVelocity.normalize()) > 0.5f;
+            targetSpeed = following && distance < 2000
+                    ? clamp(targetMotion + (distance - 550f) * 0.06f, 150, 310) : 310;
             Vector3f offset = aim.subtract(position);
             float alignment = offset.lengthSquared() > 1 ? forward.dot(offset.normalize()) : -1;
             if (age < 0.6f && distance > 200 && distance < 1000 && alignment > 0.97f) {
