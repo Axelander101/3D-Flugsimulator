@@ -1,0 +1,115 @@
+{
+  "icao": "LSZB",
+  "name": "Bern-Belp",
+  "status": "Geodata foundation; not a finished photorealistic replica",
+  "origin_lv95_ln02": [
+    2604527.090351227,
+    1195835.800118071,
+    510
+  ],
+  "worldTranslation_jme": [
+    -16972.909648772795,
+    510,
+    -103335.80011807103
+  ],
+  "world_origin_lv95": [
+    2621500,
+    1092500
+  ],
+  "units": "metres",
+  "building_parts": 40,
+  "osm_buildings": 0,
+  "surfaces": 10,
+  "full_model": "Models/LSZB_Airport.glb",
+  "chunks": [
+    {
+      "file": "Chunks/LSZB_0_-2.glb",
+      "localTranslation_jme": [
+        250.0,
+        0,
+        750.0
+      ],
+      "objects": 9
+    },
+    {
+      "file": "Chunks/LSZB_-1_-2.glb",
+      "localTranslation_jme": [
+        -250.0,
+        0,
+        750.0
+      ],
+      "objects": 6
+    },
+    {
+      "file": "Chunks/LSZB_1_-2.glb",
+      "localTranslation_jme": [
+        750.0,
+        0,
+        750.0
+      ],
+      "objects": 4
+    },
+    {
+      "file": "Chunks/LSZB_1_-1.glb",
+      "localTranslation_jme": [
+        750.0,
+        0,
+        250.0
+      ],
+      "objects": 5
+    },
+    {
+      "file": "Chunks/LSZB_0_-1.glb",
+      "localTranslation_jme": [
+        250.0,
+        0,
+        250.0
+      ],
+      "objects": 10
+    },
+    {
+      "file": "Chunks/LSZB_0_0.glb",
+      "localTranslation_jme": [
+        250.0,
+        0,
+        -250.0
+      ],
+      "objects": 8
+    },
+    {
+      "file": "Chunks/LSZB_-1_0.glb",
+      "localTranslation_jme": [
+        -250.0,
+        0,
+        -250.0
+      ],
+      "objects": 5
+    },
+    {
+      "file": "Chunks/LSZB_-2_1.glb",
+      "localTranslation_jme": [
+        -750.0,
+        0,
+        -750.0
+      ],
+      "objects": 2
+    },
+    {
+      "file": "Chunks/LSZB_-1_-1.glb",
+      "localTranslation_jme": [
+        -250.0,
+        0,
+        250.0
+      ],
+      "objects": 1
+    }
+  ],
+  "known_limits": [
+    "No surveyed facades",
+    "Pavement elevations use approximate runway profiles or nominal airport elevation; not terrain-conforming",
+    "IGN objects with unavailable height attributes are marked estimated",
+    "No automatic streaming, LOD selection or collision controls"
+  ],
+  "source_date": "2026-11-12",
+  "source_credits": "© swisstopo; © OpenStreetMap contributors"
+}

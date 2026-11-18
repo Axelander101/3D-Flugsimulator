@@ -24,6 +24,10 @@ import java.awt.image.BufferedImage;
 public class Menu{
 
     private final Picture picture;
+    private final DogfightUI dogfightUI = new DogfightUI();
+    private final AssetManager menuAssets;
+    private int menuWidth, menuHeight;
+
 
     private boolean menuOffen = true;
 
@@ -119,8 +123,10 @@ public class Menu{
         AUDIO_SETTINGS,
         INTERFACE_SETTING,
         MULTIPLAYER,
-        FREE_PLAY
+        FREE_PLAY,
+        DOGFIGHT_AI
     }
+
 
     private enum GraphicsSettings {
         RESOLUTION,
@@ -145,6 +151,8 @@ public class Menu{
     public Menu(AssetManager assets, int width, int height, FlightTraining app, InputManager input) {
         this.app = app;
         this.input = input;
+        menuAssets = assets;
+        menuWidth = width; menuHeight = height;
 
         for (String airport : AIRPORTS) {
             airportImages.put(
@@ -158,7 +166,7 @@ public class Menu{
         picture.setHeight(height);
         picture.setPosition(0, 0);
 
-        drawMenu(width, height, assets);
+        redraw();
 
 
         //Mouse klicks
@@ -202,26 +210,31 @@ public class Menu{
                     if (mouseX >= 80 && mouseX <= 380) {
                         if (mouseY >= 180 && mouseY <= 250) {
                             screen = Screen.MISSIONS;
-                            drawMenu(width, height, assets);
+                            redraw();
 
                         } else if (mouseY >= 270 && mouseY <= 340) {
                             screen = Screen.FREE_PLAY;
-                            drawMenu(width, height, assets);
+                            redraw();
 
                         } else if (mouseY >= 360 && mouseY <= 430) {
                             screen = Screen.SETTINGS;
-                            drawMenu(width, height, assets);
+                            redraw();
 
                         } else if (mouseY >= 540 && mouseY <= 610) {
+                            screen = Screen.DOGFIGHT_AI;
+                            redraw();
+
+                        }else if (mouseY >= 620 && mouseY <= 690){
                             app.stop();
                         }
+
                     }
                 }
 
                 case FREE_PLAY -> {
                     if (backBounds.contains(mouseX, mouseY)) {
                         screen = Screen.MAIN;
-                        drawMenu(width, height, assets);
+                        redraw();
                         return;
                     }
 
@@ -236,7 +249,7 @@ public class Menu{
                 case MISSIONS -> {
                     if (backBounds.contains(mouseX, mouseY)) {
                         screen = Screen.MAIN;
-                        drawMenu(width, height, assets);
+                        redraw();
                         return;
                     }
 
@@ -254,23 +267,23 @@ public class Menu{
                     if (mouseY >= 180 && mouseY <= 250) {
                         screen = Screen.GRAPHICS_SETTINGS;
                         scrollOffset = 0;
-                        drawMenu(width, height, assets);
+                        redraw();
 
                     } else if (mouseY >= 270 && mouseY <= 340) {
                         screen = Screen.STEERING_SETTINGS;
-                        drawMenu(width, height, assets);
+                        redraw();
 
                     } else if (mouseY >= 360 && mouseY <= 430) {
                         screen = Screen.GAMEPLAY_SETTINGS;
-                        drawMenu(width, height, assets);
+                        redraw();
                     }
                     else if (mouseY >= 450 && mouseY <= 520) {
                         screen = Screen.AUDIO_SETTINGS;
-                        drawMenu(width, height, assets);
+                        redraw();
                     }
                     else if (mouseY >= 540 && mouseY <= 610) {
                         screen = Screen.INTERFACE_SETTING;
-                        drawMenu(width, height, assets);
+                        redraw();
                     }
                 }
 
@@ -278,7 +291,7 @@ public class Menu{
                 case GRAPHICS_SETTINGS -> {
                     if (backBounds.contains(mouseX, mouseY)) {
                         screen = Screen.SETTINGS;
-                        drawMenu(width, height, assets);
+                        redraw();
                         return;
                     }
                     if (!graphicsViewport.contains(mouseX, mouseY)) return;
@@ -290,6 +303,28 @@ public class Menu{
                         }
                     }
                 }
+
+                case STEERING_SETTINGS -> {
+
+                }
+
+                case DOGFIGHT_AI -> {
+                    String clicked = dogfightUI.hit(mouseX, mouseY);
+                    switch (clicked) {
+                        case "back" -> screen = Screen.MAIN;
+                        case "countMinus" -> dogfightUI.count = Math.max(1, dogfightUI.count - 1);
+                        case "countPlus", "count" -> dogfightUI.count = Math.min(8, dogfightUI.count + 1);
+                        case "difficulty" -> dogfightUI.difficultyIndex = (dogfightUI.difficultyIndex + 1) % 3;
+                        case "region" -> dogfightUI.regionIndex = (dogfightUI.regionIndex + 1) % DogfightSettings.Region.values().length;
+                        case "altitude" -> dogfightUI.altitudeIndex = (dogfightUI.altitudeIndex + 1) % DogfightUI.HEIGHTS.length;
+                        case "distance" -> dogfightUI.distanceIndex = (dogfightUI.distanceIndex + 1) % DogfightUI.DISTANCES.length;
+                        case "weapons" -> dogfightUI.weapons = !dogfightUI.weapons;
+                        case "start" -> { app.startDogfight(dogfightUI.settings()); return; }
+                        default -> { return; }
+                    }
+                    redraw();
+                }
+
             }
 
         };
@@ -307,7 +342,7 @@ public class Menu{
             if (!graphicsViewport.contains(cursor.x, mouseY)) return;
             float direction = name.equals("ScrollDown") ? 1f : -1f;
             float previous = scrollOffset;
-            scrollOffset = Math.max(0, Math.min(maxGraphicsScroll(height),
+            scrollOffset = Math.max(0, Math.min(maxGraphicsScroll(menuHeight),
                     scrollOffset + direction * value * 40f));
             if (scrollOffset != previous) graphicsRedrawPending = true;
         };
@@ -322,14 +357,24 @@ public class Menu{
                     elapsed = 0;
                     graphicsRedrawPending = false;
                     if (menuOffen && screen == Screen.GRAPHICS_SETTINGS)
-                        drawMenu(width, height, assets);
+                        redraw();
                 }
             }
             @Override protected void controlRender(RenderManager rm, ViewPort vp) {}
         });
     }
 
+    private void redraw() {
+        drawMenu(app.getCamera().getWidth(), app.getCamera().getHeight(), menuAssets);
+    }
+
+    public void update(float tpf) {
+        if (menuOffen && (menuWidth != app.getCamera().getWidth() || menuHeight != app.getCamera().getHeight())) redraw();
+    }
+
     private void drawMenu(int width, int height, AssetManager assets) {
+        menuWidth = width; menuHeight = height;
+        picture.setWidth(width); picture.setHeight(height);
         BufferedImage image = new BufferedImage(
                 width, height, BufferedImage.TYPE_INT_ARGB
         );
@@ -351,12 +396,14 @@ public class Menu{
                     drawButton(g, "Free Play", 270, 80, hellBlau);
                     drawButton(g, "Einstellungen", 360, 80, hellBlau);
                     drawButton(g, "Multiplayer", 450, 80, hellBlau);
-                    drawButton(g, "Beenden", 540, 80, Color.red);
+                    drawButton(g, "Dogfight AI", 540, 80, hellBlau);
+                    drawButton(g, "Beenden", 630, 80, Color.red);
                 }
                 case FREE_PLAY -> drawFreePlay(g, width, height);
                 case MISSIONS -> drawMissions(g, width, height);
                 case SETTINGS -> drawSettings(g);
                 case GRAPHICS_SETTINGS -> drawGraphicSetting(g, width, height);
+                case DOGFIGHT_AI -> dogfightUI.draw(g, width, height);
 
             }
         } finally {
@@ -367,7 +414,11 @@ public class Menu{
                 new AWTLoader().load(image, true)
         );
 
+        com.jme3.texture.Texture old = picture.getMaterial() == null ? null
+                : picture.getMaterial().getTextureParam("Texture") == null ? null
+                : picture.getMaterial().getTextureParam("Texture").getTextureValue();
         picture.setTexture(assets, texture, true);
+        if (old != null && old.getImage() != null) old.getImage().dispose();
     }
 
     private void drawFreePlay(Graphics2D g, int width, int height) {
@@ -739,6 +790,7 @@ public class Menu{
     public void show(Node guiNode) {
         guiNode.attachChild(picture);
         menuOffen = true;
+        redraw();
     }
 
     public void hide() {
@@ -748,5 +800,122 @@ public class Menu{
 
     public boolean getMenuOffen(){
         return menuOffen;
+    }
+
+    private static final class DogfightUI {
+        private static final Color WHITE = new Color(232, 240, 250);
+        private static final Color MUTED = new Color(144, 163, 187);
+        private static final Color ACCENT = new Color(71, 205, 188);
+        // Bildschirmkoordinaten der Felder für deine spätere Klickbehandlung.
+        private final java.util.Map<String, Rectangle> bounds = new java.util.LinkedHashMap<>();
+        private int count=1, difficultyIndex=1, regionIndex=0, altitudeIndex=3, distanceIndex=2;
+        private boolean weapons=true;
+        private static final float[] HEIGHTS = {600,1000,2000,3000,4000,6000};
+        private static final float[] DISTANCES = {1000,3000,5000,8000,10000};
+        private DogfightSettings settings() {
+            return new DogfightSettings(DogfightSettings.Region.values()[regionIndex],
+                    DogfightSettings.Difficulty.values()[difficultyIndex], count,
+                    HEIGHTS[altitudeIndex], DISTANCES[distanceIndex], weapons);
+        }
+        private String hit(float x,float y) {
+            for (java.util.Map.Entry<String,Rectangle> e: bounds.entrySet())
+                if(e.getValue().contains(x,y)) return e.getKey();
+            return "";
+        }
+        private float scale;
+        private int offsetX, offsetY;
+
+        public void draw(Graphics2D original, int width, int height) {
+            Graphics2D g = (Graphics2D) original.create();
+            try {
+                bounds.clear();
+                scale = Math.min(width / 1280f, height / 800f);
+                offsetX = Math.round((width - 1280 * scale) / 2);
+                offsetY = Math.round((height - 800 * scale) / 2);
+                g.setPaint(new GradientPaint(0, 0, new Color(12, 21, 35), width, height, new Color(24, 42, 61)));
+                g.fillRect(0, 0, width, height);
+                g.translate(offsetX, offsetY);
+                g.scale(scale, scale);
+                g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+
+                text(g, "FLIGHT TRAINING   /   EINZELSPIELER", 48, 44, 12, ACCENT, true);
+                text(g, "Dogfight", 48, 100, 44, WHITE, true);
+                text(g, "Dein Flugzeug. Dein Gegner. Dein Trainingsszenario.", 50, 130, 16, MUTED, false);
+                button(g, "back", "Zurück", 1092, 56, 140, 44, false);
+
+                panel(g, 48, 164, 440, 412);
+                text(g, "DEIN FLUGZEUG", 72, 199, 12, ACCENT, true);
+                text(g, "F/A-18 Hornet", 72, 267, 32, WHITE, true);
+                text(g, "Mehrzweck-Kampfflugzeug", 74, 301, 16, MUTED, false);
+                g.setColor(new Color(47, 65, 85));
+                g.drawLine(72, 330, 462, 330);
+                text(g, "STARTREGION", 74, 371, 12, ACCENT, true);
+                text(g, DogfightSettings.Region.values()[regionIndex].label, 74, 401, 20, WHITE, true);
+                text(g, "HÖHE ÜBER GELÄNDE", 74, 451, 12, ACCENT, true);
+                text(g, String.format(java.util.Locale.ROOT, "%.0f m", HEIGHTS[altitudeIndex]), 74, 481, 22, WHITE, true);
+                text(g, "Frontalstart gegen KI-Gegner", 74, 542, 15, MUTED, false);
+
+                panel(g, 512, 164, 720, 220);
+                text(g, "01   GEGNER", 540, 199, 13, ACCENT, true);
+                label(g, "Anzahl", 540, 236);
+                button(g, "countMinus", "−", 540, 252, 42, 46, false);
+                button(g, "count", Integer.toString(count), 590, 252, 60, 46, false);
+                button(g, "countPlus", "+", 658, 252, 42, 46, false);
+                label(g, "Flugzeug", 726, 236);
+                text(g, "F/A-18 Hornet", 726, 282, 18, WHITE, true);
+                label(g, "Schwierigkeit", 978, 236);
+                button(g, "difficulty", DogfightSettings.Difficulty.values()[difficultyIndex].label + "  ›", 978, 252, 226, 46, false);
+                text(g, "Klicken: nächster Wert · 1 bis 8 Gegner · Frontalstart", 540, 345, 14, MUTED, false);
+
+                panel(g, 512, 404, 720, 274);
+                text(g, "02   STARTBEDINGUNGEN", 540, 440, 13, ACCENT, true);
+                field(g, "region", "Region", DogfightSettings.Region.values()[regionIndex].label + "  ›", 540, 474, 316);
+                field(g, "altitude", "Höhe über Boden", String.format(java.util.Locale.ROOT, "%.0f m  ›", HEIGHTS[altitudeIndex]), 880, 474, 324);
+                field(g, "distance", "Anfangsabstand", String.format(java.util.Locale.ROOT, "%.0f km  ›", DISTANCES[distanceIndex]/1000f), 540, 567, 316);
+                field(g, "weapons", "Bewaffnung", weapons ? "Bordkanone  ›" : "Unbewaffnet  ›", 880, 567, 324);
+
+                panel(g, 48, 596, 440, 82);
+                text(g, "TRAININGSSZENARIO", 72, 626, 12, ACCENT, true);
+                text(g, count + " Gegner · " + DogfightSettings.Difficulty.values()[difficultyIndex].label, 72, 653, 15, WHITE, false);
+                text(g, "BEREIT ZUM START", 50, 728, 11, MUTED, true);
+                text(g, "Starthöhe über Gelände · Terrain lädt vor dem Flugstart.", 50, 752, 14, MUTED, false);
+                button(g, "start", "DOGFIGHT STARTEN   →", 912, 706, 320, 58, true);
+            } finally {
+                g.dispose();
+            }
+        }
+
+        private void field(Graphics2D g, String id, String title, String value, int x, int y, int w) {
+            label(g, title, x, y);
+            button(g, id, value, x, y + 15, w, 46, false);
+        }
+        private void label(Graphics2D g, String value, int x, int y) {
+            text(g, value, x, y, 14, MUTED, false);
+        }
+        private void panel(Graphics2D g, int x, int y, int w, int h) {
+            g.setColor(new Color(25, 39, 57));
+            g.fillRoundRect(x, y, w, h, 20, 20);
+            g.setColor(new Color(47, 65, 85));
+            g.drawRoundRect(x, y, w, h, 20, 20);
+        }
+        private void button(Graphics2D g, String id, String value, int x, int y, int w, int h, boolean primary) {
+            bounds.put(id, new Rectangle(offsetX + Math.round(x * scale), offsetY + Math.round(y * scale),
+                    Math.round(w * scale), Math.round(h * scale)));
+            g.setColor(primary ? ACCENT : new Color(35, 53, 74));
+            g.fillRoundRect(x, y, w, h, 12, 12);
+            g.setColor(primary ? ACCENT : new Color(63, 83, 106));
+            g.drawRoundRect(x, y, w, h, 12, 12);
+            g.setFont(new Font("SansSerif", Font.BOLD, value.length() > 22 ? 13 : 15));
+            FontMetrics metrics = g.getFontMetrics();
+            g.setColor(primary ? new Color(12, 35, 40) : WHITE);
+            g.drawString(value, x + (w - metrics.stringWidth(value)) / 2,
+                    y + (h - metrics.getHeight()) / 2 + metrics.getAscent());
+        }
+        private void text(Graphics2D g, String value, int x, int y, int size, Color color, boolean bold) {
+            g.setColor(color);
+            g.setFont(new Font("SansSerif", bold ? Font.BOLD : Font.PLAIN, size));
+            g.drawString(value, x, y);
+        }
     }
 }
