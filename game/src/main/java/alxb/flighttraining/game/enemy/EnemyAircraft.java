@@ -22,7 +22,7 @@ public final class EnemyAircraft {
  public EnemyAircraft(Node node,Node weaponTargets){
   enemyPlane=node; node.updateGeometricState();
   physics=new FlightPhysics(node,commands);
-  physics.setVelocity(node.getLocalRotation().mult(new Vector3f(0,0,-180)));
+  physics.reset(node.getLocalRotation().mult(new Vector3f(0,0,-180)), physics.getTrimThrottle(180,1,0));
   ai=new EnemyAI(commands,node,physics); cannon=new Cannon(weaponTargets);
  }
  public void update(float dt,Node target,Vector3f targetVelocity,float ground){

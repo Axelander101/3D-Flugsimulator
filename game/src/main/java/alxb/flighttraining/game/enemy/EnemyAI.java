@@ -64,11 +64,11 @@ public final class EnemyAI {
         Vector3f estimate = getEstimatedTargetPosition();
         float distance = estimate == null ? Float.POSITIVE_INFINITY : position.distance(estimate);
         float clearance = Float.isFinite(ground) ? position.y - ground : Float.POSITIVE_INFINITY;
-        float speed = physics.getSpeed();
+        float speed = physics.getAirspeed();
         float aoa = Math.abs(physics.getAngleOfAttack());
         // Bei Sinkflug früher abfangen; noch keine vorausschauende Geländeabfrage.
         float safeHeight = 220f + Math.max(0, -physics.getVerticalSpeed()) * 5f;
-        if (clearance < safeHeight || speed < 115 || aoa > 24 || distance < 160) {
+        if (clearance < safeHeight || physics.getEquivalentAirspeed() < 90 || aoa > 30 || distance < 160) {
             recoveryTimer = 2.5f;
         }
         Vector3f aim;
@@ -154,21 +154,19 @@ public final class EnemyAI {
         commands.setRoll((targetBank - bank) * 2.2f - bankRate * 0.5f);
         // Höhenmesser -> Soll-Steigrate -> Soll-Nicklage -> Höhenruder.
         float climb = clamp((targetAltitude - position.y) * 0.08f, -20, low ? 40 : 25);
-        float speed = Math.max(physics.getSpeed(), 1);
-        float bankSupport = Math.max(0.35f, (float)Math.cos(bank));
-        float requiredCl = 10000f * 9.81f / (0.5f * 1.225f * speed * speed * 20f * bankSupport);
-        float trimAoA = (float)Math.toRadians(clamp(requiredCl * 15f, 2, 12));
-        float desiredPitch = (float)Math.atan2(climb, Math.max(100, speed)) + trimAoA;
-        float pitch = (float)Math.asin(clamp(forward.y, -1, 1));
-        float pitchCommand = (desiredPitch - pitch) * 3.2f / Math.max(0.5f, bankSupport)
-                + (climb - physics.getVerticalSpeed()) * 0.008f
-                - physics.getPitchSpeed() * 0.45f;
-        if (physics.getAngleOfAttack() < -16) pitchCommand = Math.min(pitchCommand, -0.1f);
-        if (speed < 110 && !low) pitchCommand = Math.min(pitchCommand, -0.15f);
-        commands.setPitch(pitchCommand);
-        commands.setYaw(clamp(error * 0.08f - physics.getSideSlipAngle() * 0.01f, -0.2f, 0.2f));
+        float speed = Math.max(physics.getAirspeed(), 1);
+        float bankSupport = Math.max(0.3f, (float)Math.cos(bank));
+        float verticalAcceleration = clamp((climb - physics.getVerticalSpeed()) * 0.65f, -12f, 18f);
+        float desiredLoad = (1f + verticalAcceleration / 9.80665f) / bankSupport;
+        desiredLoad = clamp(desiredLoad, -2f, physics.getParameters().positiveGLimit());
+        if (physics.getAngleOfAttack() < -26 || (physics.getEquivalentAirspeed() < 85 && !low))
+            desiredLoad = Math.min(desiredLoad, 0.6f);
+        commands.setPitch(physics.pitchCommandForLoadFactor(desiredLoad));
+        // Physik enthält Schiebestabilisierung; Seitenruder nur als geringe Unterstützung.
+        commands.setYaw(clamp(error * 0.03f, -0.1f, 0.1f));
         float speedError = targetSpeed - speed;
         speedIntegral = clamp(speedIntegral + speedError * dt, -100, 100);
-        commands.setThrottle(recovering ? 1 : clamp(0.48f + speedError * 0.015f + speedIntegral * 0.002f, 0, 1));
+        float trim = physics.getTrimThrottle(targetSpeed, desiredLoad, climb);
+        commands.setThrottle(recovering ? 1 : clamp(trim + speedError * 0.008f + speedIntegral * 0.0006f, 0, 1));
     }
 }

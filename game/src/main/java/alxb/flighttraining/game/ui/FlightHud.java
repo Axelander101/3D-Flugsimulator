@@ -20,17 +20,19 @@ public final class FlightHud {
     }
 
     public void update(FlightPhysics physics, float height) {
-        String speedText = String.format("%.0f", physics.getSpeed());
+        String speedText = String.format("%.0f", physics.getAirspeed());
         String heightText = String.format("%.0f", height);
         String aoaText = String.format("%.1f", -physics.getAngleOfAttack());
         String betaText = String.format("%.1f", physics.getSideSlipAngle());
         String flightPathText = String.format("%.1f", physics.getFlightPathAngle());
-        String gFaktor = String.format("%.1f", physics.getNormalG()+1);
+        String gFaktor = String.format("%.1f", physics.getNormalG());
         String pitchSpeed = String.format("%.3f", physics.getPitchSpeed());
         String verticalSpeed = String.format("%.1f", physics.getVerticalSpeed());
 
         hudText.setText(
-                "Speed: " + speedText + " m/s\n"
+                "TAS: " + speedText + " m/s\n"
+                        + "EAS: " + String.format("%.0f", physics.getEquivalentAirspeed()) + " m/s\n"
+                        + "Mach: " + String.format("%.2f", physics.getMach()) + "\n"
                         + "Height: " + heightText + " m\n"
                         + "AoA: " + aoaText + "°\n"
                         + "Beta: " + betaText + "°\n"
