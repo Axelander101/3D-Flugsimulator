@@ -1,0 +1,5 @@
+Nov. 13, 2026 5:01:43 PM com.jme3.asset.AssetConfig loadText
+WARNUNG: Cannot find loader com.jme3.audio.plugins.OGGLoader
+PASS LOD0: imported, metre scale, Z axis, exhaust socket
+PASS LOD1: imported, metre scale, Z axis, exhaust socket
+PASS LOD2: imported, metre scale, Z axis, exhaust socket

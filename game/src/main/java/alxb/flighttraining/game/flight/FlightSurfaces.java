@@ -314,8 +314,8 @@ public final class FlightSurfaces {
     }
 
     public void updateEffects() {
-        boolean supersonic = physics.getSpeed() >= 343f;
-        boolean stalling = Math.abs(physics.getAngleOfAttack()) > 15f;
+        boolean supersonic = physics.getMach() >= 1f;
+        boolean stalling = physics.isStalling();
 
         if (stalling && !wasStalling) {
             stallEffect();

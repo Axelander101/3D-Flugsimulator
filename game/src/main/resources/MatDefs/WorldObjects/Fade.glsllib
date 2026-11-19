@@ -1,0 +1,16 @@
+uniform float m_WorldFade;
+uniform bool m_WorldFadeOut;
+uniform vec3 m_ObjectCenter;
+uniform float m_ObjectRange;
+varying vec2 worldObjectXZ;
+void applyWorldObjectFade() {
+    float distanceToPlane = length(worldObjectXZ - m_ObjectCenter.xz);
+    float edge = 1.0 - smoothstep(max(0.0, m_ObjectRange - 300.0), m_ObjectRange, distanceToPlane);
+    float threshold = fract(52.9829189 * fract(dot(floor(gl_FragCoord.xy), vec2(0.06711056, 0.00583715))));
+    if (threshold >= edge) discard;
+    if (m_WorldFadeOut) {
+        if (threshold < m_WorldFade) discard;
+    } else {
+        if (threshold >= m_WorldFade) discard;
+    }
+}

@@ -1,554 +1,216 @@
 package alxb.flighttraining.game.flight;
 
+import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Node;
+import java.util.Objects;
 
+/**
+ * Aerodynamische Kräfte mit vereinfachtem Fly-by-Wire und gedämpften Drehraten.
+ * Welt: +Y oben; Flugzeug: +X rechts, -Z vorne. SI-Einheiten.
+ * Spieler und KI verwenden dieselbe Physik. Keine KI-spezifische Kursdrehung.
+ */
 public final class FlightPhysics {
+    private static final float G=9.80665f, STEP=1f/120f;
     private final Node plane;
     private final FlightInput input;
     private final FlightCommandAi aiInput;
-    private Vector3f velocity = new Vector3f();
+    private final AircraftParameters parameters;
+    private final Vector3f velocity=new Vector3f(),wind=new Vector3f();
+    private float pitchSpeed,yawSpeed,rollSpeed,pitchCommand,rollCommand,yawCommand;
+    private float throttle,enginePower,normalG,lastThrust,lastLift,lastDrag,lastFrameDt;
+    private boolean engineRunning=true,flightAssistEnabled=true;
 
-    private float pitchSpeed;
-    private float yawSpeed;
-    private float rollSpeed;
-
-    private float throttle;
-    private final float maxThrust = 100000f;
-    private final float rho = 1.225f;
-    private final float wingArea = 20f;
-    private final float mass = 10000f;
-    private final float sideArea = 10f;
-
-    private float rollCommand = 0f;
-
-    private float pitchCommand = 0f;
-    private float trimAoADeg = 3f;
-
-
-    private static final float G = 9.81f;
-    private final Vector3f gravity = new Vector3f(0f, -G, 0f);
-
-    private float normalG = 0f;
-
-
-    public FlightPhysics(Node plane, FlightInput input) {
-        this.plane = plane;
-        this.input = java.util.Objects.requireNonNull(input);
-        this.aiInput = null;
+    public FlightPhysics(Node plane,FlightInput input){this(plane,input,null,AircraftParameters.hornet());}
+    public FlightPhysics(Node plane,FlightCommandAi commands){this(plane,null,Objects.requireNonNull(commands),AircraftParameters.hornet());}
+    public FlightPhysics(Node plane,FlightInput input,AircraftParameters parameters){this(plane,Objects.requireNonNull(input),null,parameters);}
+    public FlightPhysics(Node plane,FlightCommandAi commands,AircraftParameters parameters){this(plane,null,Objects.requireNonNull(commands),parameters);}
+    private FlightPhysics(Node plane,FlightInput input,FlightCommandAi commands,AircraftParameters parameters){
+        this.plane=Objects.requireNonNull(plane);this.input=input;aiInput=commands;
+        this.parameters=Objects.requireNonNull(parameters);
+        if(input==null && commands==null)throw new IllegalArgumentException("Steuerquelle fehlt");
     }
-
-    public FlightPhysics(Node plane, FlightCommandAi commands) {
-        this.plane = java.util.Objects.requireNonNull(plane);
-        this.input = null;
-        this.aiInput = java.util.Objects.requireNonNull(commands);
+    public AircraftParameters getParameters(){return parameters;}
+    public void reset(Vector3f initialVelocity,float initialThrottle){
+        setVelocity(initialVelocity);throttle=clamp(initialThrottle,0,1);enginePower=engineRunning?throttle:0;
+        pitchSpeed=yawSpeed=rollSpeed=pitchCommand=rollCommand=yawCommand=normalG=0;
+        lastThrust=lastLift=lastDrag=0;
     }
-
-    public void reset(Vector3f initialVelocity, float initialThrottle) {
-        setVelocity(initialVelocity);
-        pitchSpeed = yawSpeed = rollSpeed = 0f;
-        pitchCommand = rollCommand = 0f;
-        throttle = clamp(initialThrottle, 0f, 1f);
-        normalG = 0f;
+    public void setVelocity(Vector3f value){checkVector(value);velocity.set(value);}
+    public void setWindVelocity(Vector3f value){checkVector(value);wind.set(value);}
+    public Vector3f getWindVelocity(){return wind.clone();}
+    public void setEngineRunning(boolean value){engineRunning=value;}
+    public void setFlightAssistEnabled(boolean value){flightAssistEnabled=value;}
+    private static void checkVector(Vector3f v){
+        if(v==null || !Float.isFinite(v.x)||!Float.isFinite(v.y)||!Float.isFinite(v.z))
+            throw new IllegalArgumentException("Ungültiger Vektor");
     }
-
-    public void setVelocity(Vector3f initialVelocity) {
-        if (initialVelocity == null || !Float.isFinite(initialVelocity.x)
-                || !Float.isFinite(initialVelocity.y) || !Float.isFinite(initialVelocity.z)) {
-            throw new IllegalArgumentException("Ungültige Geschwindigkeit");
+    private static float clamp(float v,float lo,float hi){return Float.isFinite(v)?Math.max(lo,Math.min(hi,v)):0;}
+    private static float blend(float response,float dt){return 1-(float)Math.exp(-response*dt);}
+    private static float stick(float value){
+        value=clamp(value,-1,1);float a=Math.abs(value);
+        return a<=0.05f?0:Math.signum(value)*(a-0.05f)/0.95f;
+    }
+    private float requestedPitch(){
+        if(aiInput!=null)return clamp(aiInput.getPitch(),-1,1);
+        float key=(input.pitchUp?1:0)-(input.pitchDown?1:0);return key!=0?key:stick(input.pitchInput);
+    }
+    private float requestedRoll(){
+        if(aiInput!=null)return clamp(aiInput.getRoll(),-1,1);
+        float key=(input.rollLeft?1:0)-(input.rollRight?1:0);return key!=0?key:stick(input.rollInput);
+    }
+    private float requestedYaw(){
+        if(aiInput!=null)return clamp(aiInput.getYaw(),-1,1);
+        float key=(input.yawLeft?1:0)-(input.yawRight?1:0);return key!=0?key:stick(input.yawInput);
+    }
+    public float pitchCommandForLoadFactor(float g){
+        return g>=1?clamp((g-1)/(parameters.positiveGLimit()-1),0,1)
+                :clamp((g-1)/(1-parameters.negativeGLimit()),-1,0);
+    }
+    private float requestedLoad(){
+        return pitchCommand>=0?1+pitchCommand*(parameters.positiveGLimit()-1)
+                :1+pitchCommand*(1-parameters.negativeGLimit());
+    }
+    public void update(float tpf){
+        if(!Float.isFinite(tpf)||tpf<=0)return;
+        lastFrameDt=Math.min(tpf,0.25f);
+        float remaining=lastFrameDt;
+        while(remaining>0.000001f){float dt=Math.min(STEP,remaining);step(dt);remaining-=dt;}
+    }
+    private void step(float dt){
+        updateCommands(dt);
+        Vector3f air=velocity.subtract(wind);
+        float speed=air.length();
+        Quaternion rotation=plane.getWorldRotation().clone();
+        Vector3f forward=rotation.mult(new Vector3f(0,0,-1));
+        Vector3f right=rotation.mult(Vector3f.UNIT_X);
+        Vector3f up=rotation.mult(Vector3f.UNIT_Y);
+        FlightAtmosphere atmosphere=getAtmosphere();
+        float mach=speed/atmosphere.speedOfSoundMps();
+        float q=0.5f*atmosphere.densityKgM3()*speed*speed;
+        Vector3f local=rotation.inverse().mult(air);
+        float alpha=speed>0.1f?(float)Math.atan2(-local.y,-local.z):0;
+        float beta=speed>0.1f?(float)Math.asin(clamp(local.x/speed,-1,1)):0;
+        float cl=AerodynamicModel.liftCoefficient(alpha,mach);
+        float cd=AerodynamicModel.dragCoefficient(alpha,beta,cl,mach,parameters);
+        lastThrust=thrustForPower(enginePower,mach,atmosphere.densityKgM3())
+                * (engineRunning?1:clamp(enginePower/0.03f,0,1));
+        Vector3f nonGravity=forward.mult(lastThrust);
+        lastLift=q*parameters.wingAreaM2()*cl;lastDrag=q*parameters.wingAreaM2()*cd;
+        if(speed>0.1f){
+            Vector3f direction=air.divide(speed);
+            Vector3f liftDirection=right.cross(direction);
+            if(liftDirection.lengthSquared()>0.0001f)nonGravity.addLocal(liftDirection.normalizeLocal().mult(lastLift));
+            nonGravity.addLocal(direction.mult(-lastDrag));
+            // Rumpf-/Leitwerks-Seitenkraft; zusätzliche Energieverluste stehen im C_D(beta).
+            nonGravity.addLocal(right.mult(-q*parameters.wingAreaM2()*0.45f*beta));
         }
-        velocity.set(initialVelocity);
+        Vector3f specificForce=nonGravity.divide(parameters.massKg());
+        Vector3f acceleration=specificForce.add(new Vector3f(0,-G,0));
+        normalG=specificForce.dot(up)/G;
+        updateRotation(dt,rotation,air,alpha,beta,q,mach,acceleration);
+        velocity.addLocal(acceleration.mult(dt));
+        Vector3f worldPosition=plane.getWorldTranslation().add(velocity.mult(dt));
+        plane.setLocalTranslation(plane.getParent()==null?worldPosition:plane.getParent().worldToLocal(worldPosition,new Vector3f()));
     }
-
-    private static float clamp(float value, float min, float max) {
-        return Float.isFinite(value) ? Math.max(min, Math.min(max, value)) : 0f;
-    }
-
-    private static float stick(float value) {
-        value = clamp(value, -1f, 1f);
-        float magnitude = Math.abs(value);
-        return magnitude <= 0.05f ? 0f
-                : Math.signum(value) * (magnitude - 0.05f) / 0.95f;
-    }
-
-    private float requestedPitch() {
-        if (aiInput != null) return clamp(aiInput.getPitch(), -1f, 1f);
-        float keyboard = (input.pitchUp ? 1f : 0f) - (input.pitchDown ? 1f : 0f);
-        return keyboard != 0f ? keyboard : stick(input.pitchInput);
-    }
-
-    private float requestedRoll() {
-        if (aiInput != null) return clamp(aiInput.getRoll(), -1f, 1f);
-        float keyboard = (input.rollLeft ? 1f : 0f) - (input.rollRight ? 1f : 0f);
-        return keyboard != 0f ? keyboard : stick(input.rollInput);
-    }
-
-    private float requestedYaw() {
-        if (aiInput != null) return clamp(aiInput.getYaw(), -1f, 1f);
-        float keyboard = (input.yawLeft ? 1f : 0f) - (input.yawRight ? 1f : 0f);
-        return keyboard != 0f ? keyboard : stick(input.yawInput);
-    }
-
-    public float getNormalG() {
-        return normalG;
-    }
-
-    public void update(float tpf) {
-        if (tpf <= 0f) {
-            return;
+    private void updateCommands(float dt){
+        pitchCommand+=(requestedPitch()-pitchCommand)*blend(12,dt);
+        rollCommand+=(requestedRoll()-rollCommand)*blend(16,dt);
+        yawCommand+=(requestedYaw()-yawCommand)*blend(10,dt);
+        if(aiInput!=null)throttle=clamp(aiInput.getThrottle(),0,1);
+        else{
+            float change=(input.throttleUp?1:0)-(input.throttleDown?1:0);
+            if(Math.abs(input.throttleUpInput)>0.05f)change+=input.throttleUpInput;
+            if(Math.abs(input.throttleDownInput)>0.05f)change-=input.throttleDownInput;
+            throttle=clamp(throttle+change*dt*0.4f,0,1);
         }
-
-        Vector3f previousVelocity = velocity.clone();
-
-        updateRotation(tpf);
-        updateSpeed(tpf);
-        updateLift(tpf);
-        updateDrag(tpf);
-        updateSideSlip(tpf);
-
-
-        Vector3f acceleration = velocity
-                .subtract(previousVelocity)
-                .divideLocal(tpf);
-
-
-        Vector3f specificForce = acceleration.subtract(gravity);
-
-
-        Vector3f aircraftUp = plane.getLocalRotation()
-                .mult(Vector3f.UNIT_Y)
-                .normalizeLocal();
-
-        normalG = specificForce.dot(aircraftUp) / G;
-
-        plane.move(velocity.mult(tpf));
+        float target=engineRunning?throttle:0;
+        enginePower+=(target-enginePower)*blend(target>enginePower?1.2f:2.5f,dt);
     }
-
-    public Vector3f getVelocity() {
-        return velocity.clone();
-    }
-
-    public float getSpeed() {
-        return velocity.length();
-    }
-
-    public float getVerticalSpeed() {
-        return velocity.y;
-    }
-
-    public float getFlightPathAngle() {
-        float horizontalSpeed = (float) Math.sqrt(velocity.x * velocity.x + velocity.z * velocity.z);
-        return (float) Math.toDegrees((float) Math.atan2(velocity.y, horizontalSpeed));
-    }
-
-    public float getThrottle() {
-        return throttle;
-    }
-
-    public float getPitchSpeed() {
-        return pitchSpeed;
-    }
-
-    public void resolveGroundCollision(float groundHeight) {
-        Vector3f position = plane.getLocalTranslation();
-        if (!Float.isNaN(groundHeight) && position.y < groundHeight + 0.5f) {
-            plane.setLocalTranslation(position.x, groundHeight + 0.5f, position.z);
-            if (velocity.y < 0) {
-                velocity.y = 0;
-            }
+    private void updateRotation(float dt,Quaternion rotation,Vector3f air,float alpha,float beta,
+                                float q,float mach,Vector3f acceleration){
+        float speed=air.length();
+        float authority=clamp((float)Math.sqrt(q/12000f),0,1);
+        float separated=clamp((Math.abs(alpha)-(float)Math.toRadians(24))/(float)Math.toRadians(35),0,1);
+        float controlAuthority=authority*(1-0.75f*separated);
+        // Winkelgeschwindigkeit des Geschwindigkeitsvektors: folgt der durch Kräfte entstehenden Kurve.
+        // Vereinfachte aerodynamische Stabilisierung, nicht die volle Momentengleichung eines Jets.
+        Vector3f pathRate=speed>30?air.cross(acceleration).divideLocal(speed*speed):new Vector3f();
+        Vector3f localPathRate=rotation.inverse().mult(pathRate);
+        float targetPitch;
+        if(flightAssistEnabled){
+            float desiredCl=requestedLoad()*parameters.massKg()*G/Math.max(100,q*parameters.wingAreaM2());
+            float desiredAlpha=AerodynamicModel.alphaForLift(desiredCl,mach);
+            targetPitch=localPathRate.x+(desiredAlpha-alpha)*3.2f*controlAuthority;
+        }else targetPitch=localPathRate.x+pitchCommand*0.65f*controlAuthority-alpha*0.2f*controlAuthority;
+        targetPitch=clamp(targetPitch,-0.7f,0.7f);
+        float targetYaw=localPathRate.y-beta*2.5f*authority+yawCommand*0.25f*controlAuthority;
+        float targetRoll=rollCommand*(float)Math.toRadians(150)*controlAuthority;
+        pitchSpeed+=(targetPitch-pitchSpeed)*blend(8,dt);
+        yawSpeed+=(clamp(targetYaw,-0.6f,0.6f)-yawSpeed)*blend(7,dt);
+        rollSpeed+=(targetRoll-rollSpeed)*blend(10,dt);
+        Vector3f rates=new Vector3f(pitchSpeed,yawSpeed,rollSpeed);
+        float magnitude=rates.length();
+        if(magnitude>0.000001f){
+            Quaternion increment=new Quaternion().fromAngleAxis(magnitude*dt,rates.divide(magnitude));
+            plane.setLocalRotation(plane.getLocalRotation().mult(increment).normalizeLocal());
         }
     }
-
-    public float getAngleOfAttack() {
-        if (velocity.length() == 0) return 0;
-
-        Vector3f localVelocity = plane.getLocalRotation().inverse().mult(velocity);
-
-        float angle = (float) Math.atan2(
-                localVelocity.y,
-                -localVelocity.z
-        );
-
-        float angleDeg = (float) Math.toDegrees(angle);
-
-        return angleDeg;
+    private float thrustForPower(float power,float mach,float density){
+        float lapse=(float)Math.pow(Math.max(0.08f,density/1.225f),0.65f);
+        float inlet=1-0.12f*clamp(mach/2,0,1);
+        float dry=parameters.dryThrustN()*(0.03f+0.97f*clamp(power/0.85f,0,1));
+        float afterburner=(parameters.afterburnerThrustN()-parameters.dryThrustN())*clamp((power-0.85f)/0.15f,0,1);
+        return (dry+afterburner)*lapse*inlet;
     }
-
-    public float sideSlip() {
-        Vector3f right = plane.getLocalRotation().mult(Vector3f.UNIT_X);
-
-        float sideSpeed = velocity.dot(right);
-
-        return sideSpeed;
+    public float getTrimThrottle(float airspeed,float loadFactor,float climbRate){
+        float speed=Math.max(50,airspeed);FlightAtmosphere a=getAtmosphere();
+        float q=0.5f*a.densityKgM3()*speed*speed,mach=speed/a.speedOfSoundMps();
+        float cl=parameters.massKg()*G*loadFactor/(q*parameters.wingAreaM2());
+        float alpha=AerodynamicModel.alphaForLift(cl,mach);
+        float drag=q*parameters.wingAreaM2()*AerodynamicModel.dragCoefficient(alpha,0,cl,mach,parameters);
+        float required=Math.max(0,drag+parameters.massKg()*G*climbRate/speed);
+        float dry=thrustForPower(0.85f,mach,a.densityKgM3()),max=thrustForPower(1,mach,a.densityKgM3());
+        return required<=dry?clamp(0.85f*(required/dry-0.03f)/0.97f,0,0.85f)
+                :clamp(0.85f+0.15f*(required-dry)/Math.max(1,max-dry),0.85f,1);
     }
-
-    public float getSideSlipAngle() {
-        Vector3f localVelocity = plane.getLocalRotation().inverse().mult(velocity);
-
-        float angle = (float) Math.atan2(localVelocity.x, -localVelocity.z);
-
-        float angleDeg = (float) Math.toDegrees(angle);
-
-        return angleDeg;
-    }
-
-    private void updateSideSlip(float tpf) {
-        float sideDragAmount = 0f;
-
-        float betaDeg = getSideSlipAngle();
-        float cy = 0f;
-
-        float absBeta = Math.abs(betaDeg);
-
-        if (absBeta > 5) cy = -betaDeg / 20f;
-        if (absBeta < 5) cy = -betaDeg / 10f;
-
-        cy = Math.max(-1f, Math.min(cy, 1f));
-
-        Vector3f right = plane.getLocalRotation().mult(Vector3f.UNIT_X);
-
-        float speed = velocity.length();
-
-        sideDragAmount = 0.5f * rho * speed * speed * sideArea * cy;
-
-        Vector3f sideDragForce = right.mult(sideDragAmount / mass * tpf);
-
-        velocity = velocity.add(sideDragForce);
-    }
-
-    private float calculateDrag() {
-        float geschwindigkeit = velocity.length();
-
-        if (geschwindigkeit == 0) return 0;
-
-        float angleDeg = getAngleOfAttack();
-        float absAngle = Math.abs(angleDeg);
-        float cd;
-
-        float stallAngle = 15f;
-        float excessAoA = absAngle - stallAngle;
-
-        if (absAngle <= 15) cd = 0.02f + absAngle / 200f;
-        else cd = 0.1f + excessAoA / 50f;
-
-        float dragForce = geschwindigkeit * geschwindigkeit * 0.5f * wingArea * rho * cd;
-
-        return dragForce;
-    }
-
-    private void updateDrag(float tpf) {
-        if (velocity.length() == 0) return;
-
-        Vector3f dragDirection = velocity.normalize().negate();
-
-        float drag = calculateDrag();
-
-        drag /= mass;
-
-        Vector3f dragAcceleration = dragDirection.mult(drag * tpf);
-
-        velocity = velocity.add(dragAcceleration);
-    }
-
-    private void updateLift(float tpf) {
-        float angleDeg = getAngleOfAttack();
-        float absAngle = Math.abs(angleDeg);
-
-        float cl;
-        float stallCl;
-
-        if (absAngle < 15) {
-            stallCl = absAngle / 15f;
-        } else {
-            stallCl = (15f / absAngle) * (15f / absAngle);
+    public void resolveGroundCollision(float groundHeight){
+        if(!Float.isFinite(groundHeight))return;
+        Vector3f world=plane.getWorldTranslation();
+        if(world.y<=groundHeight+0.5f){
+            world=world.clone();world.y=groundHeight+0.5f;
+            plane.setLocalTranslation(plane.getParent()==null?world:plane.getParent().worldToLocal(world,new Vector3f()));
+            if(velocity.y<0)velocity.y=0;
+            float horizontal=(float)Math.hypot(velocity.x,velocity.z);
+            float factor=horizontal>0?Math.max(0,1-0.025f*G*lastFrameDt/horizontal):0;
+            velocity.x*=factor;velocity.z*=factor;
+            normalG=plane.getWorldRotation().mult(Vector3f.UNIT_Y).dot(Vector3f.UNIT_Y);
+            pitchSpeed*=0.9f;yawSpeed*=0.9f;
         }
-
-        if (angleDeg < 0) {
-            cl = stallCl;
-        } else {
-            cl = -stallCl;
-        }
-
-        float speed = velocity.length();
-
-        if (speed == 0) {
-            return;
-        }
-
-        Vector3f right = plane.getLocalRotation().mult(Vector3f.UNIT_X);
-
-        Vector3f velocityDirection = velocity.normalize();
-
-        Vector3f liftDirection = right.cross(velocityDirection).normalize();
-
-        float liftAmount = 0.5f * rho
-                * speed * speed
-                * wingArea
-                * cl;
-
-        Vector3f lift = liftDirection.mult(liftAmount);
-
-        Vector3f liftAcceleration = lift.mult(1f / mass);
-
-        velocity = velocity.add(liftAcceleration.mult(tpf));
     }
+    public Vector3f getVelocity(){return velocity.clone();}
+    public float getSpeed(){return velocity.length();}
+    public float getAirspeed(){return velocity.subtract(wind).length();}
+    public float getEquivalentAirspeed(){return getAirspeed()*(float)Math.sqrt(getAirDensity()/1.225f);}
+    public FlightAtmosphere getAtmosphere(){return FlightAtmosphere.atAltitude(plane.getWorldTranslation().y);}
+    public float getAirDensity(){return getAtmosphere().densityKgM3();}
+    public float getMach(){return getAirspeed()/getAtmosphere().speedOfSoundMps();}
+    public float getVerticalSpeed(){return velocity.y;}
+    public float getFlightPathAngle(){return (float)Math.toDegrees(Math.atan2(velocity.y,Math.hypot(velocity.x,velocity.z)));}
+    public float getThrottle(){return throttle;}
+    public float getEnginePower(){return enginePower;}
+    public float getPitchSpeed(){return pitchSpeed;}
+    public float getNormalG(){return normalG;}
+    public float getThrustN(){return lastThrust;}
+    public float getLiftN(){return lastLift;}
+    public float getDragN(){return lastDrag;}
 
-    private void updateSpeed(float tpf) {
-        Vector3f forward = plane.getLocalRotation().mult(Vector3f.UNIT_Z.negate());
-
-        float throttleForce = 0f;
-
-        if (aiInput != null) {
-            throttle = clamp(aiInput.getThrottle(), 0f, 1f);
-        } else {
-            float change = (input.throttleUp ? 1f : 0f)
-                    - (input.throttleDown ? 1f : 0f);
-            if (Math.abs(input.throttleUpInput) > 0.05f)
-                change += input.throttleUpInput;
-            if (Math.abs(input.throttleDownInput) > 0.05f)
-                change -= input.throttleDownInput;
-            throttle = clamp(throttle + change * tpf, 0f, 1f);
-        }
-
-        throttleForce = maxThrust * throttle;
-
-        Vector3f thrustForce = forward.mult(throttleForce);
-        Vector3f thrustAcceleration = thrustForce.mult(1f / mass);
-
-        velocity = velocity.add(thrustAcceleration.mult(tpf));
-
-        velocity = velocity.add(gravity.mult(tpf));
+    public float getAngleOfAttack(){
+        Vector3f air=velocity.subtract(wind);if(air.lengthSquared()<0.01f)return 0;
+        Vector3f local=plane.getWorldRotation().inverse().mult(air);
+        return (float)Math.toDegrees(Math.atan2(local.y,-local.z));
     }
-
-    private float getRollAngle() {
-        float[] angles = plane.getLocalRotation().toAngles(null);
-
-        float rollRad = angles[2];
-        float rollDeg = (float) Math.toDegrees(rollRad);
-
-        return rollDeg;
-    }
-
-    private float calculateAoAControlFactor(float aoa) {
-        if (aoa <= 15f) {
-            return 1f;
-        }
-
-        if (aoa <= 30f) {
-            return 1f - (aoa - 15f) / 20f;
-        }
-
-        return 0.05f;
-    }
-
-    private float calculateQFactor(float speed) {
-        float referenceSpeed = 150f;
-
-        float referencePressure = 0.5f * rho * referenceSpeed * referenceSpeed;
-
-        float dynamicPressure = 0.5f * rho * speed * speed;
-
-        float qFactor = dynamicPressure / referencePressure;
-
-        return Math.max(0f, Math.min(qFactor, 1f));
-    }
-
-    private float calculateRequiredCl(float forwardSpeed) {
-        float speed = Math.max(forwardSpeed, 0f);
-
-        if (speed < 30f) {
-            return 0f;
-        }
-
-        float weightForce = mass * 9.81f;
-
-        float dynamicPart =
-                0.5f
-                        * rho
-                        * speed
-                        * speed
-                        * wingArea;
-
-        float requiredCl = weightForce / dynamicPart;
-
-        return requiredCl;
-    }
-
-    private void updatePitch(float tpf, float qFactor, float aoaControlFactor, float forwardSpeed) {
-        if (tpf <= 0f) {
-            return;
-        }
-
-
-        float targetCommand = requestedPitch();
-
-
-        float controlResponse = 7f;
-        float blend = 1f - (float) Math.exp(-controlResponse * tpf);
-
-        pitchCommand += (targetCommand - pitchCommand) * blend;
-
-
-        float pressure = Math.max(0f, Math.min(3f, qFactor));
-
-        float controlAuthority = Math.max(0f, Math.min(1f, aoaControlFactor));
-
-
-        float currentAoA = -(float) Math.toRadians(getAngleOfAttack());
-
-        float trimAoA = (float) Math.toRadians(trimAoADeg);
-
-
-        float aoaError = trimAoA - currentAoA;
-
-        float controlGain = 2.5f;
-        float stabilityGain = 1.2f;
-
-        float controlAcceleration = pitchCommand
-                        * controlGain
-                        * pressure
-                        * controlAuthority;
-
-        float stabilityAcceleration = aoaError
-                        * stabilityGain
-                        * pressure;
-
-        float acceleration =
-                controlAcceleration + stabilityAcceleration;
-
-
-        float damping = 0.2f + 1.5f * (float) Math.sqrt(pressure);
-
-
-        float decay = (float) Math.exp(-damping * tpf);
-
-        float equilibriumRate = acceleration / damping;
-
-        pitchSpeed = equilibriumRate + (pitchSpeed - equilibriumRate) * decay;
-
-
-        float maxPitchSpeed = (float) Math.toRadians(40f);
-
-        pitchSpeed = Math.max(-maxPitchSpeed, Math.min(maxPitchSpeed, pitchSpeed));
-    }
-
-    private void updateRoll(float tpf, float aoaControlFactor) {
-        if (tpf <= 0f) {
-            return;
-        }
-
-        float targetCommand = requestedRoll();
-
-        float controlResponse = 8f;
-        float blend = 1f - (float) Math.exp(-controlResponse * tpf);
-
-        rollCommand += (targetCommand - rollCommand) * blend;
-
-        float controlAuthority = Math.max(0f, Math.min(1f, aoaControlFactor));
-
-
-        float rollAcceleration = 6f;
-        float rollDamping = 2f;
-
-        float acceleration = rollCommand
-                        * rollAcceleration
-                        * controlAuthority;
-
-
-        float decay = (float) Math.exp(-rollDamping * tpf);
-
-        float equilibriumRate = acceleration / rollDamping;
-
-        rollSpeed = equilibriumRate + (rollSpeed - equilibriumRate) * decay;
-
-        float maxRollSpeed = (float) Math.toRadians(150f);
-
-        rollSpeed = Math.max(-maxRollSpeed, Math.min(maxRollSpeed, rollSpeed));
-    }
-
-    private void updateYaw(float tpf, float qFactor, float aoaControlFactor) {
-        float betaStability = 0.03f;
-
-        float currentBeta = getSideSlipAngle();
-        float targetBeta = 0f;
-        float betaError = targetBeta-currentBeta;
-
-        betaError = Math.max(-15f, Math.min(betaError, 15f));
-
-        float restoringYawAcceleration  = betaError
-                * betaStability
-                * qFactor;
-
-        float rotationSpeed = 1.5f;
-        float abbremsen = 1f;
-
-        float yawDamping = 1.5f;
-
-        float speed = velocity.length();
-
-        float maxAerodynamicTurnRate;
-
-        if (speed > 1f) {
-            maxAerodynamicTurnRate = 25f / speed;
-        } else {
-            maxAerodynamicTurnRate = 0f;
-        }
-
-        float maxYawSpeed = Math.min(0.15f, maxAerodynamicTurnRate * 0.3f);
-
-        // Dämpfung
-        if (Math.abs(requestedYaw()) < 0.0001f) {
-            if (yawSpeed > 0) {
-                yawSpeed = Math.max(0, yawSpeed - abbremsen * tpf);
-            }
-
-            if (yawSpeed < 0) {
-                yawSpeed = Math.min(0, yawSpeed + abbremsen * tpf);
-            }
-
-            yawSpeed -= yawSpeed * yawDamping * tpf;
-        }
-
-        yawSpeed += requestedYaw() * rotationSpeed * tpf * aoaControlFactor;
-
-        yawSpeed += restoringYawAcceleration * tpf;
-        // Begrenzen
-        yawSpeed = Math.max(-maxYawSpeed, Math.min(yawSpeed, maxYawSpeed));
-    }
-
-    private void updateRotation(float tpf) {
-        Vector3f forward = plane.getLocalRotation()
-                .mult(Vector3f.UNIT_Z.negate());
-
-        float forwardSpeed = velocity.dot(forward);
-
-        float speed = velocity.length();
-        float aoa = Math.abs(getAngleOfAttack());
-
-        float qFactor = calculateQFactor(speed);
-        float aoaControlFactor = calculateAoAControlFactor(aoa);
-
-        updatePitch(tpf, qFactor, aoaControlFactor, forwardSpeed);
-        updateRoll(tpf, aoaControlFactor);
-        updateYaw(tpf, qFactor, aoaControlFactor);
-
-        // Vereinfachte Kurvenkoordination nur für den KI-Autopiloten.
-        // Schräglage erzeugt eine Kursänderung statt nur seitlichen Drift.
-        if (aiInput != null && speed > 100f) {
-            Vector3f right = plane.getLocalRotation().mult(Vector3f.UNIT_X);
-            Vector3f up = plane.getLocalRotation().mult(Vector3f.UNIT_Y);
-            float bank = (float)Math.atan2(right.y, up.y);
-            bank = Math.max(-1.2f, Math.min(1.2f, bank));
-            float turnRate = G * (float)Math.tan(bank) / speed;
-            com.jme3.math.Quaternion turn = new com.jme3.math.Quaternion()
-                    .fromAngleAxis(turnRate * tpf, Vector3f.UNIT_Y);
-            plane.setLocalRotation(turn.mult(plane.getLocalRotation()));
-        }
-        plane.rotate(
-                pitchSpeed * tpf,
-                yawSpeed * tpf,
-                rollSpeed * tpf
-        );
-    }
-
+    public float sideSlip(){return velocity.subtract(wind).dot(plane.getWorldRotation().mult(Vector3f.UNIT_X));}
+    public float getSideSlipAngle(){return (float)Math.toDegrees(Math.asin(clamp(sideSlip()/Math.max(0.1f,getAirspeed()),-1,1)));}
+    public boolean isStalling(){return Math.abs(getAngleOfAttack())>AerodynamicModel.STALL_ONSET_DEG && getAirspeed()>15;}
 }
