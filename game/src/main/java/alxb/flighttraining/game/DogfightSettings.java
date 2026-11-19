@@ -20,7 +20,7 @@ public final class DogfightSettings {
         public final String label;
         public final float x,z;
         Region(String label,float x,float z){this.label=label;this.x=x;this.z=z;}
-        public SpawnSettings spawn(float height){return new SpawnSettings(x,z,height);}
+        public SpawnSettings spawn(float height){return new SpawnSettings(x,z,height, 1);}
         @Override public String toString(){return label;}
     }
     public final Region region;

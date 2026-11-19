@@ -476,17 +476,17 @@ public class Menu{
     private void startGame(String flughafen){
 
         switch (flughafen){
-            case "Zürich" -> app.startFreePlay(new SpawnSettings(62160f, -164460f, 432f));
-            case "Genf" -> app.startFreePlay(new SpawnSettings(-124060f, -29110f, 430f));
-            case "Basel-Mulhouse" -> app.startFreePlay(new SpawnSettings(-15300f, -179730f, 270f));
-            case "Bern-Belp" -> app.startFreePlay(new SpawnSettings(-16970f, -103340, 510f));
-            case "St. Gallen-Altenrhein" -> app.startFreePlay(new SpawnSettings(138510f, -169020f, 398f));
-            case "Lugano-Agno" -> app.startFreePlay(new SpawnSettings(92500f, -3240f, 279f));
-            case "Sion" -> app.startFreePlay(new SpawnSettings(-30120f, -26140f, 482f));
-            case "Grenchen" -> app.startFreePlay(new SpawnSettings(-23190f, -133100f, 430f));
-            case "Payerne" -> app.startFreePlay(new SpawnSettings(-61550f, -95560f, 447f));
-            case "Meiringen" -> app.startFreePlay(new SpawnSettings(29740f, -84500f, 577f));
-            case "Emmen" -> app.startFreePlay(new SpawnSettings(44320f, -123520f, 427f));
+            case "Zürich" -> app.startFreePlay(new SpawnSettings(62160f, -164460f, 432f, 0f));
+            case "Genf" -> app.startFreePlay(new SpawnSettings(-124060f, -29110f, 430f, 0f));
+            case "Basel-Mulhouse" -> app.startFreePlay(new SpawnSettings(-15300f, -179730f, 270f, 0f));
+            case "Bern-Belp" -> app.startFreePlay(new SpawnSettings(-16970f, -103340, 510f, 0f));
+            case "St. Gallen-Altenrhein" -> app.startFreePlay(new SpawnSettings(138510f, -169020f, 398f, 0f));
+            case "Lugano-Agno" -> app.startFreePlay(new SpawnSettings(92500f, -3240f, 279f, 0f));
+            case "Sion" -> app.startFreePlay(new SpawnSettings(-30120f, -26140f, 482f, 0f));
+            case "Grenchen" -> app.startFreePlay(new SpawnSettings(-23190f, -133100f, 430f, 0f));
+            case "Payerne" -> app.startFreePlay(new SpawnSettings(-61550f, -95560f, 447f, 0f));
+            case "Meiringen" -> app.startFreePlay(new SpawnSettings(29740f, -84500f, 577f, 0f));
+            case "Emmen" -> app.startFreePlay(new SpawnSettings(44320f, -123520f, 427f, 0f));
 
             default -> throw new IllegalArgumentException(
                     "Unbekannter Flugplatz: " + flughafen
