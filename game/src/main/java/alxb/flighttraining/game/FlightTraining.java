@@ -1,5 +1,20 @@
 package alxb.flighttraining.game;
 
+import alxb.flighttraining.game.weapons.Cannon;
+import alxb.flighttraining.game.config.DogfightSettings;
+import alxb.flighttraining.game.enemy.Enemy;
+import alxb.flighttraining.game.ui.FlightHud;
+import alxb.flighttraining.game.flight.FlightInput;
+import alxb.flighttraining.game.flight.FlightPhysics;
+import alxb.flighttraining.game.flight.FlightSurfaces;
+import alxb.flighttraining.game.weapons.Guns;
+import alxb.flighttraining.game.weapons.InfraredMissile;
+import alxb.flighttraining.game.ui.Menu;
+import alxb.flighttraining.game.sensors.Radar;
+import alxb.flighttraining.game.ui.RadarDisplay;
+import alxb.flighttraining.game.config.SpawnSettings;
+import alxb.flighttraining.game.world.TerrainStreaming;
+
 import com.jme3.anim.AnimComposer;
 import com.jme3.app.SimpleApplication;
 import com.jme3.anim.SkinningControl;
