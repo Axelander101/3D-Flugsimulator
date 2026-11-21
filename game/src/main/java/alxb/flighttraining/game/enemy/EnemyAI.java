@@ -36,6 +36,8 @@ public final class EnemyAI {
         targetAltitude = home.y;
     }
 
+    public void rebase(Vector3f delta){home.subtractLocal(delta);observation.subtractLocal(delta);}
+
     public State getState() { return state; }
     public boolean isFiring() { return firing; }
     public float getContactAge() { return age; }

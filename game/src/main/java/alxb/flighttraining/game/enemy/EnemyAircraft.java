@@ -43,6 +43,7 @@ public final class EnemyAircraft {
    cooldown=0.04f;
   }
  }
+ public void rebase(Vector3f delta){ai.rebase(delta);cannon.rebase(delta);}
  public EnemyAI.State getState(){return ai.getState();}
  public Vector3f getPosition(){return enemyPlane.getWorldTranslation().clone();}
  public Node getPlane(){return enemyPlane;}

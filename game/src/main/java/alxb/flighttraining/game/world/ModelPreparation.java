@@ -18,9 +18,16 @@ final class ModelPreparation {
 
     Spatial prepare(Spatial model) {
         materials.clear();
+        model.depthFirstTraversal(s->{
+            if(s instanceof Geometry geometry){
+                for(Spatial a=s;a!=null;a=a.getParent())if(a.getName()!=null&&a.getName().startsWith("pavement_")){
+                    geometry.setMesh(TerrainDraper.subdivide(geometry.getMesh()));break;
+                }
+            }
+        });
         canonicalize(model, new IdentityHashMap<>());
         // Batch only one spatial chunk at a time, preserving distance culling between chunks.
-        if (model instanceof Node parent) GeometryBatchFactory.optimize(parent, false);
+        // Gebäudeteile bis zur Terrain-Anpassung getrennt erhalten.
         model.depthFirstTraversal(s -> { if (s instanceof Geometry g) g.getMesh().setStatic(); });
         return model;
     }
@@ -35,7 +42,7 @@ final class ModelPreparation {
                 Image shared = seen.get(source);
                 if (shared == null) {
                     Key key = key(source);
-                    shared = images.computeIfAbsent(key, ignored -> source);
+                    shared = images.computeIfAbsent(key, ignored -> rgba(source));
                     seen.put(source, shared);
                 }
                 texture.setImage(shared);
@@ -46,6 +53,15 @@ final class ModelPreparation {
             materials.add(material);
         }
         if (s instanceof Node parent) for (Spatial child : parent.getChildren()) canonicalize(child, seen);
+    }
+    private static Image rgba(Image source){
+        if(source.getFormat()!=Image.Format.RGB8 || source.getData().size()!=1 || source.hasMipmaps())return source;
+        int pixels=source.getWidth()*source.getHeight();
+        ByteBuffer input=source.getData(0).duplicate();input.rewind();
+        if(input.remaining()!=pixels*3)return source;
+        ByteBuffer output=com.jme3.util.BufferUtils.createByteBuffer(pixels*4);
+        while(input.remaining()>=3){output.put(input.get()).put(input.get()).put(input.get()).put((byte)255);}output.flip();
+        return new Image(Image.Format.RGBA8,source.getWidth(),source.getHeight(),output,source.getColorSpace());
     }
     private static Key key(Image image) {
         try {

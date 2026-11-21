@@ -100,6 +100,8 @@ public final class Enemy {
         return enemies.get(index).getPosition();
     }
 
+    public void rebase(Vector3f delta){for(EnemyAircraft enemy:enemies)enemy.rebase(delta);}
+
     public int getCount() {
         return enemies.size();
     }

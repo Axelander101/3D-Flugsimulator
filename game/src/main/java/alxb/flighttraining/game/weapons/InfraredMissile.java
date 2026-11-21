@@ -29,6 +29,8 @@ public final class InfraredMissile{
     }
 
 
+    public void rebase(Vector3f delta){position.subtractLocal(delta);}
+
     public void cancel() { remainingLife = 0; model.removeFromParent(); }
 
     public boolean update(float tpf) {

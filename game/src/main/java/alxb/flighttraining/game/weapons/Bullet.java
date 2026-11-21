@@ -16,6 +16,8 @@ public final class Bullet {
         this.velocity = velocity.clone();
     }
 
+    public void rebase(Vector3f delta){position.subtractLocal(delta);}
+
     public boolean update(float tpf, Node targets) {
         if (tpf <= 0f) return false;
         life -= tpf;
