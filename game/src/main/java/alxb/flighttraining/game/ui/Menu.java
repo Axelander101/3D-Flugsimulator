@@ -52,6 +52,20 @@ public class Menu{
             "Meiringen", "Emmen"
     };
 
+    private static final java.util.Map<String, String> AIRPORT_IMAGE_CODES = java.util.Map.ofEntries(
+            java.util.Map.entry("Zürich", "LSZH"),
+            java.util.Map.entry("Genf", "LSGG"),
+            java.util.Map.entry("Basel-Mulhouse", "LFSB"),
+            java.util.Map.entry("Bern-Belp", "LSZB"),
+            java.util.Map.entry("St. Gallen-Altenrhein", "LSZR"),
+            java.util.Map.entry("Lugano-Agno", "LSZA"),
+            java.util.Map.entry("Sion", "LSGS"),
+            java.util.Map.entry("Grenchen", "LSZG"),
+            java.util.Map.entry("Payerne", "LSMP"),
+            java.util.Map.entry("Meiringen", "LSMM"),
+            java.util.Map.entry("Emmen", "LSME")
+    );
+
     private static final String[] MISSIONS = {
             "Trainingsflug",
             "Navigation",
@@ -161,7 +175,7 @@ public class Menu{
         for (String airport : AIRPORTS) {
             airportImages.put(
                     airport,
-                    loadMenuImage("/Airports/" + airport + ".png")
+                    MenuImages.load(menuAssets, AIRPORT_IMAGE_CODES.get(airport), airport)
             );
         }
 
@@ -302,7 +316,7 @@ public class Menu{
                     for (int i = 0; i < graphicsBounds.size(); i++) {
                         if (graphicsBounds.get(i).contains(mouseX, mouseY)) {
                             System.out.println("Grafikeinstellung: " + GRAPHICS_SETTING[i]);
-                            // Hier später die ausgewählte Einstellung ändern.
+                            if(i==7){alxb.flighttraining.game.world.WorldDetailSettings.cycleRenderDistance();redraw();}
                             return;
                         }
                     }
@@ -480,17 +494,17 @@ public class Menu{
     private void startGame(String flughafen){
 
         switch (flughafen){
-            case "Zürich" -> app.startFreePlay(new SpawnSettings(62160f, -164460f, 432f, 0f));
-            case "Genf" -> app.startFreePlay(new SpawnSettings(-124060f, -29110f, 430f, 0f));
-            case "Basel-Mulhouse" -> app.startFreePlay(new SpawnSettings(-15300f, -179730f, 270f, 0f));
-            case "Bern-Belp" -> app.startFreePlay(new SpawnSettings(-16970f, -103340, 510f, 0f));
+            case "Zürich" -> app.startFreePlay(new SpawnSettings(62160f, -164460f, 0f, 0f));
+            case "Genf" -> app.startFreePlay(new SpawnSettings(-124060f, -29110f, 0f, 0f));
+            case "Basel-Mulhouse" -> app.startFreePlay(new SpawnSettings(-15300f, -179730f, 0f, 0f));
+            case "Bern-Belp" -> app.startFreePlay(new SpawnSettings(-16970f, -103340, 0f, 0f));
             case "St. Gallen-Altenrhein" -> app.startFreePlay(new SpawnSettings(138510f, -169020f, 398f, 0f));
-            case "Lugano-Agno" -> app.startFreePlay(new SpawnSettings(92500f, -3240f, 279f, 0f));
-            case "Sion" -> app.startFreePlay(new SpawnSettings(-30120f, -26140f, 482f, 0f));
-            case "Grenchen" -> app.startFreePlay(new SpawnSettings(-23190f, -133100f, 430f, 0f));
-            case "Payerne" -> app.startFreePlay(new SpawnSettings(-61550f, -95560f, 447f, 0f));
-            case "Meiringen" -> app.startFreePlay(new SpawnSettings(29740f, -84500f, 577f, 0f));
-            case "Emmen" -> app.startFreePlay(new SpawnSettings(44320f, -123520f, 427f, 0f));
+            case "Lugano-Agno" -> app.startFreePlay(new SpawnSettings(92500f, -3240f, 0f, 0f));
+            case "Sion" -> app.startFreePlay(new SpawnSettings(-30120f, -26140f, 0f, 0f));
+            case "Grenchen" -> app.startFreePlay(new SpawnSettings(-23190f, -133100f, 0f, 0f));
+            case "Payerne" -> app.startFreePlay(new SpawnSettings(-61550f, -95560f, 0f, 0f));
+            case "Meiringen" -> app.startFreePlay(new SpawnSettings(29740f, -84500f, 0f, 0f));
+            case "Emmen" -> app.startFreePlay(new SpawnSettings(44320f, -123520f, 0f, 0f));
 
             default -> throw new IllegalArgumentException(
                     "Unbekannter Flugplatz: " + flughafen
@@ -599,7 +613,7 @@ public class Menu{
                 content.fillRoundRect(row.x, row.y, row.width, row.height, 16, 16);
                 content.setColor(Color.WHITE);
                 content.setFont(new Font("SansSerif", Font.PLAIN, 24));
-                content.drawString(GRAPHICS_SETTING[i], row.x + 18, row.y + 39);
+                content.drawString(GRAPHICS_SETTING[i]+(i==7?String.format(java.util.Locale.ROOT,"   %.0f km  ›",alxb.flighttraining.game.world.WorldDetailSettings.renderDistance()/1000f):""), row.x + 18, row.y + 39);
             }
         } finally {
             content.dispose();
@@ -692,33 +706,6 @@ public class Menu{
             );
         } finally {
             copy.dispose();
-        }
-    }
-
-    private BufferedImage loadMenuImage(String path) {
-        try (java.io.InputStream stream =
-                     Menu.class.getResourceAsStream(path)) {
-
-            if (stream == null) {
-                throw new IllegalArgumentException(
-                        "Bild nicht gefunden: " + path
-                );
-            }
-
-            BufferedImage image = javax.imageio.ImageIO.read(stream);
-
-            if (image == null) {
-                throw new IllegalArgumentException(
-                        "Bildformat nicht unterstützt: " + path
-                );
-            }
-
-            return image;
-
-        } catch (java.io.IOException e) {
-            throw new IllegalStateException(
-                    "Bild konnte nicht geladen werden: " + path, e
-            );
         }
     }
 

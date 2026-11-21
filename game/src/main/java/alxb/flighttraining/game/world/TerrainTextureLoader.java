@@ -17,9 +17,18 @@ final class TerrainTextureLoader {
     }
 
     static Texture2D load(Path path) throws IOException {
+        return load(path,1024);
+    }
+    static Texture2D load(Path path,int maximum) throws IOException {
         var source = ImageIO.read(path.toFile());
         if (source == null) {
             throw new IOException("Ungültiges Luftbild: " + path);
+        }
+        if(source.getWidth()>maximum){
+            var smaller=new java.awt.image.BufferedImage(maximum,maximum,java.awt.image.BufferedImage.TYPE_INT_RGB);
+            var graphics=smaller.createGraphics();
+            try{graphics.setRenderingHint(java.awt.RenderingHints.KEY_INTERPOLATION,java.awt.RenderingHints.VALUE_INTERPOLATION_BILINEAR);graphics.drawImage(source,0,0,maximum,maximum,null);}finally{graphics.dispose();}
+            source=smaller;
         }
         int width = source.getWidth();
         int height = source.getHeight();

@@ -41,6 +41,7 @@ public class FlightTraining extends SimpleApplication {
     private FlightInput input;
     private FlightPhysics physics;
     private FlightHud hud;
+    private alxb.flighttraining.game.ui.LoadingScreen loadingScreen;
     private TerrainStreaming terrain;
     private Guns guns;
     private float shotCooldown;
@@ -95,6 +96,7 @@ public class FlightTraining extends SimpleApplication {
 
         input = new FlightInput(inputManager);
         hud = new FlightHud(guiFont, guiNode, cam.getHeight());
+        loadingScreen = new alxb.flighttraining.game.ui.LoadingScreen(assetManager, guiNode, guiFont);
 
 
         viewPort.setBackgroundColor(new ColorRGBA(0.5f, 0.7f, 1f, 1f));
@@ -157,7 +159,10 @@ public class FlightTraining extends SimpleApplication {
 
     @Override
     public void simpleUpdate(float tpf) {
+        float renderDistance=alxb.flighttraining.game.world.WorldDetailSettings.renderDistance();
+        if(cam.getFrustumFar()!=renderDistance)cam.setFrustumFar(renderDistance);
         menu.update(tpf);
+        loadingScreen.update(tpf,cam.getWidth(),cam.getHeight());
         radarDisplay.setVisible(
                 !menu.getMenuOffen() && spawnReady
         );
@@ -170,6 +175,11 @@ public class FlightTraining extends SimpleApplication {
             }
 
             physics.update(tpf);
+            Vector3f delta=terrain.recenter(plane.getLocalTranslation(),cam);
+            if(delta.lengthSquared()>0){
+                guns.rebase(delta);enemies.rebase(delta);
+                for(InfraredMissile missile:missiles)missile.rebase(delta);
+            }
             Vector3f position = plane.getLocalTranslation();
             terrain.update(position, cam);
             physics.resolveGroundCollision(terrain.getGroundHeight(position));
@@ -247,14 +257,18 @@ public class FlightTraining extends SimpleApplication {
         shotCooldown = 0f;
         cannonFlashTimer = 1f;
         plane.setLocalRotation(new com.jme3.math.Quaternion());
-        plane.setLocalTranslation(settings.worldX, settings.heightAboveGround, settings.worldZ);
+        terrain.close();
+        terrain = new TerrainStreaming(assetManager,rootNode,settings.worldX,settings.worldZ);
+        enemies.configure(plane,physics,terrain);
+        plane.setLocalTranslation(0f, settings.heightAboveGround, 0f);
         physics.reset(new Vector3f(), 0f);
         input.shoot = input.pitchUp = input.pitchDown = input.rollLeft = input.rollRight = false;
         input.yawLeft = input.yawRight = input.throttleUp = input.throttleDown = false;
         input.resetControllerInput();
         menu.hide();
         inputManager.setCursorVisible(false);
-        hud.showLoading("Starthöhe und Terrain werden geladen …");
+        hud.showLoading("");
+        loadingScreen.begin(cam.getWidth(),cam.getHeight());
         updateCamera();
     }
 
@@ -265,7 +279,7 @@ public class FlightTraining extends SimpleApplication {
 
         float groundHeight = terrain.getGroundHeight(position);
         if (!Float.isFinite(groundHeight)) {
-            hud.showLoading(terrain.getGroundLoadStatus(position));
+            loadingScreen.progress(terrain.getGroundLoadStatus(position),0);
             return;
         }
 
@@ -273,6 +287,11 @@ public class FlightTraining extends SimpleApplication {
                 position.x, groundHeight + spawnSettings.heightAboveGround, position.z
         );
         plane.updateGeometricState();
+        int ready=terrain.spawnObjectProgress(plane.getLocalTranslation());
+        int total=terrain.spawnObjectTotal(plane.getLocalTranslation());
+        if(!terrain.isSpawnAreaReady(plane.getLocalTranslation())){
+            loadingScreen.progress("Umgebung wird vorbereitet: "+ready+" / "+total+" Kacheln",.1f+.9f*ready/Math.max(1,total));return;
+        }
         if (dogfightSettings != null) {
             Vector3f forward = plane.getLocalRotation().mult(new Vector3f(0, 0, -1));
             physics.reset(forward.mult(220f), 0.6f);
@@ -282,8 +301,14 @@ public class FlightTraining extends SimpleApplication {
         }
         targets.updateGeometricState();
         spawnReady = true;
+        loadingScreen.finish();
         updateCamera();
         hud.update(physics, plane.getLocalTranslation().y);
+    }
+
+    /** Kartenkoordinaten im bisherigen globalen Projektbezug, trotz Floating Origin. */
+    public Vector3f getMapPosition() {
+        return terrain.coordinates().absolute(plane.getLocalTranslation());
     }
 
     public float getAngleOfAttack() {
@@ -324,7 +349,7 @@ public class FlightTraining extends SimpleApplication {
     private void configureCamera() {
         cam.setLocation(new Vector3f(0, 5, 10));
         cam.lookAt(new Vector3f(0, 1, 0), Vector3f.UNIT_Y);
-        cam.setFrustumPerspective(55f, (float)cam.getWidth()/cam.getHeight(), 0.2f, 20000f);
+        cam.setFrustumPerspective(55f, (float)cam.getWidth()/cam.getHeight(), 0.7f, alxb.flighttraining.game.world.WorldDetailSettings.renderDistance());
     }
 
     private void initializeLighting() {

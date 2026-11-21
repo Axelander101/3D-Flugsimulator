@@ -12,6 +12,8 @@ import java.util.Objects;
  */
 public final class FlightPhysics {
     private static final float G=9.80665f, STEP=1f/120f;
+    private double positionX,positionY,positionZ;
+    private final Vector3f publishedPosition=new Vector3f(Float.NaN,0,0);
     private final Node plane;
     private final FlightInput input;
     private final FlightCommandAi aiInput;
@@ -32,6 +34,7 @@ public final class FlightPhysics {
     }
     public AircraftParameters getParameters(){return parameters;}
     public void reset(Vector3f initialVelocity,float initialThrottle){
+        publishedPosition.x=Float.NaN;
         setVelocity(initialVelocity);throttle=clamp(initialThrottle,0,1);enginePower=engineRunning?throttle:0;
         pitchSpeed=yawSpeed=rollSpeed=pitchCommand=rollCommand=yawCommand=normalG=0;
         lastThrust=lastLift=lastDrag=0;
@@ -110,7 +113,11 @@ public final class FlightPhysics {
         normalG=specificForce.dot(up)/G;
         updateRotation(dt,rotation,air,alpha,beta,q,mach,acceleration);
         velocity.addLocal(acceleration.mult(dt));
-        Vector3f worldPosition=plane.getWorldTranslation().add(velocity.mult(dt));
+        Vector3f current=plane.getWorldTranslation();
+        if(!current.equals(publishedPosition)) {positionX=current.x;positionY=current.y;positionZ=current.z;}
+        positionX+=(double)velocity.x*dt;positionY+=(double)velocity.y*dt;positionZ+=(double)velocity.z*dt;
+        Vector3f worldPosition=new Vector3f((float)positionX,(float)positionY,(float)positionZ);
+        publishedPosition.set(worldPosition);
         plane.setLocalTranslation(plane.getParent()==null?worldPosition:plane.getParent().worldToLocal(worldPosition,new Vector3f()));
     }
     private void updateCommands(float dt){

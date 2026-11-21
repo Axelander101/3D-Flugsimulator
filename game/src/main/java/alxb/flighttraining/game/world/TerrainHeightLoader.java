@@ -11,39 +11,55 @@ import javax.imageio.ImageIO;
 
 final class TerrainHeightLoader {
 
+    // Immutable decoded DEM rasters are reused between the nine overlapping tile neighbourhoods.
+    private record RasterKey(Path path,java.nio.file.attribute.FileTime modified,long length) {}
+    private static final Map<RasterKey,Raster> RASTERS=new java.util.LinkedHashMap<>(64,.75f,true){
+        @Override protected boolean removeEldestEntry(Map.Entry<RasterKey,Raster> entry){return size()>64;}
+    };
+    private static Raster raster(Path path)throws IOException {
+        Path absolute=path.toAbsolutePath().normalize();
+        RasterKey key=new RasterKey(absolute,java.nio.file.Files.getLastModifiedTime(absolute),java.nio.file.Files.size(absolute));
+        synchronized(RASTERS){Raster found=RASTERS.get(key);if(found!=null)return found;}
+        var image=ImageIO.read(path.toFile());
+        if(image==null||image.getWidth()!=500||image.getHeight()!=500)
+            throw new IOException("Erwartet wird eine 500 × 500 swissALTI3D-Kachel: "+path);
+        Raster loaded=image.getRaster();
+        synchronized(RASTERS){Raster existing=RASTERS.get(key);if(existing!=null)return existing;RASTERS.put(key,loaded);}
+        return loaded;
+    }
     private TerrainHeightLoader() {
     }
 
     static float[] load(TerrainTile center, Map<TerrainTile, Path> paths) throws IOException {
+        return load(center,paths,513);
+    }
+    static float[] load(TerrainTile center, Map<TerrainTile, Path> paths,int size) throws IOException {
+        int last=size-1;
         Map<TerrainTile, Raster> rasters = new HashMap<>();
         for (var entry : paths.entrySet()) {
-            var image = ImageIO.read(entry.getValue().toFile());
-            if (image == null || image.getWidth() != 500 || image.getHeight() != 500) {
-                throw new IOException("Erwartet wird eine 500 × 500 swissALTI3D-Kachel: " + entry.getValue());
-            }
-            rasters.put(entry.getKey(), image.getRaster());
+            rasters.put(entry.getKey(), raster(entry.getValue()));
         }
         if (!rasters.containsKey(center)) {
             throw new IOException("Höhenkachel fehlt: " + center);
         }
 
-        float[] heights = new float[513 * 513];
-        for (int z = 0; z <= 512; z++) {
+        float[] heights = new float[size * size];
+        for (int z = 0; z <= last; z++) {
             if (Thread.currentThread().isInterrupted()) {
                 throw new InterruptedIOException("Höhenvorbereitung abgebrochen");
             }
-            double sourceZ = z * 500.0 / 512 - 0.5;
+            double sourceZ = z * 500.0 / last - 0.5;
             int z0 = (int) Math.floor(sourceZ);
             float fractionZ = (float) (sourceZ - z0);
-            for (int x = 0; x <= 512; x++) {
-                double sourceX = x * 500.0 / 512 - 0.5;
+            for (int x = 0; x <= last; x++) {
+                double sourceX = x * 500.0 / last - 0.5;
                 int x0 = (int) Math.floor(sourceX);
                 float fractionX = (float) (sourceX - x0);
                 float top = interpolate(sample(center, rasters, x0, z0),
                         sample(center, rasters, x0 + 1, z0), fractionX);
                 float bottom = interpolate(sample(center, rasters, x0, z0 + 1),
                         sample(center, rasters, x0 + 1, z0 + 1), fractionX);
-                heights[z * 513 + x] = interpolate(top, bottom, fractionZ);
+                heights[z * size + x] = interpolate(top, bottom, fractionZ);
             }
         }
         return heights;

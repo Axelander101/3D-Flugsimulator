@@ -26,6 +26,8 @@ public abstract class Guns {
         bullets.add(new Bullet(muzzleWorldPosition, velocity));
     }
 
+    public void rebase(Vector3f delta){for(Bullet bullet:bullets)bullet.rebase(delta);}
+
     public void clear() { bullets.clear(); }
 
     public void update(float tpf) {

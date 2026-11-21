@@ -35,14 +35,26 @@ import com.jme3.renderer.Camera;
 
 
 public final class TerrainStreaming implements AutoCloseable {
-    private static final int DOWNLOAD_RADIUS = 5; // 11 × 11 inklusive Mitte
-    private static final int DISPLAY_RADIUS = 3;  // 7 × 7 inklusive Mitte
-    private static final int MAX_PENDING_HEIGHTS = 4;
+    private static final int MAX_PENDING_HEIGHTS = 6;
     private static final int MAX_PENDING_TEXTURES = 2;
     private static final float MIN_TILE_HEIGHT = -500f;
     private static final float MAX_TILE_HEIGHT = 9000f;
     private static final long RETRY_DELAY = Duration.ofSeconds(30).toNanos();
 
+    private final WorldCoordinates coordinates;
+    private final Map<Long,TerrainHeightSnapshot.Grid> heightGrids=new HashMap<>();
+    private Set<Long> unavailableHeights=Set.of();
+    private TerrainHeightSnapshot snapshot=new TerrainHeightSnapshot(Map.of());
+    private Camera activeCamera;
+    private TerrainTile lastPrediction;
+    private long nextWindowRefresh;
+
+    private Vector3f currentPosition=new Vector3f(), lastPosition;
+    private Vector3f velocity=new Vector3f();
+    private long lastUpdate;
+    private int displayRadius=8;
+    private float renderDistance=8000;
+    private final Map<TerrainTile,Integer> tileResolution=new HashMap<>();
     private final AssetManager assetManager;
     private final Node rootNode;
     private final TerrainDownloader downloader;
@@ -58,6 +70,7 @@ public final class TerrainStreaming implements AutoCloseable {
     private final Map<TerrainTile, Future<Texture>> preparedTextures = new LinkedHashMap<>();
     private final Set<TerrainTile> finishedTextures = new HashSet<>();
     private final Map<TerrainTile, Long> retryAt = new HashMap<>();
+    private final Map<TerrainTile,Integer> textureResolution=new HashMap<>();
     private Set<TerrainTile> visibleTiles = Set.of();
     private Set<TerrainTile> wantedDownloads = Set.of();
     private TerrainTile lastCenter;
@@ -66,18 +79,27 @@ public final class TerrainStreaming implements AutoCloseable {
 
 
     public TerrainStreaming(AssetManager assetManager, Node rootNode) {
-        this(assetManager, rootNode, new TerrainDownloader());
+        this(assetManager, rootNode, new TerrainDownloader(), new WorldCoordinates(0,0));
     }
 
+    public TerrainStreaming(AssetManager assets, Node root, double worldX, double worldZ) {
+        this(assets,root,new TerrainDownloader(),new WorldCoordinates(worldX,worldZ));
+    }
     TerrainStreaming(AssetManager assetManager, Node rootNode, TerrainDownloader downloader) {
+        this(assetManager,rootNode,downloader,new WorldCoordinates(0,0));
+    }
+    TerrainStreaming(AssetManager assetManager, Node rootNode, TerrainDownloader downloader, WorldCoordinates coordinates) {
+        this.coordinates=coordinates;
         this.assetManager = assetManager;
         this.rootNode = rootNode;
         this.downloader = downloader;
-        this.worldObjects = new WorldObjectStreaming(assetManager, rootNode, this::getGroundHeight);
+        this.worldObjects = new WorldObjectStreaming(assetManager, rootNode, this::getGroundHeight, coordinates, ()->snapshot);
     }
 
     public float getGroundHeight(Vector3f position) {
         Vector2f location = new Vector2f(position.x, position.z);
+        TerrainQuad owner=loadedTiles.get(coordinates.tile(position));
+        if(owner!=null){float height=owner.getHeight(location);if(Float.isFinite(height))return height;}
         for (TerrainQuad tile : loadedTiles.values()) {
             float height = tile.getHeight(location);
             if (!Float.isNaN(height)) {
@@ -88,7 +110,7 @@ public final class TerrainStreaming implements AutoCloseable {
     }
 
     public String getGroundLoadStatus(Vector3f position) {
-        TerrainTile tile = TerrainTile.at(position.x, position.z);
+        TerrainTile tile = coordinates.tile(position);
         CompletableFuture<Path> height = downloads.get(tile);
         String name = tile.x() + "-" + tile.z();
 
@@ -127,11 +149,22 @@ public final class TerrainStreaming implements AutoCloseable {
     }
 
     public void update(Vector3f position, Camera cam) {
+        activeCamera=cam;
         if (closed) {
             return;
         }
-        TerrainTile center = TerrainTile.at(position.x, position.z);
-        if (!center.equals(lastCenter)) {
+        currentPosition=position.clone();
+        long tick=System.nanoTime();
+        if(lastPosition!=null && lastUpdate!=0){float dt=(tick-lastUpdate)*1e-9f;
+            if(dt>0&&dt<1){Vector3f v=position.subtract(lastPosition).divideLocal(dt);if(v.length()<1200)velocity.interpolateLocal(v,1-(float)Math.exp(-dt*2));}}
+        lastPosition=position.clone();lastUpdate=tick;
+        renderDistance=Math.min(WorldDetailSettings.renderDistance(),cam==null?WorldDetailSettings.renderDistance():cam.getFrustumFar());
+        int radius=(int)Math.ceil(Math.max(renderDistance,Math.min(5000,renderDistance)+2000)/1000f);
+        TerrainTile center = coordinates.tile(position);
+        Vector3f ahead=velocity.mult(20);ahead.y=0;if(ahead.length()>3000)ahead.normalizeLocal().multLocal(3000);
+        TerrainTile prediction=coordinates.tile(position.add(ahead));
+        if (!center.equals(lastCenter)||radius!=displayRadius||(tick>=nextWindowRefresh&&!prediction.equals(lastPrediction))) {
+            displayRadius=radius;lastPrediction=prediction;nextWindowRefresh=tick+500_000_000L;
             changeWindow(center);
         }
 
@@ -148,11 +181,19 @@ public final class TerrainStreaming implements AutoCloseable {
 
     private void changeWindow(TerrainTile center) {
         lastCenter = center;
-        visibleTiles = window(center, DISPLAY_RADIUS);
-        wantedDownloads = window(center, DOWNLOAD_RADIUS);
+        visibleTiles = window(center, displayRadius);
+        Set<TerrainTile> ahead=new LinkedHashSet<>(visibleTiles);
+        Vector3f lookahead=currentPosition.add(velocity.mult(20));
+        if(lookahead.distance(currentPosition)>3000)lookahead=currentPosition.add(velocity.normalize().mult(3000));
+        ahead.addAll(window(coordinates.tile(lookahead),displayRadius));
+        visibleTiles=ahead;
+        Set<TerrainTile> wanted=new LinkedHashSet<>();
+        for(TerrainTile t:visibleTiles)wanted.addAll(window(t,1));
+        wantedDownloads=wanted;
         for (TerrainTile tile : new ArrayList<>(loadedTiles.keySet())) {
             if (!visibleTiles.contains(tile)) {
-                loadedTiles.remove(tile).removeFromParent();
+                loadedTiles.remove(tile).removeFromParent();tileResolution.remove(tile);textureResolution.remove(tile);
+                heightGrids.remove(TerrainHeightSnapshot.key(tile.x(),tile.z()));
             }
         }
         for (TerrainTile tile : new ArrayList<>(prepared.keySet())) {
@@ -170,6 +211,7 @@ public final class TerrainStreaming implements AutoCloseable {
         textures.keySet().retainAll(wantedDownloads);
         retryAt.keySet().retainAll(visibleTiles);
         downloader.retainTiles(wantedDownloads);
+        snapshot=new TerrainHeightSnapshot(heightGrids,unavailableHeights);
     }
 
     private record TilePriority(TerrainTile tile, int group, float distanceSquared) {}
@@ -183,22 +225,24 @@ public final class TerrainStreaming implements AutoCloseable {
         float halfSize = TerrainTile.SIZE * 0.5f;
         float halfHeight = (MAX_TILE_HEIGHT - MIN_TILE_HEIGHT) * 0.5f;
         float centerY = (MAX_TILE_HEIGHT + MIN_TILE_HEIGHT) * 0.5f;
-        Vector3f cameraPosition = cam.getLocation();
         for (TerrainTile tile : visibleTiles) {
             Vector3f position = tilePosition(tile);
             int ring = Math.max(Math.abs(tile.x() - center.x()),
                     Math.abs(tile.z() - center.z()));
-            int group = ring;
-            if (ring > 1) {
-                BoundingBox box = new BoundingBox(
-                        new Vector3f(position.x, centerY, position.z),
-                        halfSize, halfHeight, halfSize
-                );
-                group = isInView(cam, box) ? 2 : 3;
+            float dx=position.x-currentPosition.x,dz=position.z-currentPosition.z;
+            float nearest=(float)Math.hypot(Math.max(0,Math.abs(dx)-halfSize),Math.max(0,Math.abs(dz)-halfSize));
+            float display=Math.min(WorldDetailSettings.MAX_DETAIL_DISTANCE,renderDistance);
+            Vector3f ahead=velocity.mult(20);ahead.y=0;if(ahead.length()>3000)ahead.normalizeLocal().multLocal(3000);
+            Vector3f predicted=currentPosition.add(ahead);
+            float predictedDistance=(float)Math.hypot(Math.max(0,Math.abs(position.x-predicted.x)-halfSize),Math.max(0,Math.abs(position.z-predicted.z)-halfSize));
+            // Complete the object's display circle before spending bandwidth on far terrain or photographs.
+            int group=ring<=1?0:nearest<=display+750?1:predictedDistance<=display+1000?2:nearest<=renderDistance+750?3:4;
+            float priority=dx*dx+dz*dz;
+            if(group>0){
+                BoundingBox box=new BoundingBox(new Vector3f(position.x,centerY,position.z),halfSize,halfHeight,halfSize);
+                if(!isInView(cam,box))priority+=250000;
             }
-            float dx = position.x - cameraPosition.x;
-            float dz = position.z - cameraPosition.z;
-            ordered.add(new TilePriority(tile, group, dx * dx + dz * dz));
+            ordered.add(new TilePriority(tile, group, priority));
         }
         ordered.sort(Comparator.comparingInt(TilePriority::group)
                 .thenComparingDouble(TilePriority::distanceSquared));
@@ -206,11 +250,8 @@ public final class TerrainStreaming implements AutoCloseable {
     }
 
     private Vector3f tilePosition(TerrainTile tile) {
-        return new Vector3f(
-                (tile.x() - TerrainTile.ORIGIN_X) * TerrainTile.SIZE,
-                0f,
-                -(tile.z() - TerrainTile.ORIGIN_Z) * TerrainTile.SIZE
-        );
+        return coordinates.local((tile.x()-TerrainTile.ORIGIN_X)*1000.0,0,
+                -(tile.z()-TerrainTile.ORIGIN_Z)*1000.0);
     }
 
     private void requestNextDownloads(List<TerrainTile> ordered) {
@@ -227,9 +268,16 @@ public final class TerrainStreaming implements AutoCloseable {
         heights.addAll(wantedDownloads);
         requestDownloads(heights, downloads, MAX_PENDING_HEIGHTS, retry,
                 tile -> downloader.downloadTile(tile.x(), tile.z()));
+        if(retry){
+            Set<Long> unavailable=new HashSet<>();
+            for(var entry:downloads.entrySet())if(entry.getValue().isDone()&&!entry.getValue().isCompletedExceptionally()&&completedPath(entry.getValue())==null)
+                unavailable.add(TerrainHeightSnapshot.key(entry.getKey().x(),entry.getKey().z()));
+            if(!unavailable.equals(unavailableHeights)){unavailableHeights=Set.copyOf(unavailable);snapshot=new TerrainHeightSnapshot(heightGrids,unavailableHeights);}
+        }
 
         // Übertrage Luftbilder bereits während die Geometrie vorbereitet wird.
         List<TerrainTile> images = ordered.stream()
+                .filter(tile -> tilePosition(tile).distance(currentPosition)<renderDistance+1000)
                 .filter(tile -> completedPath(downloads.get(tile)) != null)
                 .toList();
         requestDownloads(images, textures, MAX_PENDING_TEXTURES, retry,
@@ -277,8 +325,21 @@ public final class TerrainStreaming implements AutoCloseable {
             try {
                 TerrainQuad tile = future.get();
                 if (visibleTiles.contains(coordinate)) {
-                    loadedTiles.put(coordinate, tile);
+                    TerrainQuad previous=loadedTiles.put(coordinate, tile);
+                    if(previous!=null){previous.removeFromParent();worldObjects.groundChanged(coordinate);}
+                    tileResolution.put(coordinate,tile.getTotalSize());
+                    heightGrids.put(TerrainHeightSnapshot.key(coordinate.x(),coordinate.z()),new TerrainHeightSnapshot.Grid(tile.getTotalSize(),tile.getHeightMap()));
+                    snapshot=new TerrainHeightSnapshot(heightGrids,unavailableHeights);
+                    // Vorbereitung kann vor einem Rebase begonnen haben: aktuelle lokale Position verwenden.
+                    tile.setLocalTranslation(tilePosition(coordinate));
+                    if(activeCamera!=null){
+                        com.jme3.terrain.geomipmap.TerrainLodControl lod=new com.jme3.terrain.geomipmap.TerrainLodControl(tile,activeCamera);
+                        lod.setLodCalculator(new com.jme3.terrain.geomipmap.lodcalc.DistanceLodCalculator(65,2.7f));
+                        tile.addControl(lod);
+                    }
+                    if(previous!=null){tile.setMaterial(previous.getMaterial());}
                     rootNode.attachChild(tile);
+                    tile.updateGeometricState();
                 }
             } catch (ExecutionException e) {
                 System.err.println("Terrain konnte nicht vorbereitet werden: "
@@ -300,13 +361,15 @@ public final class TerrainStreaming implements AutoCloseable {
             if (prepared.size() + preparedTextures.size() >= PREPARATION_THREADS) {
                 return;
             }
-            if (loadedTiles.containsKey(tile) || prepared.containsKey(tile)
+            int desired=resolution(tile);
+            Integer existing=tileResolution.get(tile);
+            if ((existing!=null && existing==desired) || prepared.containsKey(tile)
                     || (retryAt.containsKey(tile) && System.nanoTime() - retryAt.get(tile) < 0)) {
                 continue;
             }
             Map<TerrainTile, Path> paths = completedNeighborhood(tile);
             if (paths != null) {
-                prepared.put(tile, preparation.submit(() -> buildTile(tile, paths)));
+                prepared.put(tile, preparation.submit(() -> buildTile(tile, paths,desired)));
             }
         }
     }
@@ -341,12 +404,13 @@ public final class TerrainStreaming implements AutoCloseable {
             return;
         }
         for (TerrainTile tile : ordered) {
-            if (!loadedTiles.containsKey(tile) || finishedTextures.contains(tile)) {
+            if (!loadedTiles.containsKey(tile) || (finishedTextures.contains(tile)&&textureResolution.getOrDefault(tile,0)==textureSize(tile))) {
                 continue;
             }
             Path path = completedPath(textures.get(tile));
             if (path != null) {
-                preparedTextures.put(tile, preparation.submit(() -> TerrainTextureLoader.load(path)));
+                int size=textureSize(tile);
+                preparedTextures.put(tile, preparation.submit(() -> TerrainTextureLoader.load(path,size)));
                 return;
             }
         }
@@ -367,6 +431,7 @@ public final class TerrainStreaming implements AutoCloseable {
                     Material material = tile.getMaterial();
                     material.setTexture("ColorMap", texture);
                     material.clearParam("Color");
+                    textureResolution.put(coordinate,texture.getImage().getWidth());
                 }
                 finishedTextures.add(coordinate);
             } catch (ExecutionException e) {
@@ -383,13 +448,13 @@ public final class TerrainStreaming implements AutoCloseable {
         }
     }
 
-    private TerrainQuad buildTile(TerrainTile coordinate, Map<TerrainTile, Path> paths)
+    private TerrainQuad buildTile(TerrainTile coordinate, Map<TerrainTile, Path> paths,int size)
             throws IOException {
-        float[] heights = TerrainHeightLoader.load(coordinate, paths);
+        float[] heights = TerrainHeightLoader.load(coordinate, paths,size);
         TerrainQuad tile = new TerrainQuad(
-                "Terrain_" + coordinate.x() + "_" + coordinate.z(), 65, 513, heights
+                "Terrain_" + coordinate.x() + "_" + coordinate.z(), Math.min(65,size), size, heights
         );
-        float spacing = TerrainTile.SIZE / 512f;
+        float spacing = TerrainTile.SIZE / (size-1f);
         tile.setLocalScale(spacing, 1f, spacing);
         tile.setLocalTranslation(tilePosition(coordinate));
         Material material = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
@@ -405,6 +470,17 @@ public final class TerrainStreaming implements AutoCloseable {
     }
 
 
+    private int textureSize(TerrainTile tile){
+        int resolution=resolution(tile);return resolution==513?1024:resolution==129?512:128;
+    }
+    private int resolution(TerrainTile tile){
+        float distance=tilePosition(tile).distance(currentPosition);
+        int old=tileResolution.getOrDefault(tile,0);
+        if(old==513 && distance<2500)return 513;
+        if(old==129 && distance>1900 && distance<5800)return 129;
+        if(old==65 && distance>5100)return 65;
+        return distance<2200?513:distance<5500?129:65;
+    }
     private boolean isInView(Camera cam, BoundingBox bounds) {
         int savedPlaneState = cam.getPlaneState();
 
@@ -416,6 +492,32 @@ public final class TerrainStreaming implements AutoCloseable {
         }
 
 
+    }
+
+    public WorldCoordinates coordinates(){return coordinates;}
+    public float maxGroundError(){return worldObjects.maxGroundError();}
+    public int pavementVertexCount(){return worldObjects.pavementVertices();}
+    public int visibleObjectCount(){return worldObjects.visibleCount();}
+    public int groundedPartCount(){return worldObjects.groundedParts();}
+    public boolean isSpawnAreaReady(Vector3f position){return worldObjects.spawnReady(position);}
+    public int spawnObjectTotal(Vector3f position){return worldObjects.spawnTotal(position);}
+    public int spawnObjectProgress(Vector3f position){return worldObjects.spawnProgress(position);}
+    public int loadedMapCellCount(){return worldObjects.mapCellCount();}
+    public int mappedTreeCount(){return worldObjects.mappedTreeCount();}
+    public int mappedBuildingCount(){return worldObjects.mappedBuildingCount();}
+    public int loadedObjectCount(){return worldObjects.loadedCount();}
+    public int registeredObjectCount(){return worldObjects.registeredCount();}
+    public Vector3f recenter(Vector3f player, Camera camera) {
+        if(Math.abs(player.x)<4000 && Math.abs(player.z)<4000)return new Vector3f();
+        Vector3f delta=new Vector3f(Math.round(player.x/1000f)*1000f,0,Math.round(player.z/1000f)*1000f);
+        for(com.jme3.scene.Spatial child:rootNode.getChildren())child.move(delta.negate());
+        worldObjects.normalizeRoot();
+        coordinates.shift(delta);
+        if(lastPosition!=null)lastPosition.subtractLocal(delta);
+        currentPosition.subtractLocal(delta);
+        camera.setLocation(camera.getLocation().subtract(delta));
+        rootNode.updateGeometricState();
+        return delta;
     }
 
     public void prewarm(com.jme3.renderer.RenderManager manager) {
@@ -454,7 +556,7 @@ public final class TerrainStreaming implements AutoCloseable {
             for (TerrainQuad tile : loadedTiles.values()) {
                 tile.removeFromParent();
             }
-            loadedTiles.clear();
+            loadedTiles.clear();heightGrids.clear();snapshot=new TerrainHeightSnapshot(Map.of());
             if (interrupted) {
                 Thread.currentThread().interrupt();
             }
