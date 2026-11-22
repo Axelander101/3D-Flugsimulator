@@ -29,11 +29,11 @@ public final class LoadingScreen {
         this.assets=assets;this.gui=gui;
         layer.setLocalTranslation(0,0,100);
         layer.attachChild(backdrop);
-        title=text(font,38,ColorRGBA.White);title.setText("FLIGHT TRAINING");
-        caption=text(font,14,new ColorRGBA(.35f,.8f,1,1));caption.setText("FLUG WIRD VORBEREITET");
+        title=text(font,38,ColorRGBA.White);title.setText(English.text("FLIGHT TRAINING"));
+        caption=text(font,14,new ColorRGBA(.35f,.8f,1,1));caption.setText(English.text("FLUG WIRD VORBEREITET"));
         status=text(font,17,new ColorRGBA(.85f,.9f,.96f,1));
         percentage=text(font,18,ColorRGBA.White);
-        hint=text(font,13,new ColorRGBA(.68f,.75f,.84f,1));hint.setText("Terrain und Umgebung werden für deinen Start vorbereitet.");
+        hint=text(font,13,new ColorRGBA(.68f,.75f,.84f,1));hint.setText(English.text("Terrain und Umgebung werden für deinen Start vorbereitet."));
         track=rectangle("LoadingTrack",new ColorRGBA(.18f,.24f,.32f,1));
         fill=rectangle("LoadingProgress",new ColorRGBA(.25f,.76f,1,1));
         runner=rectangle("LoadingActivity",new ColorRGBA(.65f,.91f,1,1));
@@ -47,12 +47,12 @@ public final class LoadingScreen {
     }
     public void begin(int width,int height){
         if(photo==null)photo=MenuImages.load(assets,"LSZH","Zürich");
-        target=displayed=clock=0;active=true;status.setText("Höhendaten werden angefordert …");
-        layout(width,height);gui.attachChild(layer);percentage.setText("…");update(0,width,height);
+        target=displayed=clock=0;active=true;status.setText(English.text("Höhendaten werden angefordert …"));
+        layout(width,height);gui.attachChild(layer);percentage.setText(English.text("…"));update(0,width,height);
     }
     public void progress(String message,float progress){
         if(!active)return;
-        status.setText(message);target=Math.max(target,Math.min(.99f,Math.max(0,progress)));
+        status.setText(English.text(message));target=Math.max(target,Math.min(.99f,Math.max(0,progress)));
     }
     public void update(float tpf,int width,int height){
         if(!active)return;
@@ -60,7 +60,7 @@ public final class LoadingScreen {
         clock+=Math.max(0,tpf);
         displayed+=(target-displayed)*(1-(float)Math.exp(-8*Math.max(0,tpf)));
         float barWidth=barWidth();fill.setLocalScale(Math.max(.001f,barWidth*displayed),7,1);
-        percentage.setText(target==0?"…":Math.round(displayed*100)+" %");
+        percentage.setText(English.text(target==0?"…":Math.round(displayed*100)+" %"));
         percentage.setLocalTranslation(margin()+barWidth-percentage.getLineWidth(),barY()+38,2);
         runner.setCullHint(target==0?Spatial.CullHint.Inherit:Spatial.CullHint.Always);
         runner.setLocalTranslation(margin()+(barWidth-70)*(.5f+.5f*(float)Math.sin(clock*1.8f)),barY(),3);

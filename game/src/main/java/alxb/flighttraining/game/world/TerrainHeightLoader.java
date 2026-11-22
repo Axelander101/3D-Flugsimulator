@@ -23,9 +23,32 @@ final class TerrainHeightLoader {
         var image=ImageIO.read(path.toFile());
         if(image==null||image.getWidth()!=500||image.getHeight()!=500)
             throw new IOException("Erwartet wird eine 500 × 500 swissALTI3D-Kachel: "+path);
-        Raster loaded=image.getRaster();
+        Raster loaded=repairNoData(image.getRaster(),absolute);
         synchronized(RASTERS){Raster existing=RASTERS.get(key);if(existing!=null)return existing;RASTERS.put(key,loaded);}
         return loaded;
+    }
+    private static boolean valid(float height){return Float.isFinite(height) && height>-9000f;}
+    private static Raster repairNoData(Raster source,Path path)throws IOException{
+        int width=source.getWidth(),height=source.getHeight(),count=width*height;
+        float[] data=source.getSamples(0,0,width,height,0,(float[])null);int validCount=0;
+        for(float value:data)if(valid(value))validCount++;
+        if(validCount==count)return source;
+        if(validCount==0)throw new IOException("Keine gültigen Höhenwerte in "+path);
+        // Fill raster-edge voids once per decoded tile, from the nearest measured sample.
+        // Multi-source breadth-first propagation is linear, unlike a search for every missing pixel.
+        int[] queue=new int[count];int head=0,tail=0;
+        for(int i=0;i<count;i++)if(valid(data[i]))queue[tail++]=i;
+        while(head<tail){
+            if((head&16383)==0 && Thread.currentThread().isInterrupted())
+                throw new InterruptedIOException("Höhenvorbereitung abgebrochen");
+            int i=queue[head++],x=i%width,y=i/width;
+            if(x>0&&!valid(data[i-1])){data[i-1]=data[i];queue[tail++]=i-1;}
+            if(x+1<width&&!valid(data[i+1])){data[i+1]=data[i];queue[tail++]=i+1;}
+            if(y>0&&!valid(data[i-width])){data[i-width]=data[i];queue[tail++]=i-width;}
+            if(y+1<height&&!valid(data[i+width])){data[i+width]=data[i];queue[tail++]=i+width;}
+        }
+        var sampleModel=new java.awt.image.ComponentSampleModel(java.awt.image.DataBuffer.TYPE_FLOAT,width,height,1,width,new int[]{0});
+        return Raster.createWritableRaster(sampleModel,new java.awt.image.DataBufferFloat(data,count),null);
     }
     private TerrainHeightLoader() {
     }
@@ -37,7 +60,8 @@ final class TerrainHeightLoader {
         int last=size-1;
         Map<TerrainTile, Raster> rasters = new HashMap<>();
         for (var entry : paths.entrySet()) {
-            rasters.put(entry.getKey(), raster(entry.getValue()));
+            try{rasters.put(entry.getKey(),raster(entry.getValue()));}
+            catch(IOException error){if(entry.getKey().equals(center))throw error;}
         }
         if (!rasters.containsKey(center)) {
             throw new IOException("Höhenkachel fehlt: " + center);

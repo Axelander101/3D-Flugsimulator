@@ -29,10 +29,6 @@ import javax.imageio.ImageIO;
 public final class TerrainDownloader implements AutoCloseable {
     private static final int DATA_YEAR = 2024;
     private static final long RETRY_DELAY_NANOS = Duration.ofSeconds(30).toNanos();
-    private static final Pattern CACHE_FILE = Pattern.compile(
-            "(terrain|texture)_([0-9]+)-([0-9]+)[.](tif|png)"
-    );
-
     private enum Kind { HEIGHT, TEXTURE }
 
     private record Resource(TerrainTile tile, Kind kind) {
@@ -91,9 +87,11 @@ public final class TerrainDownloader implements AutoCloseable {
             return CompletableFuture.failedFuture(new IllegalStateException("Downloader geschlossen"));
         }
         Download previous = downloads.get(resource);
-        if (previous != null && (!previous.result.isCompletedExceptionally()
-                || System.nanoTime() - previous.retryAt < 0)) {
-            return previous.result;
+        if(previous!=null){
+            boolean stale=previous.result.isDone() && !previous.result.isCompletedExceptionally()
+                    && previous.result.getNow(null)!=null && !Files.isRegularFile(previous.result.getNow(null));
+            if(!stale && (!previous.result.isCompletedExceptionally() || System.nanoTime()-previous.retryAt<0))
+                return previous.result;
         }
         Download download = new Download();
         download.task = new FutureTask<>(() -> {
@@ -332,36 +330,15 @@ public final class TerrainDownloader implements AutoCloseable {
     }
 
     synchronized void retainTiles(Set<TerrainTile> wanted) {
-        if (closed) {
-            return;
-        }
-        for (Resource resource : Set.copyOf(downloads.keySet())) {
-            if (!wanted.contains(resource.tile())) {
-                forgetResource(resource);
+        if(closed)return;
+        // Retention is a memory/job window, not a disk eviction policy. Deleting cached rasters
+        // here races running neighbourhood readers and forces the return flight to download again.
+        for(Resource resource:Set.copyOf(downloads.keySet()))if(!wanted.contains(resource.tile())){
+            Download old=downloads.remove(resource);
+            if(old!=null && !old.result.isDone()){
+                old.result.cancel(false);old.task.cancel(true);workers.remove(old.task);
             }
         }
-        // Auch Dateien eines früheren Spielstarts berücksichtigen.
-        workers.execute(() -> {
-            if (!Files.isDirectory(cacheDirectory)) {
-                return;
-            }
-            try (var files = Files.list(cacheDirectory)) {
-                files.forEach(file -> {
-                    var match = CACHE_FILE.matcher(file.getFileName().toString());
-                    if (match.matches()) {
-                        TerrainTile tile = new TerrainTile(
-                                Integer.parseInt(match.group(2)), Integer.parseInt(match.group(3))
-                        );
-                        if (!wanted.contains(tile)) {
-                            Kind kind = match.group(1).equals("terrain") ? Kind.HEIGHT : Kind.TEXTURE;
-                            deleteUnusedFile(new Resource(tile, kind));
-                        }
-                    }
-                });
-            } catch (IOException e) {
-                System.err.println("Karten-Cache konnte nicht bereinigt werden: " + e.getMessage());
-            }
-        });
     }
 
     @Override

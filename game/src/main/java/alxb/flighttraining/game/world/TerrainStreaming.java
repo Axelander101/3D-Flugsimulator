@@ -54,6 +54,7 @@ public final class TerrainStreaming implements AutoCloseable {
     private long lastUpdate;
     private int displayRadius=8;
     private float renderDistance=8000;
+    private final Map<TerrainTile,Integer> builtNeighborhoods=new HashMap<>(), preparingNeighborhoods=new HashMap<>();
     private final Map<TerrainTile,Integer> tileResolution=new HashMap<>();
     private final AssetManager assetManager;
     private final Node rootNode;
@@ -193,12 +194,12 @@ public final class TerrainStreaming implements AutoCloseable {
         for (TerrainTile tile : new ArrayList<>(loadedTiles.keySet())) {
             if (!visibleTiles.contains(tile)) {
                 loadedTiles.remove(tile).removeFromParent();tileResolution.remove(tile);textureResolution.remove(tile);
-                heightGrids.remove(TerrainHeightSnapshot.key(tile.x(),tile.z()));
+                heightGrids.remove(TerrainHeightSnapshot.key(tile.x(),tile.z()));builtNeighborhoods.remove(tile);
             }
         }
         for (TerrainTile tile : new ArrayList<>(prepared.keySet())) {
             if (!visibleTiles.contains(tile)) {
-                prepared.remove(tile).cancel(true);
+                prepared.remove(tile).cancel(true);preparingNeighborhoods.remove(tile);
             }
         }
         for (TerrainTile tile : new ArrayList<>(preparedTextures.keySet())) {
@@ -294,7 +295,8 @@ public final class TerrainStreaming implements AutoCloseable {
                 break;
             }
             CompletableFuture<Path> current = requests.get(tile);
-            if (current == null || (retry && current.isCompletedExceptionally())) {
+            if (current == null || (retry && (current.isCompletedExceptionally()
+                    || current.isDone() && current.getNow(null)!=null && !java.nio.file.Files.isRegularFile(current.getNow(null))))) {
                 CompletableFuture<Path> next = download.apply(tile);
                 requests.put(tile, next);
                 if (isPending(next)) {
@@ -328,6 +330,7 @@ public final class TerrainStreaming implements AutoCloseable {
                     TerrainQuad previous=loadedTiles.put(coordinate, tile);
                     if(previous!=null){previous.removeFromParent();worldObjects.groundChanged(coordinate);}
                     tileResolution.put(coordinate,tile.getTotalSize());
+                    builtNeighborhoods.put(coordinate,preparingNeighborhoods.getOrDefault(coordinate,0));
                     heightGrids.put(TerrainHeightSnapshot.key(coordinate.x(),coordinate.z()),new TerrainHeightSnapshot.Grid(tile.getTotalSize(),tile.getHeightMap()));
                     snapshot=new TerrainHeightSnapshot(heightGrids,unavailableHeights);
                     // Vorbereitung kann vor einem Rebase begonnen haben: aktuelle lokale Position verwenden.
@@ -350,7 +353,7 @@ public final class TerrainStreaming implements AutoCloseable {
             } catch (CancellationException e) {
                 // Abgebrochene Vorbereitungen werden bei Bedarf erneut eingeplant.
             }
-            prepared.remove(coordinate);
+            prepared.remove(coordinate);preparingNeighborhoods.remove(coordinate);
             // Höchstens eine neue Kachel pro Frame einhängen.
             return;
         }
@@ -363,13 +366,16 @@ public final class TerrainStreaming implements AutoCloseable {
             }
             int desired=resolution(tile);
             Integer existing=tileResolution.get(tile);
-            if ((existing!=null && existing==desired) || prepared.containsKey(tile)
+            if (prepared.containsKey(tile)
                     || (retryAt.containsKey(tile) && System.nanoTime() - retryAt.get(tile) < 0)) {
                 continue;
             }
             Map<TerrainTile, Path> paths = completedNeighborhood(tile);
-            if (paths != null) {
-                prepared.put(tile, preparation.submit(() -> buildTile(tile, paths,desired)));
+            if(paths!=null){
+                int signature=neighborhoodSignature(tile,paths);
+                if(existing!=null && existing==desired && (builtNeighborhoods.getOrDefault(tile,0)==signature || !neighborhoodSettled(tile)))continue;
+                preparingNeighborhoods.put(tile,signature);
+                prepared.put(tile,preparation.submit(()->buildTile(tile,paths,desired)));
             }
         }
     }
@@ -387,9 +393,7 @@ public final class TerrainStreaming implements AutoCloseable {
                 continue;
             }
             CompletableFuture<Path> future = downloads.get(tile);
-            if (future == null || isPending(future)) {
-                return null;
-            }
+            if(future==null || isPending(future))continue;
             // Fehlgeschlagene Nachbarhöhen am Rand aus der eigenen Tile ergänzen.
             Path path = completedPath(future);
             if (path != null) {
@@ -399,6 +403,18 @@ public final class TerrainStreaming implements AutoCloseable {
         return result;
     }
 
+    private boolean neighborhoodSettled(TerrainTile center){
+        for(TerrainTile tile:window(center,1)){
+            CompletableFuture<Path> future=downloads.get(tile);
+            if(future==null || !future.isDone())return false;
+        }
+        return true;
+    }
+    private static int neighborhoodSignature(TerrainTile center,Map<TerrainTile,Path> paths){
+        int mask=0,index=0;
+        for(TerrainTile tile:window(center,1)){if(paths.containsKey(tile))mask|=1<<index;index++;}
+        return mask;
+    }
     private void prepareNextTexture(List<TerrainTile> ordered) {
         if (!preparedTextures.isEmpty() || prepared.size() >= PREPARATION_THREADS) {
             return;

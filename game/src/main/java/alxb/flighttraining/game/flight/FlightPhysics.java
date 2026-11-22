@@ -21,6 +21,7 @@ public final class FlightPhysics {
     private final Vector3f velocity=new Vector3f(),wind=new Vector3f();
     private float pitchSpeed,yawSpeed,rollSpeed,pitchCommand,rollCommand,yawCommand;
     private float throttle,enginePower,normalG,lastThrust,lastLift,lastDrag,lastFrameDt;
+    private final AircraftSystems systems=new AircraftSystems();
     private boolean engineRunning=true,flightAssistEnabled=true;
 
     public FlightPhysics(Node plane,FlightInput input){this(plane,input,null,AircraftParameters.hornet());}
@@ -30,8 +31,11 @@ public final class FlightPhysics {
     private FlightPhysics(Node plane,FlightInput input,FlightCommandAi commands,AircraftParameters parameters){
         this.plane=Objects.requireNonNull(plane);this.input=input;aiInput=commands;
         this.parameters=Objects.requireNonNull(parameters);
+        systems.reset(true);
         if(input==null && commands==null)throw new IllegalArgumentException("Steuerquelle fehlt");
     }
+    public AircraftSystems getSystems(){return systems;}
+    public boolean isEngineRunning(){return engineRunning;}
     public AircraftParameters getParameters(){return parameters;}
     public void reset(Vector3f initialVelocity,float initialThrottle){
         publishedPosition.x=Float.NaN;
@@ -76,12 +80,18 @@ public final class FlightPhysics {
     }
     public void update(float tpf){
         if(!Float.isFinite(tpf)||tpf<=0)return;
+        if(input!=null){
+            int commands=input.drainSystemCommands();
+            systems.command(commands,getSpeed());
+            if((commands&AircraftSystems.ENGINE)!=0)engineRunning=!engineRunning;
+        }
         lastFrameDt=Math.min(tpf,0.25f);
         float remaining=lastFrameDt;
         while(remaining>0.000001f){float dt=Math.min(STEP,remaining);step(dt);remaining-=dt;}
     }
     private void step(float dt){
         updateCommands(dt);
+        systems.update(dt,getAirspeed(),-getAngleOfAttack(),requestedYaw(),input!=null && input.wheelBrake);
         Vector3f air=velocity.subtract(wind);
         float speed=air.length();
         Quaternion rotation=plane.getWorldRotation().clone();
@@ -95,11 +105,13 @@ public final class FlightPhysics {
         float alpha=speed>0.1f?(float)Math.atan2(-local.y,-local.z):0;
         float beta=speed>0.1f?(float)Math.asin(clamp(local.x/speed,-1,1)):0;
         float cl=AerodynamicModel.liftCoefficient(alpha,mach);
-        float cd=AerodynamicModel.dragCoefficient(alpha,beta,cl,mach,parameters);
+        cl+=systems.getFlaps()*.55f;
+        float cd=AerodynamicModel.dragCoefficient(alpha,beta,cl,mach,parameters)
+                +systemsDragCoefficient();
         lastThrust=thrustForPower(enginePower,mach,atmosphere.densityKgM3())
                 * (engineRunning?1:clamp(enginePower/0.03f,0,1));
         Vector3f nonGravity=forward.mult(lastThrust);
-        lastLift=q*parameters.wingAreaM2()*cl;lastDrag=q*parameters.wingAreaM2()*cd;
+        lastLift=q*parameters.wingAreaM2()*cl*(1-.35f*systems.getWingFold());lastDrag=q*parameters.wingAreaM2()*cd;
         if(speed>0.1f){
             Vector3f direction=air.divide(speed);
             Vector3f liftDirection=right.cross(direction);
@@ -145,8 +157,20 @@ public final class FlightPhysics {
         Vector3f pathRate=speed>30?air.cross(acceleration).divideLocal(speed*speed):new Vector3f();
         Vector3f localPathRate=rotation.inverse().mult(pathRate);
         float targetPitch;
+        if(systems.isOnGround() && speed<65){
+            // Nosewheel steering is independent of aerodynamic rudder authority.
+            float signedSpeed=velocity.dot(rotation.mult(new Vector3f(0,0,-1)));
+            float turn=Math.max(-.65f,Math.min(.65f,(float)Math.tan(systems.getSteering())*signedSpeed/3.7f));
+            plane.setLocalRotation(plane.getLocalRotation().mult(new Quaternion().fromAngleAxis(turn*dt,Vector3f.UNIT_Y)).normalizeLocal());
+            float headingChange=turn*dt;
+            Vector3f rolling=new Quaternion().fromAngleAxis(headingChange,Vector3f.UNIT_Y).mult(velocity);
+            velocity.x=rolling.x;velocity.z=rolling.z;
+            pitchSpeed=yawSpeed=rollSpeed=0;
+            return;
+        }
         if(flightAssistEnabled){
-            float desiredCl=requestedLoad()*parameters.massKg()*G/Math.max(100,q*parameters.wingAreaM2());
+            float desiredCl=requestedLoad()*parameters.massKg()*G/Math.max(100,q*parameters.wingAreaM2()*(1-.35f*systems.getWingFold()))
+                    -systems.getFlaps()*.55f;
             float desiredAlpha=AerodynamicModel.alphaForLift(desiredCl,mach);
             targetPitch=localPathRate.x+(desiredAlpha-alpha)*3.2f*controlAuthority;
         }else targetPitch=localPathRate.x+pitchCommand*0.65f*controlAuthority-alpha*0.2f*controlAuthority;
@@ -170,29 +194,48 @@ public final class FlightPhysics {
         float afterburner=(parameters.afterburnerThrustN()-parameters.dryThrustN())*clamp((power-0.85f)/0.15f,0,1);
         return (dry+afterburner)*lapse*inlet;
     }
+    private float systemsDragCoefficient(){
+        return systems.getGear()*.025f+systems.getAirbrake()*.14f+systems.getFlaps()*.055f
+                +systems.getCanopy()*.03f+systems.getWingFold()*.08f;
+    }
     public float getTrimThrottle(float airspeed,float loadFactor,float climbRate){
         float speed=Math.max(50,airspeed);FlightAtmosphere a=getAtmosphere();
         float q=0.5f*a.densityKgM3()*speed*speed,mach=speed/a.speedOfSoundMps();
         float cl=parameters.massKg()*G*loadFactor/(q*parameters.wingAreaM2());
-        float alpha=AerodynamicModel.alphaForLift(cl,mach);
-        float drag=q*parameters.wingAreaM2()*AerodynamicModel.dragCoefficient(alpha,0,cl,mach,parameters);
+        float alpha=AerodynamicModel.alphaForLift(cl-systems.getFlaps()*.55f,mach);
+        float drag=q*parameters.wingAreaM2()*(AerodynamicModel.dragCoefficient(alpha,0,cl,mach,parameters)+systemsDragCoefficient());
         float required=Math.max(0,drag+parameters.massKg()*G*climbRate/speed);
         float dry=thrustForPower(0.85f,mach,a.densityKgM3()),max=thrustForPower(1,mach,a.densityKgM3());
         return required<=dry?clamp(0.85f*(required/dry-0.03f)/0.97f,0,0.85f)
                 :clamp(0.85f+0.15f*(required-dry)/Math.max(1,max-dry),0.85f,1);
     }
     public void resolveGroundCollision(float groundHeight){
-        if(!Float.isFinite(groundHeight))return;
+        if(!Float.isFinite(groundHeight)){systems.groundContact(false,0,0);return;}
         Vector3f world=plane.getWorldTranslation();
-        if(world.y<=groundHeight+0.5f){
-            world=world.clone();world.y=groundHeight+0.5f;
+        Vector3f up=plane.getWorldRotation().mult(Vector3f.UNIT_Y);
+        // Asset is displayed at half scale: main wheel bottom is 1.155 m below its root.
+        float clearance=systems.getGear()>.99f?1.155f:.5f;
+        boolean contact=world.y<=groundHeight+clearance;
+        float forwardSpeed=velocity.dot(plane.getWorldRotation().mult(new Vector3f(0,0,-1)));
+        systems.groundContact(contact,forwardSpeed,lastFrameDt);
+        if(contact){
+            world=world.clone();world.y=groundHeight+clearance;
             plane.setLocalTranslation(plane.getParent()==null?world:plane.getParent().worldToLocal(world,new Vector3f()));
+            positionX=world.x;positionY=world.y;positionZ=world.z;publishedPosition.set(world);
             if(velocity.y<0)velocity.y=0;
             float horizontal=(float)Math.hypot(velocity.x,velocity.z);
-            float factor=horizontal>0?Math.max(0,1-0.025f*G*lastFrameDt/horizontal):0;
+            // Braking scales with supported weight; airborne brakes never slow the aircraft.
+            float supported=Math.max(0,Math.min(1,1-lastLift*up.y/(parameters.massKg()*G)));
+            float friction=systems.getGear()>.99f?.02f+.55f*systems.getBrake():.4f;
+            float deceleration=friction*G*supported;
+            float factor=horizontal>0?Math.max(0,1-deceleration*lastFrameDt/horizontal):0;
             velocity.x*=factor;velocity.z*=factor;
-            normalG=plane.getWorldRotation().mult(Vector3f.UNIT_Y).dot(Vector3f.UNIT_Y);
-            pitchSpeed*=0.9f;yawSpeed*=0.9f;
+            // Static brake holds against idle thrust, without reversing velocity.
+            if(horizontal<.5f && systems.getBrake()>.5f && lastThrust<deceleration*parameters.massKg()){
+                velocity.x=velocity.z=0;
+            }
+            normalG=up.dot(Vector3f.UNIT_Y);
+            pitchSpeed*=.9f;yawSpeed*=.9f;
         }
     }
     public Vector3f getVelocity(){return velocity.clone();}

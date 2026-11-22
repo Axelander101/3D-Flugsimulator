@@ -37,6 +37,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class FlightTraining extends SimpleApplication {
+    private alxb.flighttraining.game.audio.GameAudio gameAudio;
+    public alxb.flighttraining.game.audio.GameAudio getGameAudio(){return gameAudio;}
     private boolean spawnReady;
     private Node plane;
     private FlightInput input;
@@ -83,6 +85,9 @@ public class FlightTraining extends SimpleApplication {
         setDisplayFps(false);
         setDisplayStatView(false);
         flyCam.setEnabled(false);
+        // C and M are aircraft controls; disable the engine's overlapping debug shortcuts.
+        if(inputManager.hasMapping(INPUT_MAPPING_CAMERA_POS))inputManager.deleteMapping(INPUT_MAPPING_CAMERA_POS);
+        if(inputManager.hasMapping(INPUT_MAPPING_MEMORY))inputManager.deleteMapping(INPUT_MAPPING_MEMORY);
 
         menu = new Menu(
                 assetManager,
@@ -100,6 +105,7 @@ public class FlightTraining extends SimpleApplication {
 
 
         input = new FlightInput(inputManager);
+        gameAudio=new alxb.flighttraining.game.audio.GameAudio(assetManager,rootNode,listener,audioRenderer,inputManager);
         loadingScreen = new alxb.flighttraining.game.ui.LoadingScreen(assetManager, guiNode, guiFont);
 
 
@@ -132,6 +138,8 @@ public class FlightTraining extends SimpleApplication {
         guns = new Cannon(targets);
         enemies = new Enemy(assetManager, targets);
         enemies.configure(plane, physics, terrain);
+        enemies.setSoundEvents(p->gameAudio.at("cannon",p),p->gameAudio.at("impact",p));
+        guns.setHitListener(p->gameAudio.at("impact",p));
         radar = new Radar(5000f, plane, enemies);
         hud = new FlightHud(assetManager, cockpit, plane, enemies);
         enemyMarkers = new EnemyMarkerDisplay(assetManager, guiNode, cam, enemies);
@@ -166,6 +174,7 @@ public class FlightTraining extends SimpleApplication {
 
     @Override
     public void destroy() {
+        if(gameAudio!=null)gameAudio.close();
         if (terrain != null) {
             terrain.close();
         }
@@ -177,6 +186,8 @@ public class FlightTraining extends SimpleApplication {
         float renderDistance=alxb.flighttraining.game.world.WorldDetailSettings.renderDistance();
         if(cam.getFrustumFar()!=renderDistance)cam.setFrustumFar(renderDistance);
         menu.update(tpf);
+        gameAudio.setActive(!menu.getMenuOffen() && spawnReady);
+        input.setFlightControlsEnabled(!menu.getMenuOffen() && spawnReady);
         loadingScreen.update(tpf,cam.getWidth(),cam.getHeight());
         cockpit.setEnabled(!menu.getMenuOffen() && spawnReady);
         hud.setVisible(!menu.getMenuOffen() && spawnReady);
@@ -192,7 +203,7 @@ public class FlightTraining extends SimpleApplication {
             physics.update(tpf);
             Vector3f delta=terrain.recenter(plane.getLocalTranslation(),cam);
             if(delta.lengthSquared()>0){
-                guns.rebase(delta);enemies.rebase(delta);
+                guns.rebase(delta);enemies.rebase(delta);gameAudio.rebase(delta);
                 for (InfraredMissile missile : missiles) missile.rebase(delta);
             }
             // Streaming/LOD must inspect this frame's camera, after physics and any origin shift.
@@ -208,6 +219,7 @@ public class FlightTraining extends SimpleApplication {
 
             radar.update();
             cockpit.updateControls(input, physics.getThrottle(), tpf);
+            cockpit.updateSystems(physics.getSystems());
             // Ground correction may have moved the plane; do not integrate head input twice.
             cockpit.update(0f);
             enemyMarkers.update(dogfightSettings != null);
@@ -219,12 +231,14 @@ public class FlightTraining extends SimpleApplication {
                 Vector3f p = missile.getModel().getLocalTranslation();
                 float ground = terrain.getGroundHeight(p);
                 if (Float.isFinite(ground) && p.y <= ground) {
+                    gameAudio.at("explosion",p);
                     missile.cancel();
                     return true;
                 }
                 return false;
             });
 
+            gameAudio.update(tpf,physics,enemies,plane,cam,getMapPosition(),terrain.getGroundHeight(plane.getLocalTranslation()),mountedMissiles.size(),weaponsEnabled());
             hud.setWeapons(mountedMissiles.size(), weaponsEnabled());
             hud.update(physics, plane.getLocalTranslation().y);
         }
@@ -261,6 +275,7 @@ public class FlightTraining extends SimpleApplication {
                 plane.getWorldRotation().mult(Vector3f.UNIT_Y)
         );
         missiles.add(missile);
+        if(gameAudio!=null)gameAudio.at("launch",position);
         missileCooldown = 0.75f;
     }
 
@@ -276,7 +291,9 @@ public class FlightTraining extends SimpleApplication {
                 Spatial model = assetManager.loadModel("Models/InfraredMissile/FT_IR_Missile_LOD0.glb");
                 model.setLocalScale(0.5f);
                 float side = i % 2 == 0 ? -1f : 1f;
-                model.setLocalTranslation(side * (i < 2 ? 2.1f : 1.5f), -0.30f, 0f);
+                // Centres of the existing inboard pylons, in aircraft space at model scale 0.5.
+                // Pylon underside y=-0.1575; missile body radius=0.04 -> centre y=-0.20.
+                model.setLocalTranslation(side * (i < 2 ? 1.175f : 1.8f), -0.20f, i < 2 ? 1.0f : 1.175f);
                 model.setLocalRotation(new com.jme3.math.Quaternion().fromAngleAxis(
                         (float) Math.PI, Vector3f.UNIT_Y));
                 plane.attachChild(model);
@@ -314,6 +331,7 @@ public class FlightTraining extends SimpleApplication {
         int shots = 0;
         while (shotCooldown <= 0f && shots < 16) {
             guns.fire(muzzle, direction, physics.getVelocity());
+            gameAudio.cannonFire();
             shotCooldown += 1f / 100f;
             shots++;
         }
@@ -344,6 +362,7 @@ public class FlightTraining extends SimpleApplication {
         if (settings == null || !Float.isFinite(settings.worldX) || !Float.isFinite(settings.worldZ)
                 || !Float.isFinite(settings.heightAboveGround) || settings.heightAboveGround < 0)
             throw new IllegalArgumentException("Ungültige Startposition");
+        if(gameAudio!=null)gameAudio.reset();
         spawnSettings = settings;
         spawnReady = false;
         cockpit.reset();
@@ -361,6 +380,8 @@ public class FlightTraining extends SimpleApplication {
         enemies.configure(plane,physics,terrain);
         plane.setLocalTranslation(0f, settings.heightAboveGround, 0f);
         physics.reset(new Vector3f(), 0f);
+        physics.setEngineRunning(true);
+        physics.getSystems().reset(settings.heightAboveGround > 3f);
         input.shoot = input.pitchUp = input.pitchDown = input.rollLeft = input.rollRight = false;
         input.infraredMissile = false;
         input.yawLeft = input.yawRight = input.throttleUp = input.throttleDown = false;
@@ -384,7 +405,7 @@ public class FlightTraining extends SimpleApplication {
         }
 
         plane.setLocalTranslation(
-                position.x, groundHeight + spawnSettings.heightAboveGround, position.z
+                position.x, groundHeight + Math.max(spawnSettings.heightAboveGround, 1.155f), position.z
         );
         plane.updateGeometricState();
         int ready=terrain.spawnObjectProgress(plane.getLocalTranslation());
@@ -406,6 +427,7 @@ public class FlightTraining extends SimpleApplication {
         if (dogfightSettings == null) return;
         Vector3f forward = plane.getLocalRotation().mult(new Vector3f(0, 0, -1));
         physics.reset(forward.mult(220f), .6f);
+        physics.getSystems().reset(true);
         enemies.spawn(dogfightSettings.enemyCount, plane, dogfightSettings);
     }
 

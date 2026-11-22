@@ -15,6 +15,8 @@ import java.util.List;
 public final class Enemy {
     private final AssetManager assets;
     private final Node targets;
+    private java.util.function.Consumer<Vector3f> soundFire=p->{},soundHit=p->{};
+    public void setSoundEvents(java.util.function.Consumer<Vector3f> fire,java.util.function.Consumer<Vector3f> hit){soundFire=fire;soundHit=hit;for(EnemyAircraft e:enemies)e.setSoundEvents(fire,hit);}
     private final List<EnemyAircraft> enemies = new ArrayList<>();
 
     public Enemy(AssetManager assets, Node targets) {
@@ -85,6 +87,7 @@ public final class Enemy {
             }
             EnemyAircraft aircraft = new EnemyAircraft(enemy, player);
             if (settings != null) aircraft.configure(settings);
+            aircraft.setSoundEvents(soundFire,soundHit);
             enemies.add(aircraft);
         }
     }

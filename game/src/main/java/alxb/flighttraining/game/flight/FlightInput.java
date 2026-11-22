@@ -32,6 +32,15 @@ public final class FlightInput {
     public boolean throttleUp;
     public boolean throttleDown;
 
+    public boolean wheelBrake;
+    private boolean flightControlsEnabled;
+    private int systemCommands;
+    public void setFlightControlsEnabled(boolean enabled) {
+        flightControlsEnabled=enabled;
+        if(!enabled){systemCommands=0;wheelBrake=false;}
+    }
+    public int drainSystemCommands(){int value=systemCommands;systemCommands=0;return value;}
+
     public boolean shoot;
     public boolean infraredMissile;
 
@@ -39,6 +48,17 @@ public final class FlightInput {
         this.inputManager = inputManager;
         configureJoystick();
         configureKeyboard();
+        String[] names={"AircraftGear","AircraftAirbrake","AircraftFlaps","AircraftParkingBrake",
+                "AircraftCanopy","AircraftHook","AircraftFold","AircraftEngine","AircraftDisplayPage","AircraftDisplayDetail","AircraftWheelBrake"};
+        int[] keys={KeyInput.KEY_G,KeyInput.KEY_X,KeyInput.KEY_L,KeyInput.KEY_P,
+                KeyInput.KEY_C,KeyInput.KEY_H,KeyInput.KEY_K,KeyInput.KEY_I,KeyInput.KEY_V,KeyInput.KEY_TAB,KeyInput.KEY_B};
+        for(int i=0;i<names.length;i++) inputManager.addMapping(names[i],new KeyTrigger(keys[i]));
+        ActionListener systems=(name,pressed,tpf)->{
+            if(name.equals("AircraftWheelBrake")){wheelBrake=pressed && flightControlsEnabled;return;}
+            if(!pressed || !flightControlsEnabled)return;
+            for(int i=0;i<10;i++)if(names[i].equals(name)){systemCommands|=1<<i;break;}
+        };
+        inputManager.addListener(systems,names);
     }
 
     private void configureKeyboard() {

@@ -100,6 +100,8 @@ public class Menu{
             "3840x2160"
     };
 
+    private float displayedAudioVolume=-1;
+    private final java.awt.Rectangle audioMinus=new java.awt.Rectangle(),audioPlus=new java.awt.Rectangle(),audioMute=new java.awt.Rectangle();
     private final java.util.List<java.awt.Rectangle> missionBounds =
             new java.util.ArrayList<>();
 
@@ -214,6 +216,7 @@ public class Menu{
                 return;
             }
 
+            if(app.getGameAudio()!=null)app.getGameAudio().uiClick();
             Vector2f cursor = app.getInputManager().getCursorPosition();
 
             float mouseX = cursor.x;
@@ -322,6 +325,16 @@ public class Menu{
                     }
                 }
 
+                case AUDIO_SETTINGS -> {
+                    if(backBounds.contains(mouseX,mouseY))screen=Screen.SETTINGS;
+                    else if(app.getGameAudio()!=null){
+                        var audio=app.getGameAudio();
+                        if(audioMinus.contains(mouseX,mouseY))audio.setVolume(audio.getVolume()-.1f);
+                        if(audioPlus.contains(mouseX,mouseY))audio.setVolume(audio.getVolume()+.1f);
+                        if(audioMute.contains(mouseX,mouseY))audio.toggleMute();
+                    }
+                    redraw();
+                }
                 case STEERING_SETTINGS -> {
 
                 }
@@ -387,6 +400,7 @@ public class Menu{
     }
 
     public void update(float tpf) {
+        if(menuOffen&&screen==Screen.AUDIO_SETTINGS&&app.getGameAudio()!=null&&displayedAudioVolume!=app.getGameAudio().getVolume())redraw();
         if (menuOffen && (menuWidth != app.getCamera().getWidth() || menuHeight != app.getCamera().getHeight())) redraw();
     }
 
@@ -408,7 +422,7 @@ public class Menu{
 
             switch (screen) {
                 case MAIN -> {
-                    g.drawString("Flight Training", 80, 120);
+                    g.drawString(English.text("Flight Training"), 80, 120);
 
                     drawButton(g, "Missionen", 180, 80, hellBlau);
                     drawButton(g, "Free Play", 270, 80, hellBlau);
@@ -421,6 +435,7 @@ public class Menu{
                 case MISSIONS -> drawMissions(g, width, height);
                 case SETTINGS -> drawSettings(g);
                 case GRAPHICS_SETTINGS -> drawGraphicSetting(g, width, height);
+                case AUDIO_SETTINGS -> drawAudioSettings(g,width);
                 case DOGFIGHT_AI -> dogfightUI.draw(g, width, height);
 
             }
@@ -448,11 +463,11 @@ public class Menu{
         // Kopfbereich
         g.setColor(Color.WHITE);
         g.setFont(new Font("SansSerif", Font.BOLD, 36));
-        g.drawString("Free Play", margin, 65);
+        g.drawString(English.text("Free Play"), margin, 65);
 
         g.setColor(new Color(165, 180, 200));
         g.setFont(new Font("SansSerif", Font.PLAIN, 17));
-        g.drawString("Wähle deinen Startflugplatz", margin, 95);
+        g.drawString(English.text("Wähle deinen Startflugplatz"), margin, 95);
 
         // Zurück oben rechts
         backBounds.setBounds(width - margin - 130, 35, 130, 44);
@@ -562,19 +577,19 @@ public class Menu{
 
             g.setColor(Color.WHITE);
             g.setFont(new Font("SansSerif", Font.BOLD, 22));
-            g.drawString(MISSIONS[i], x + 18, y + cardHeight - 58);
+            g.drawString(English.text(MISSIONS[i]), x + 18, y + cardHeight - 58);
 
             g.setColor(new Color(180, 195, 212));
             g.setFont(new Font("SansSerif", Font.PLAIN, 15));
-            g.drawString(
-                    MISSION_DESCRIPTIONS[i],
+            g.drawString(English.text(
+                    MISSION_DESCRIPTIONS[i]),
                     x + 18, y + cardHeight - 30
             );
         }
     }
 
     private void drawSettings(Graphics2D g) {
-        g.drawString("Flight Training", 80, 120);
+        g.drawString(English.text("Flight Training"), 80, 120);
 
         drawButton(g, "Graphics", 180, 80, hellBlau);
         drawButton(g, "Steering", 270, 80, hellBlau);
@@ -613,7 +628,7 @@ public class Menu{
                 content.fillRoundRect(row.x, row.y, row.width, row.height, 16, 16);
                 content.setColor(Color.WHITE);
                 content.setFont(new Font("SansSerif", Font.PLAIN, 24));
-                content.drawString(GRAPHICS_SETTING[i]+(i==7?String.format(java.util.Locale.ROOT,"   %.0f km  ›",alxb.flighttraining.game.world.WorldDetailSettings.renderDistance()/1000f):""), row.x + 18, row.y + 39);
+                content.drawString(English.text(GRAPHICS_SETTING[i]+(i==7?String.format(java.util.Locale.ROOT,"   %.0f km  ›",alxb.flighttraining.game.world.WorldDetailSettings.renderDistance()/1000f):"")), row.x + 18, row.y + 39);
             }
         } finally {
             content.dispose();
@@ -638,13 +653,26 @@ public class Menu{
 
 
 
+    private void drawAudioSettings(Graphics2D g,int width){
+        drawPageHeader(g,"Audio","Flight effects, cockpit warnings and airport proximity radio",width);
+        float volume=app.getGameAudio()==null?.65f:app.getGameAudio().getVolume();
+        displayedAudioVolume=volume;
+        g.setFont(new Font("SansSerif",Font.BOLD,28));g.setColor(Color.WHITE);g.drawString("Master volume: "+Math.round(volume*100)+" %",60,185);
+        audioMinus.setBounds(60,215,100,60);audioPlus.setBounds(180,215,100,60);audioMute.setBounds(300,215,190,60);
+        for(java.awt.Rectangle r:new java.awt.Rectangle[]{audioMinus,audioPlus,audioMute}){g.setColor(new Color(50,100,160));g.fillRoundRect(r.x,r.y,r.width,r.height,12,12);}
+        g.setColor(Color.WHITE);drawCenteredText(g,"−",audioMinus,0);drawCenteredText(g,"+",audioPlus,0);drawCenteredText(g,volume>0?"Mute":"Unmute",audioMute,0);
+        g.setFont(new Font("SansSerif",Font.PLAIN,19));g.drawString("F8: mute   F9: quieter   F10: louder",60,325);
+        g.drawString("Safety warnings take priority over radio messages.",60,370);
+        g.drawString("Airport radio announces proximity only, not airspace clearance.",60,405);
+    }
+
     private void drawSettingsBox(Graphics2D g, String text, int y, int x, Color color){
         g.setColor(color);
         g.fillRoundRect(x, y, 300, 70, 16, 16);
 
         g.setColor(Color.WHITE);
         g.setFont(new Font("SansSerif", Font.PLAIN, 28));
-        g.drawString(text, x+15, y + 45);
+        g.drawString(English.text(text), x+15, y + 45);
     }
 
     private int graphicsContentHeight() {
@@ -663,7 +691,7 @@ public class Menu{
 
         g.setColor(Color.WHITE);
         g.setFont(new Font("SansSerif", Font.PLAIN, 28));
-        g.drawString(text, x+15, y + 45);
+        g.drawString(English.text(text), x+15, y + 45);
     }
 
     private void drawButton(Graphics2D g, String text, int y, int x, Color color) {
@@ -672,7 +700,7 @@ public class Menu{
 
         g.setColor(Color.WHITE);
         g.setFont(new Font("SansSerif", Font.PLAIN, 28));
-        g.drawString(text, x+15, y + 45);
+        g.drawString(English.text(text), x+15, y + 45);
     }
 
     private void drawCoverImage(Graphics2D g, BufferedImage image, int x, int y, int width, int height) {
@@ -738,31 +766,31 @@ public class Menu{
 
         g.setColor(Color.WHITE);
         g.setFont(new Font("SansSerif", Font.BOLD, 18));
-        g.drawString(name, x + 16, y + h - 17);
+        g.drawString(English.text(name), x + 16, y + h - 17);
     }
 
     private void drawCenteredText(Graphics2D g, String text, java.awt.Rectangle bounds, int offsetY) {
         java.awt.FontMetrics metrics = g.getFontMetrics();
 
         int x = bounds.x
-                + (bounds.width - metrics.stringWidth(text)) / 2;
+                + (bounds.width - metrics.stringWidth(English.text(text))) / 2;
 
         int y = bounds.y
                 + (bounds.height - metrics.getHeight()) / 2
                 + metrics.getAscent()
                 + offsetY;
 
-        g.drawString(text, x, y);
+        g.drawString(English.text(text), x, y);
     }
 
     private void drawPageHeader(Graphics2D g, String title, String subtitle, int width) {
         g.setColor(Color.WHITE);
         g.setFont(new Font("SansSerif", Font.BOLD, 36));
-        g.drawString(title, 40, 65);
+        g.drawString(English.text(title), 40, 65);
 
         g.setColor(new Color(165, 180, 200));
         g.setFont(new Font("SansSerif", Font.PLAIN, 17));
-        g.drawString(subtitle, 40, 95);
+        g.drawString(English.text(subtitle), 40, 95);
 
         backBounds.setBounds(width - 170, 35, 130, 44);
 
@@ -900,13 +928,13 @@ public class Menu{
             g.setFont(new Font("SansSerif", Font.BOLD, value.length() > 22 ? 13 : 15));
             FontMetrics metrics = g.getFontMetrics();
             g.setColor(primary ? new Color(12, 35, 40) : WHITE);
-            g.drawString(value, x + (w - metrics.stringWidth(value)) / 2,
+            g.drawString(English.text(value), x + (w - metrics.stringWidth(English.text(value))) / 2,
                     y + (h - metrics.getHeight()) / 2 + metrics.getAscent());
         }
         private void text(Graphics2D g, String value, int x, int y, int size, Color color, boolean bold) {
             g.setColor(color);
             g.setFont(new Font("SansSerif", bold ? Font.BOLD : Font.PLAIN, size));
-            g.drawString(value, x, y);
+            g.drawString(English.text(value), x, y);
         }
     }
 }

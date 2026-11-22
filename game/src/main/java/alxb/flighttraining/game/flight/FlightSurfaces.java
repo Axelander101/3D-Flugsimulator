@@ -17,6 +17,7 @@ import com.jme3.scene.Spatial;
 
 public final class FlightSurfaces {
 
+    private final AircraftRig mechanicalRig;
     private final FlightInput input;
     private final FlightPhysics physics;
     private final Node plane;
@@ -77,6 +78,7 @@ public final class FlightSurfaces {
         this.assetManager = assetManager;
         this.plane = plane;
         initSurfaces(model);
+        mechanicalRig=new AircraftRig(model,physics.getSystems());
         wingVaporLeft = createWingVapor(plane, assetManager, "WingVapor.L",
                 new Vector3f(-0.6f, 0.3f, -1f));
         wingVaporRight = createWingVapor(plane, assetManager, "WingVapor.R",
@@ -85,6 +87,7 @@ public final class FlightSurfaces {
 
     public void update(float tpf) {
         updateControlSurfaces(tpf);
+        mechanicalRig.update();
         updateWingVapor();
     }
 

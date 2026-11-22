@@ -18,7 +18,8 @@ public final class Bullet {
 
     public void rebase(Vector3f delta){position.subtractLocal(delta);}
 
-    public boolean update(float tpf, Node targets) {
+    public boolean update(float tpf,Node targets){return update(tpf,targets,p->{});}
+    public boolean update(float tpf, Node targets, java.util.function.Consumer<Vector3f> hitListener) {
         if (tpf <= 0f) return false;
         life -= tpf;
 
@@ -34,7 +35,7 @@ public final class Bullet {
 
             for (CollisionResult hit : results) {
                 if (hit.getDistance() <= distance) {
-                    System.out.println("Treffer bei " + hit.getContactPoint());
+                    hitListener.accept(hit.getContactPoint().clone());
                     return true;
                 }
             }

@@ -11,7 +11,7 @@ import java.util.Locale;
 /** Live flight instruments drawn onto the actual 3D display surfaces, not a screen overlay. */
 public final class FlightHud {
     private static final Color GREEN = new Color(96, 255, 140), DIM = new Color(22, 89, 53);
-    private static final Font FONT = new Font(Font.MONOSPACED, Font.PLAIN, 28);
+    private static final Font FONT = new Font(Font.MONOSPACED, Font.BOLD, 36);
     private final CockpitTexture hud, radar, flight, navigation, scratchpad;
     private final Node plane;
     private final Enemy enemies;
@@ -69,12 +69,12 @@ public final class FlightHud {
     }
     private void paintHud(FlightPhysics p, float altitude) {
         Graphics2D g = hud.begin(true); g.setColor(GREEN); g.setStroke(new BasicStroke(2.4f));
-        g.setFont(FONT.deriveFont(Font.BOLD, 35));
+        g.setFont(FONT.deriveFont(Font.BOLD, 46));
         g.drawRect(10, 130, 147, 49); g.drawRect(334, 130, 168, 49);
         g.drawString(number(p.getAirspeed(), "%3.0f"), 25, 167);
         String alt = number(altitude, "%5.0f"); g.drawString(alt, 492 - g.getFontMetrics().stringWidth(alt), 167);
         g.setFont(FONT.deriveFont(21f)); g.drawString("TAS m/s", 18, 119); g.drawString("ALT m", 364, 119);
-        g.setFont(FONT.deriveFont(26f));
+        g.setFont(FONT.deriveFont(36f));
         String hdg = number(heading(), "%03.0f"); g.drawString(hdg, 232, 64);
         for (int i = -3; i <= 3; i++) g.drawLine(256 + i * 31, 75, 256 + i * 31, i == 0 ? 94 : 86);
         g.drawOval(243, 239, 26, 26); g.drawLine(222, 252, 243, 252);
@@ -94,33 +94,59 @@ public final class FlightHud {
         if (p.isStalling()) { g.setColor(new Color(255, 195, 75)); g.drawString("HIGH AOA", 196, 345); }
         hud.upload(g);
     }
-    private void paintFlight(FlightPhysics p, float altitude) {
-        Graphics2D g = flight.begin(false); heading(g, "FLIGHT / AIRDATA");
-        row(g, 103, "TAS", number(p.getAirspeed(), "%.0f") + " m/s");
-        row(g, 148, "EAS", number(p.getEquivalentAirspeed(), "%.0f") + " m/s");
-        row(g, 193, "MACH", number(p.getMach(), "%.2f"));
-        row(g, 238, "ALT", number(altitude, "%.0f") + " m");
-        row(g, 283, "AOA", number(-p.getAngleOfAttack(), "%+.1f") + " deg");
-        row(g, 328, "G LOAD", number(p.getNormalG(), "%+.1f") + " g");
-        row(g, 373, "V/S", number(p.getVerticalSpeed(), "%+.0f") + " m/s");
-        row(g, 420, "THR", number(p.getThrottle() * 100, "%.0f") + " %");
-        g.setColor(DIM); g.fillRect(26, 453, 458, 18); g.setColor(GREEN);
-        g.fillRect(26, 453, (int) (458 * Math.max(0, Math.min(1, p.getThrottle()))), 18);
+    private static void cell(Graphics2D g,int x,int y,String label,String value){
+        g.setColor(GREEN);g.setFont(FONT.deriveFont(27f));g.drawString(label,x,y);
+        g.setFont(FONT.deriveFont(54f));g.drawString(value,x,y+57);
+    }
+    private void paintFlight(FlightPhysics p,float altitude){
+        Graphics2D g=flight.begin(false);heading(g,"FLIGHT");
+        cell(g,22,92,"TAS m/s",number(p.getAirspeed(),"%.0f"));
+        cell(g,275,92,"ALT m",number(altitude,"%.0f"));
+        cell(g,22,199,"MACH",number(p.getMach(),"%.2f"));
+        cell(g,275,199,"G LOAD",number(p.getNormalG(),"%+.1f"));
+        cell(g,22,306,"AOA deg",number(-p.getAngleOfAttack(),"%+.1f"));
+        cell(g,275,306,"V/S m/s",number(p.getVerticalSpeed(),"%+.0f"));
+        cell(g,22,413,"EAS m/s",number(p.getEquivalentAirspeed(),"%.0f"));
+        cell(g,275,413,"THR %",number(p.getThrottle()*100,"%.0f"));
         flight.upload(g);
     }
-    private void paintNavigation(FlightPhysics p) {
-        Graphics2D g = navigation.begin(false); heading(g, "NAV / FLIGHT / STORES");
-        row(g, 103, "HDG", number(heading(), "%03.0f") + " deg");
-        row(g, 150, "BETA", number(p.getSideSlipAngle(), "%+.1f") + " deg");
-        row(g, 197, "PATH", number(p.getFlightPathAngle(), "%+.1f") + " deg");
-        row(g, 244, "PITCH RATE", number(p.getPitchSpeed(), "%+.3f"));
-        g.setFont(FONT.deriveFont(20f)); g.drawString("rad/s", 412, 270); g.setFont(FONT);
-        row(g, 312, "IR MISSILES", missiles + " / 4");
-        row(g, 359, "RELEASE", !weaponsEnabled ? "SAFE" : missiles == 0 ? "IR EMPTY" : "IR READY");
-        row(g, 406, "THROTTLE", number(p.getThrottle() * 100, "%.0f") + " %");
-        g.setFont(FONT.deriveFont(19f)); g.drawString("ARROWS / RMB: LOOK   HOME: CENTER", 22, 462);
-        g.drawString("SPACE: CANNON    M: MISSILE", 22, 490);
+    private static void status(Graphics2D g,int y,String key,String value){
+        g.setColor(GREEN);g.setFont(FONT.deriveFont(27f));g.drawString(key,24,y);
+        g.setFont(FONT.deriveFont(43f));g.drawString(value,24,y+42);
+    }
+    private void paintNavigation(FlightPhysics p){
+        if(!p.getSystems().isSystemsPage()){paintNavigationData(p);return;}
+        var state=p.getSystems();Graphics2D g=navigation.begin(false);
+        heading(g,state.isAirframePage()?"AIRFRAME":"LANDING / SYSTEMS");
+        if(state.isAirframePage()){
+            status(g,88,"CANOPY [C]",state.getCanopy()<.01f?"CLOSED":state.getCanopy()>.99f?"OPEN":"MOVING");
+            status(g,164,"HOOK [H]",state.getHook()>.99f?"DOWN":state.getHook()<.01f?"UP":"MOVING");
+            status(g,240,"WING FOLD [K]",state.getWingFold()<.01f?"SPREAD":number(state.getWingFold()*100,"%.0f")+" %");
+            status(g,316,"IR MISSILES",missiles+" / 4");
+            status(g,392,"WEAPONS",weaponsEnabled?"READY":"SAFE");
+        }else{
+            String gear=state.getGear()>.99f?"DOWN":state.getGear()<.01f?"UP":"MOVING";
+            status(g,88,"GEAR [G]",gear);
+            status(g,164,"BRAKE [B/P]",state.isParkingBrake()?"PARK":state.getBrake()>.5f?"ON":"OFF");
+            status(g,240,"AIRBRAKE [X]",number(state.getAirbrake()*100,"%.0f")+" %");
+            status(g,316,"FLAPS [L]",state.getFlapMode().toString());
+            status(g,392,"ENGINE [I]",p.isEngineRunning()?"RUN":"OFF");
+        }
+        g.setFont(FONT.deriveFont(22f));
+        if(!state.getNotice().isEmpty()){
+            g.setColor(new Color(255,195,75));g.drawString(state.getNotice(),22,466);
+        }
+        g.setColor(GREEN);g.drawString("TAB: SYSTEMS   V: NAV   Z: ZOOM",22,496);
         navigation.upload(g);
+    }
+    private void paintNavigationData(FlightPhysics p){
+        Graphics2D g=navigation.begin(false);heading(g,"NAVIGATION");
+        status(g,88,"HEADING deg",number(heading(),"%03.0f"));
+        status(g,164,"BETA deg",number(p.getSideSlipAngle(),"%+.1f"));
+        status(g,240,"FLIGHT PATH deg",number(p.getFlightPathAngle(),"%+.1f"));
+        status(g,316,"PITCH RATE rad/s",number(p.getPitchSpeed(),"%+.2f"));
+        status(g,392,"IR / RELEASE",missiles+" / "+(weaponsEnabled?"READY":"SAFE"));
+        g.setFont(FONT.deriveFont(22f));g.drawString("V: SYSTEMS   Z: INSTRUMENT ZOOM",22,496);navigation.upload(g);
     }
     private void paintRadar() {
         Graphics2D g = radar.begin(false); heading(g, "RADAR / 5 km");
@@ -145,7 +171,7 @@ public final class FlightHud {
         radar.upload(g);
     }
     private void paintScratchpad() {
-        Graphics2D g=scratchpad.begin(false);g.setColor(GREEN);g.setFont(FONT.deriveFont(Font.BOLD,38));
+        Graphics2D g=scratchpad.begin(false);g.setColor(GREEN);g.setFont(FONT.deriveFont(Font.BOLD,46));
         g.drawString(!weaponsEnabled ? "WEAPONS SAFE" : "IR " + missiles + "   " + (missiles>0 ? "READY" : "EMPTY"),18,46);
         scratchpad.upload(g);
     }
