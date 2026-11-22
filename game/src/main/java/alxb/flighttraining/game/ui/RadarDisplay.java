@@ -58,16 +58,16 @@ public class RadarDisplay {
         );
         display.attachChild(playerDot);
 
+        // Convert the existing pixel layout to a physical cockpit display.
+        display.setLocalScale(0.0007f);
+        display.setLocalTranslation(0.065f, 0.285f, -2.32f);
+        display.setQueueBucket(com.jme3.renderer.queue.RenderQueue.Bucket.Translucent);
         guiNode.attachChild(display);
     }
 
     public void update(int screenWidth, int screenHeight) {
 
-            display.setLocalTranslation(
-                    screenWidth - size - 20f,
-                    screenHeight - size - 20f,
-                    0
-            );
+            // Position stays fixed to the aircraft, independently of viewport size.
 
             // Anzahl der Punkte an die Gegnerzahl anpassen.
             while (dots.size() < enemies.getCount()) {

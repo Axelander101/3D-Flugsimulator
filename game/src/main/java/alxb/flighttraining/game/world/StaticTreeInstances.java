@@ -16,6 +16,7 @@ final class StaticTreeInstances extends InstancedGeometry {
     private final float[] localData;
     private final BoundingVolume localBounds;
     private final Vector3f origin=new Vector3f();
+    private boolean originSet;
     private final FloatBuffer data;
     StaticTreeInstances(String name,Geometry source,Material material,List<Matrix4f> transforms){
         super(name);setMesh(source.getMesh());setMaterial(material);count=transforms.size();localData=new float[count*16];
@@ -31,7 +32,8 @@ final class StaticTreeInstances extends InstancedGeometry {
         buffer.setupData(VertexBuffer.Usage.Dynamic,16,VertexBuffer.Format.Float,data);setTransformUserInstanceData(buffer);
     }
     void setOrigin(Vector3f origin){
-        this.origin.set(origin);data.clear();data.put(localData);
+        if(originSet&&this.origin.equals(origin))return;
+        originSet=true;this.origin.set(origin);data.clear();data.put(localData);
         for(int i=0;i<count;i++){int offset=i*16;data.put(offset+12,localData[offset+12]+origin.x);data.put(offset+13,localData[offset+13]+origin.y);data.put(offset+14,localData[offset+14]+origin.z);}
         data.flip();getTransformUserInstanceData().updateData(data);setBoundRefresh();
     }

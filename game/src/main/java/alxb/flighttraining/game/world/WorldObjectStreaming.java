@@ -29,6 +29,18 @@ final class WorldObjectStreaming implements AutoCloseable {
     private final Map<String,Node> batches=new HashMap<>();
     private final Map<String,Long> dirtyBatches=new LinkedHashMap<>();
     private Entry warmingEntry;
+    private Future<Spatial> preparing;
+    private Entry preparingEntry;
+    private Spatial preparingSource;
+    private Future<Node> batchBuild;
+    private Node batchWarming;
+    private String batchKey;
+    private double batchOriginX,batchOriginZ;
+    private final WorldUploadQueue batchUploads=new WorldUploadQueue();
+    private final ObjectLoadPriority priority=new ObjectLoadPriority();
+    private Vector3f flightDirection=new Vector3f(0,0,-1),predicted=new Vector3f();
+    private long previousPositionTime;
+    private int uploadFrames;
     private static String cell(Entry e){return (int)Math.floor(e.position.x/400)+":"+(int)Math.floor(e.position.z/400);}
     private void dirty(Entry e){dirtyBatches.putIfAbsent(cell(e),System.nanoTime());}
     private final Function<Vector3f, Float> ground;
@@ -47,7 +59,7 @@ final class WorldObjectStreaming implements AutoCloseable {
             Thread.ofPlatform().daemon().name("world-model-loader").factory());
     private final ModelPreparation preparation = new ModelPreparation();
     private Spatial warming;
-    private final java.util.ArrayDeque<Geometry> uploads = new java.util.ArrayDeque<>();
+    private final WorldUploadQueue uploads = new WorldUploadQueue();
     private Entry pendingEntry;
     private Future<Spatial> pending;
     private boolean closed;
@@ -167,7 +179,14 @@ final class WorldObjectStreaming implements AutoCloseable {
         landscape.update(player,camera);
         float groundY=ground.apply(player);currentAgl=Float.isFinite(groundY)?Math.max(0,player.y-groundY):Math.max(0,player.y);
         activeRange=Math.min(LOAD_RANGE,Math.min(WorldDetailSettings.renderDistance(),camera==null?LOAD_RANGE:camera.getFrustumFar()));
-        Vector3f absolutePlayer=coordinates.absolute(player);lastAbsolute=absolutePlayer;
+        Vector3f absolutePlayer=coordinates.absolute(player);
+        long positionTime=System.nanoTime();float elapsed=(positionTime-previousPositionTime)*1e-9f;
+        Vector3f movement=absolutePlayer.subtract(lastAbsolute);movement.y=0;
+        if(previousPositionTime!=0&&elapsed>0&&elapsed<1&&movement.length()/elapsed<1200&&movement.lengthSquared()>.001f){
+            flightDirection=movement.normalize();predicted=absolutePlayer.add(flightDirection.mult(Math.min(3000,movement.length()/elapsed*20)));
+        }else{if(previousPositionTime==0&&camera!=null)flightDirection=new Vector3f(camera.getDirection().x,0,camera.getDirection().z).normalizeLocal();predicted=absolutePlayer;}
+        previousPositionTime=positionTime;lastAbsolute=absolutePlayer;
+        priority.update(absolutePlayer,flightDirection,predicted,activeRange,Float.isFinite(groundY)?groundY:0,camera,coordinates,null);
         Set<Entry> shown=new HashSet<>();
         for(Entry entry:loaded.keySet())if(distance(entry,absolutePlayer)<=activeRange*activeRange)shown.add(entry);
         for(Entry entry:shown)if(!displayedEntries.contains(entry))dirty(entry);
@@ -178,7 +197,7 @@ final class WorldObjectStreaming implements AutoCloseable {
             float d=distance(e.getKey(),absolutePlayer);
             boolean change=!e.getKey().path.startsWith("Textures/SwissAirports/")
                 && lod(e.getKey(),absolutePlayer)!=loadedLods.getOrDefault(e.getKey(),-1)
-                && e.getValue()!=warming && e.getValue()!=groundingModel;
+                && e.getValue()!=warming && e.getValue()!=groundingModel && e.getValue()!=preparingSource;
             if(d<=(activeRange+2500)*(activeRange+2500)&&currentAgl<3000&&!change)return false;
             e.getValue().removeFromParent();dirty(e.getKey());loadedLods.remove(e.getKey());return true;
         });
@@ -216,17 +235,33 @@ final class WorldObjectStreaming implements AutoCloseable {
             if(groundingModel.getParent()==null){grounding=null;groundingModel=null;}
             else if(grounding.step()){
                 // Erst nach Bodenanpassung zusammenfassen, sonst gehen Gebäudepivots verloren.
-                if(groundingModel instanceof Node parent)jme3tools.optimize.GeometryBatchFactory.optimize(parent,false);
                 groundingModel.updateGeometricState();
                 groundedParts+=grounding.completed();
                 maxGroundError=Math.max(maxGroundError,grounding.maxError());pavementVertices+=grounding.pavementVertices();
-                warming=groundingModel;warmingEntry=groundingEntry;collectUploads(warming);grounding=null;groundingModel=null;
+                preparingSource=groundingModel;preparingEntry=groundingEntry;
+                Spatial detached=groundingModel.clone(false);
+                preparing=worker.submit(()->WorldRenderGroups.prepare(detached));
+                grounding=null;groundingModel=null;
             }else if(System.nanoTime()-groundingStarted>10_000_000_000L){
                 groundingModel.removeFromParent();loaded.remove(groundingEntry);
                 retry.put(groundingEntry,System.nanoTime()+2_000_000_000L);grounding=null;groundingModel=null;
             }
         }
-        if (pending != null || warming != null || grounding!=null) return;
+        if(preparing!=null&&preparing.isDone()){
+            try{
+                Spatial result=preparing.get();
+                if(preparingSource.getParent()!=null){
+                    result.setLocalTransform(preparingSource.getLocalTransform());preparingSource.removeFromParent();
+                    node.attachChild(result);loaded.put(preparingEntry,result);
+                    warming=result;warmingEntry=preparingEntry;uploads.add(result);
+                }
+            }catch(InterruptedException ex){Thread.currentThread().interrupt();return;}
+            catch(ExecutionException ex){
+                System.err.println("Objektgruppen konnten nicht erstellt werden: "+ex.getCause());
+                preparingSource.removeFromParent();loaded.remove(preparingEntry);retry.put(preparingEntry,System.nanoTime()+10_000_000_000L);
+            }finally{preparing=null;preparingEntry=null;preparingSource=null;}
+        }
+        if (pending != null || warming != null || grounding!=null || preparing!=null) return;
         long now = System.nanoTime();
         Entry best = null; float bestScore = Float.POSITIVE_INFINITY;
         for (Entry e : entries) {
@@ -234,11 +269,7 @@ final class WorldObjectStreaming implements AutoCloseable {
             float d = distance(e, absolutePlayer);
             if (d > (activeRange+2000)*(activeRange+2000) || currentAgl>=3000) continue;
             if (e.onGround && !Float.isFinite(ground.apply(coordinates.local(e.position.x,0,e.position.z)))) continue;
-            float score = d;
-            if (camera != null) {
-                Vector3f direction = coordinates.local(e.position.x,e.position.y,e.position.z).subtract(camera.getLocation());
-                if (direction.dot(camera.getDirection()) < 0) score += LOAD_RANGE * LOAD_RANGE;
-            }
+            float score=priority.score(e.position.x,e.position.z,(float)Math.sqrt(d),false);
             if (score < bestScore) {bestScore = score; best = e;}
         }
         if (best != null) {
@@ -252,58 +283,62 @@ final class WorldObjectStreaming implements AutoCloseable {
         }
     }
 
-    private void collectUploads(Spatial model) {
-        if (model instanceof Geometry geometry) uploads.add(geometry);
-        if (model instanceof Node parent) for (Spatial child : parent.getChildren()) collectUploads(child);
-    }
-
-    /** Run once per frame from SimpleApplication.simpleRender, with the OpenGL context active. */
+    /** Shared per-frame upload budget for landscape AND airport geometry. */
     void prewarm(com.jme3.renderer.RenderManager manager) {
         if(closed)return;
-        landscape.prewarm(manager);
-        refreshBatch(manager);
+        WorldUploadQueue.Budget budget=new WorldUploadQueue.Budget();
+        // Airport uploads receive a regular turn even during sustained landscape streaming.
+        boolean airportTurn=++uploadFrames%4==0;
+        if(airportTurn)prewarmModels(manager,budget);
+        landscape.prewarm(manager,budget);
+        if(!airportTurn)prewarmModels(manager,budget);
+    }
+    private void prewarmModels(com.jme3.renderer.RenderManager manager,WorldUploadQueue.Budget budget){
+        refreshBatch(manager,budget);
         if(warming==null)return;
-        if (warming.getParent() == null) { uploads.clear(); warming = null; return; }
-        long end=System.nanoTime()+2_000_000;
-        int count=0;
-        while(!uploads.isEmpty() && count++<16 && System.nanoTime()<end)manager.preloadScene(uploads.remove());
-        if (uploads.isEmpty()) {
-            warming.setCullHint(Spatial.CullHint.Inherit);
-            originals.attachChild(warming);
-            warming.updateGeometricState();dirty(warmingEntry);
-            warming = null;warmingEntry=null;
+        if(warming.getParent()==null){uploads.clear();warming=null;warmingEntry=null;return;}
+        if(uploads.advance(manager,budget)){
+            warming.setCullHint(Spatial.CullHint.Inherit);originals.attachChild(warming);
+            warming.updateGeometricState();dirty(warmingEntry);warming=null;warmingEntry=null;
         }
     }
-
-    private void refreshBatch(com.jme3.renderer.RenderManager manager){
-        String selected=null;long now=System.nanoTime();
-        for(var e:dirtyBatches.entrySet())if(now-e.getValue()>750_000_000L){selected=e.getKey();break;}
+    private void refreshBatch(com.jme3.renderer.RenderManager manager){refreshBatch(manager,new WorldUploadQueue.Budget());}
+    private void refreshBatch(com.jme3.renderer.RenderManager manager,WorldUploadQueue.Budget budget){
+        if(batchBuild!=null&&batchBuild.isDone()){
+            try{batchWarming=batchBuild.get();batchUploads.add(batchWarming);}
+            catch(InterruptedException ex){Thread.currentThread().interrupt();return;}
+            catch(ExecutionException ex){System.err.println("Flughafen-Rendergruppe: "+ex.getCause());dirtyBatches.put(batchKey,System.nanoTime());batchKey=null;}
+            finally{batchBuild=null;}
+        }
+        if(batchWarming!=null){
+            if(!batchUploads.advance(manager,budget))return;
+            // Worker snapshots are in the origin that was current when the task started.
+            batchWarming.setLocalTranslation((float)(batchOriginX-coordinates.x()),0,(float)(batchOriginZ-coordinates.z()));
+            Node previous=batches.remove(batchKey);if(previous!=null)previous.removeFromParent();
+            if(batchWarming.getQuantity()>0){node.attachChild(batchWarming);batches.put(batchKey,batchWarming);}
+            batchUploads.clear();batchWarming=null;batchKey=null;
+            if(node.getParent()!=null)node.getParent().updateGeometricState();
+        }
+        if(batchBuild!=null)return;
+        String selected=null;long now=System.nanoTime();float best=Float.POSITIVE_INFINITY;
+        for(var e:dirtyBatches.entrySet())if(now-e.getValue()>100_000_000L){
+            String[] parts=e.getKey().split(":");double x=Integer.parseInt(parts[0])*400.0+200,z=Integer.parseInt(parts[1])*400.0+200;
+            float score=priority.score(x,z,Math.max(0,(float)Math.hypot(x-lastAbsolute.x,z-lastAbsolute.z)-300),false);
+            if(score<best){selected=e.getKey();best=score;}
+        }
         if(selected==null)return;
         dirtyBatches.remove(selected);
-        Node combined=new Node("ObjectCell_"+selected);
-        List<com.jme3.material.Material> materials=new ArrayList<>();
+        Node combined=new Node("ObjectCell_"+selected);List<com.jme3.material.Material> materials=new ArrayList<>();
         for(var e:loaded.entrySet())if(cell(e.getKey()).equals(selected)&&e.getValue().getParent()==originals&&distance(e.getKey(),lastAbsolute)<=activeRange*activeRange){
-            Spatial source=e.getValue();source.updateGeometricState();
-            Spatial copy=source.clone(false);copy.setCullHint(Spatial.CullHint.Dynamic);copy.setLocalTransform(source.getWorldTransform());
+            Spatial source=e.getValue();source.updateGeometricState();Spatial copy=source.clone(false);
+            copy.setCullHint(Spatial.CullHint.Dynamic);copy.setLocalTransform(source.getWorldTransform());
             copy.depthFirstTraversal(part->{if(part instanceof Geometry g){
-                for(var m:materials)if(g.getMaterial().contentEquals(m)){g.setMaterial(m);return;}
-                materials.add(g.getMaterial());
-            }});
-            combined.attachChild(copy);
+                for(var m:materials)if(g.getMaterial().contentEquals(m)){g.setMaterial(m);return;}materials.add(g.getMaterial());
+            }});combined.attachChild(copy);
         }
-        if(combined.getQuantity()>0){
-            combined.updateGeometricState();
-            jme3tools.optimize.GeometryBatchFactory.optimize(combined,false);
-            combined.updateGeometricState();manager.preloadScene(combined);
-            node.attachChild(combined);batches.put(selected,combined);
-        }
-        Node previous=null;
-        // Alte Zell-Geometrie erst nach vollständigem Ersatz entfernen.
-        for(Spatial child:new ArrayList<>(node.getChildren()))
-            if(child!=combined && child.getName().equals("ObjectCell_"+selected)){previous=(Node)child;break;}
-        if(previous!=null)previous.removeFromParent();
-        if(combined.getQuantity()==0)batches.remove(selected);
-        if(node.getParent()!=null)node.getParent().updateGeometricState();
+        batchKey=selected;batchOriginX=coordinates.x();batchOriginZ=coordinates.z();
+        // Neither merging nor mesh partitioning runs in simpleUpdate/simpleRender anymore.
+        batchBuild=worker.submit(()->{combined.updateGeometricState();return(Node)WorldRenderGroups.prepare(combined);});
     }
 
     void normalizeRoot(){
@@ -333,6 +368,7 @@ final class WorldObjectStreaming implements AutoCloseable {
         if (closed) return;
         closed = true;
         if (pending != null) pending.cancel(true);
+        if(preparing!=null)preparing.cancel(true);if(batchBuild!=null)batchBuild.cancel(true);batchUploads.clear();batchWarming=null;
         worker.shutdownNow();osm.close();landscape.close();
         loaded.clear(); entries.clear(); retry.clear(); uploads.clear(); warming = null;
         originals.detachAllChildren();batches.clear();dirtyBatches.clear();displayedEntries.clear();

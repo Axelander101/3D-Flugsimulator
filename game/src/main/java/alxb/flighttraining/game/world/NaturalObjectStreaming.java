@@ -34,7 +34,7 @@ final class NaturalObjectStreaming implements AutoCloseable {
         Future<MapCellMesh.Built> building;
         MapCellPlan plan;
         MapCellMesh.Built ready;
-        final ArrayDeque<Spatial> uploads=new ArrayDeque<>();
+        final WorldUploadQueue uploads=new WorldUploadQueue();
         long retryAfter;
         Job(Key key,int lod,Vector3f player){
             this.key=key;this.lod=lod;revision=groundRevisions.getOrDefault(key,0L);
@@ -67,6 +67,9 @@ final class NaturalObjectStreaming implements AutoCloseable {
     private Vector3f lastAbsolute,absolute=new Vector3f(),velocity=new Vector3f();
     private long lastTime,nextSchedule;
     private boolean closed,fadeDisabled;
+    private final ObjectLoadPriority priority=new ObjectLoadPriority();
+    private int coarseAdmissions,uploadFrames;
+    private float score(Key key,boolean detail){return priority.score(key.x()+500,key.z()-500,key.distance(absolute),detail);}
 
     NaturalObjectStreaming(AssetManager assets,Node parent,Function<Vector3f,Float> ground,WorldCoordinates coordinates,List<Vector3f> airports){this(assets,parent,ground,coordinates,airports,()->null);}
     NaturalObjectStreaming(AssetManager assets,Node parent,Function<Vector3f,Float> ground,WorldCoordinates coordinates,List<Vector3f> airports,Supplier<TerrainHeightSnapshot> snapshots){
@@ -97,8 +100,8 @@ final class NaturalObjectStreaming implements AutoCloseable {
         Vector3f forward=horizontal.lengthSquared()>25?horizontal.normalize():camera==null?new Vector3f(0,0,-1):new Vector3f(camera.getDirection().x,0,camera.getDirection().z).normalizeLocal();
         Vector3f predicted=absolute.add(forward.mult(ahead));
         TerrainHeightSnapshot snapshot=snapshots.get();
+        priority.update(absolute,forward,predicted,far,Float.isFinite(floor)?floor:0,camera,coordinates,snapshot);
         advanceJobs(snapshot,now);
-        resumeGroundJobs(snapshot,now);
         updateVisibility(now);
         loaded.entrySet().removeIf(e->{
             if(e.getKey().distance(absolute)<=far+PREFETCH_MARGIN+1000||e.getKey().distance(predicted)<=far+1000)return false;
@@ -112,7 +115,7 @@ final class NaturalObjectStreaming implements AutoCloseable {
         nextSchedule=now+30_000_000L;
         int east=(int)Math.floor((absolute.x+2621500)/1000),north=(int)Math.floor((1092500-absolute.z)/1000);
         int radius=(int)Math.ceil((far+PREFETCH_MARGIN+ahead)/1000);
-        record Candidate(Key key,int lod,float score){}
+        record Candidate(Key key,int lod,float score,Job waiting){}
         List<Candidate> candidates=new ArrayList<>();
         List<Key> metadata=new ArrayList<>();
         for(int dx=-radius;dx<=radius;dx++)for(int dz=-radius;dz<=radius;dz++){
@@ -127,25 +130,36 @@ final class NaturalObjectStreaming implements AutoCloseable {
             Resident resident=loaded.get(key);
             int wanted=WorldDetailSettings.lod(distance,agl,far);
             if(resident!=null)wanted=WorldDetailSettings.stableLod(distance,agl,far,resident.lod);
-            int tier;
-            if(resident==null){wanted=3;tier=distance<far?0:futureDistance<far?1:3;}
+            if(resident==null){wanted=3;}
             else{
                 if(distance>far||transitions.containsKey(key))continue;
                 if(wanted==resident.lod&&resident.revision>=groundRevisions.getOrDefault(key,0L))continue;
-                tier=2;
+                if(wanted<resident.lod&&!priority.visible(key.x()+500,key.z()-500,500))continue;
             }
-            float facing=(float)((key.x()+500-absolute.x)*forward.x+(key.z()-500-absolute.z)*forward.z);
-            float priority=Math.min(key.centerDistance(absolute),key.centerDistance(predicted)+ahead*.35f)+(facing<0?350:0);
-            candidates.add(new Candidate(key,wanted,tier*100000f+priority));
+            candidates.add(new Candidate(key,wanted,score(key,resident!=null),null));
+        }
+        // Resumable jobs compete with fresh work; neither queue can bypass visibility priority.
+        if(snapshot!=null)for(Job job:waitingForGround.values()){
+            if(now<job.retryAfter||!snapshot.covers(job.plan.requiredGrids))continue;
+            candidates.add(new Candidate(job.key,job.lod,score(job.key,loaded.containsKey(job.key)),job));
         }
         candidates.sort(Comparator.comparingDouble(Candidate::score));
         long detailJobs=jobs.values().stream().filter(job->job.lod<3).count();
-        for(Candidate candidate:candidates){
-            if(jobs.size()>=MAX_JOBS)break;
+        while(!candidates.isEmpty()&&jobs.size()<MAX_JOBS){
+            int index=0;
+            // Reserve every eighth coarse admission for the sides/rear: continuous turns must not starve them.
+            if(coarseAdmissions%8==7)for(int i=0;i<candidates.size();i++){
+                if(ObjectLoadPriority.tier(candidates.get(i).score)==ObjectLoadPriority.SURROUNDINGS){index=i;break;}
+            }
+            Candidate candidate=candidates.remove(index);
             if(candidate.lod<3&&detailJobs>=MAX_DETAIL_JOBS)continue;
-            jobs.put(candidate.key,new Job(candidate.key,candidate.lod,absolute));if(candidate.lod<3)detailJobs++;
+            Job job=candidate.waiting;
+            if(job==null)job=new Job(candidate.key,candidate.lod,absolute);
+            else waitingForGround.remove(candidate.key);
+            jobs.put(candidate.key,job);
+            if(candidate.lod<3)detailJobs++;else coarseAdmissions++;
         }
-        metadata.sort(Comparator.comparingDouble(key->Math.min(key.centerDistance(absolute),key.centerDistance(predicted)+ahead*.3f)));
+        metadata.sort(Comparator.comparingDouble(key->score(key,false)));
         for(Key key:metadata){if(metadataLoads.size()>=2)break;metadataLoads.put(key,worker.submit(()->readCell(key)));}
     }
     private void advanceJobs(TerrainHeightSnapshot snapshot,long now){
@@ -162,7 +176,9 @@ final class NaturalObjectStreaming implements AutoCloseable {
                     if(job.ready!=null){
                         if(fadeDisabled)WorldObjectFade.fallback(job.ready.node(),assets);
                         WorldObjectFade.prepare(job.ready.node());
-                        job.uploads.addAll(job.ready.node().getChildren());job.plan=null;
+                        job.ready.node().setLocalTranslation(coordinates.local(job.key.x(),0,job.key.z()));
+                        updateInstanceOrigin(job.ready.node());
+                        job.uploads.add(job.ready.node());job.plan=null;
                     }else{job.retryAfter=now+500_000_000L;park(job);iterator.remove();continue;}
                 }
                 if(job.plan!=null&&job.building==null&&now>=job.retryAfter){
@@ -192,17 +208,6 @@ final class NaturalObjectStreaming implements AutoCloseable {
             waitingForGround.remove(farthest);
         }
     }
-    private void resumeGroundJobs(TerrainHeightSnapshot snapshot,long now){
-        if(snapshot==null)return;
-        List<Job> waiting=waitingForGround.values().stream().sorted(Comparator.comparingDouble(job->(job.lod<3?100000:0)+job.key.centerDistance(absolute))).toList();
-        long detailed=jobs.values().stream().filter(job->job.lod<3).count();
-        for(Job job:waiting){
-            if(jobs.size()>=MAX_JOBS)break;
-            if(job.lod<3&&detailed>=MAX_DETAIL_JOBS)continue;
-            if(now<job.retryAfter||!snapshot.covers(job.plan.requiredGrids))continue;
-            waitingForGround.remove(job.key);jobs.put(job.key,job);if(job.lod<3)detailed++;
-        }
-    }
     private void drainMetadata(long now){
         var iterator=metadataLoads.entrySet().iterator();
         while(iterator.hasNext()){
@@ -230,29 +235,37 @@ final class NaturalObjectStreaming implements AutoCloseable {
         // Prepared meshes outside the display circle remain resident without being rendered.
         for(var entry:loaded.entrySet())if(entry.getKey().distance(absolute)>far+100&&!transitions.containsKey(entry.getKey()))entry.getValue().node.removeFromParent();
     }
-    void prewarm(RenderManager manager){
+    void prewarm(RenderManager manager){prewarm(manager,new WorldUploadQueue.Budget());}
+    void prewarm(RenderManager manager,WorldUploadQueue.Budget budget){
         if(closed)return;
-        long end=System.nanoTime()+2_000_000;int uploads=0,installed=0;
-        List<Job> ready=jobs.values().stream().filter(job->job.ready!=null).sorted(Comparator.comparingDouble(job->job.key.centerDistance(absolute))).toList();
-        for(Job job:ready){
-            while(!job.uploads.isEmpty()&&uploads<4&&System.nanoTime()<end){
-                Spatial part=job.uploads.peek();
-                try{manager.preloadScene(part);}
-                catch(RuntimeException ex){
-                    if(!WorldObjectFade.supported(part))throw ex;
-                    // Optional transition shaders must not make the game unusable on another driver.
-                    fadeDisabled=true;
-                    System.err.println("Objekt-Überblendung deaktiviert: "+ex.getMessage());
-                    for(Resident resident:loaded.values())WorldObjectFade.fallback(resident.node,assets);
-                    for(Transition transition:transitions.values())if(transition.outgoing!=null)transition.outgoing.removeFromParent();
-                    transitions.clear();
-                    for(Job waiting:jobs.values())if(waiting.ready!=null)WorldObjectFade.fallback(waiting.ready.node(),assets);
-                    manager.preloadScene(part);
-                }
-                job.uploads.remove();uploads++;
+        int installed=0;
+        List<Job> ready=jobs.values().stream().filter(job->job.ready!=null)
+                .sorted(Comparator.comparingDouble(job->score(job.key,loaded.containsKey(job.key)))).toList();
+        if(++uploadFrames%8==0){
+            List<Job> fair=new ArrayList<>(ready);
+            for(int i=0;i<fair.size();i++)if(ObjectLoadPriority.tier(score(fair.get(i).key,loaded.containsKey(fair.get(i).key)))==ObjectLoadPriority.SURROUNDINGS){
+                Job background=fair.remove(i);fair.add(0,background);break;
             }
-            if(!job.uploads.isEmpty())continue;
-            install(job);jobs.remove(job.key);if(++installed>=2||System.nanoTime()>=end)break;
+            ready=fair;
+        }
+        for(Job job:ready){
+            if(!budget.available())break;
+            Node node=job.ready.node();node.setLocalTranslation(coordinates.local(job.key.x(),0,job.key.z()));updateInstanceOrigin(node);
+            boolean complete;
+            try{complete=job.uploads.advance(manager,budget);}
+            catch(RuntimeException ex){
+                if(!WorldObjectFade.supported(node))throw ex;
+                fadeDisabled=true;System.err.println("Objekt-Überblendung deaktiviert: "+ex.getMessage());
+                for(Resident resident:loaded.values())WorldObjectFade.fallback(resident.node,assets);
+                for(Transition transition:transitions.values())if(transition.outgoing!=null)transition.outgoing.removeFromParent();
+                transitions.clear();
+                for(Job waiting:jobs.values())if(waiting.ready!=null){
+                    WorldObjectFade.fallback(waiting.ready.node(),assets);waiting.uploads.clear();waiting.uploads.add(waiting.ready.node());
+                }
+                break; // Retry the replacement material on the next frame, within the same budget.
+            }
+            if(!complete)continue;
+            install(job);jobs.remove(job.key);if(++installed>=2)break;
         }
         if(installed>0&&root.getParent()!=null)root.getParent().updateGeometricState();
     }

@@ -36,11 +36,17 @@ final class MapCellMesh {
     });}
     private List<Geometry> prototype(String name){return prototypes.computeIfAbsent(name,key->{
         Spatial s=assets.loadModel("Textures/SwissNature/Models/"+name+".glb");s.updateGeometricState();
-        List<Geometry> result=new ArrayList<>();s.depthFirstTraversal(part->{if(part instanceof Geometry g)result.add(g);});return result;
+        List<Geometry> result=new ArrayList<>();s.depthFirstTraversal(part->{if(part instanceof Geometry g){
+            boolean oversized=false;for(VertexBuffer buffer:g.getMesh().getBufferList())if(buffer.getData()!=null&&WorldUploadQueue.bytes(buffer)>98304)oversized=true;
+            if(oversized)for(Geometry group:WorldRenderGroups.split(g)){
+                group.setLocalTransform(g.getWorldTransform());group.updateGeometricState();result.add(group);
+            }else result.add(g);
+        }});return result;
     });}
     Built build(MapCellPlan plan){
         Node result=new Node("MapCell_"+plan.cell.key());Map<Material,WorldMeshBuilder> meshes=new LinkedHashMap<>();
-        Map<Geometry,List<Matrix4f>> instances=new LinkedHashMap<>();
+        record InstanceGroup(Geometry geometry,int x,int z) {}
+        Map<InstanceGroup,List<Matrix4f>> instances=new LinkedHashMap<>();
         Map<Geometry,Material> instanceTypes=new HashMap<>();
         for(MapCellPlan.Tree t:plan.trees){
             float y=plan.heights.get(t.heightIndex());if(!Float.isFinite(y))continue;
@@ -56,7 +62,8 @@ final class MapCellMesh {
                 String kind=mat!=null&&mat.startsWith("Impostor_")?mat:mat!=null&&mat.contains("Bark")?"Bark":species.equals("Beech")?"Leaves":"Needles";
                 Material material=foliage(kind);WorldMeshBuilder mesh=meshes.computeIfAbsent(material,k->new WorldMeshBuilder());
                 if(t.lod()<2){
-                    instances.computeIfAbsent(geometry,k->new ArrayList<>()).add(model.mult(geometry.getWorldTransform().toTransformMatrix()));
+                    InstanceGroup group=new InstanceGroup(geometry,(int)Math.floor(t.x()/WorldRenderGroups.GROUP_SIZE),(int)Math.floor(t.z()/WorldRenderGroups.GROUP_SIZE));
+                    instances.computeIfAbsent(group,k->new ArrayList<>()).add(model.mult(geometry.getWorldTransform().toTransformMatrix()));
                     instanceTypes.put(geometry,material);continue;
                 }
                 float tint=.88f+MapCell.random(seed,8)*.18f;
@@ -65,13 +72,16 @@ final class MapCellMesh {
             }
         }
         for(var e:instances.entrySet()){
-            Material material=instanceMaterials.computeIfAbsent(instanceTypes.get(e.getKey()),m->{Material copy=m.clone();copy.setBoolean("UseInstancing",true);copy.setBoolean("UseVertexColor",false);return copy;});
-            result.attachChild(new StaticTreeInstances("TreeInstances",e.getKey(),material,e.getValue()));
+            Material material=instanceMaterials.computeIfAbsent(instanceTypes.get(e.getKey().geometry()),m->{Material copy=m.clone();copy.setBoolean("UseInstancing",true);copy.setBoolean("UseVertexColor",false);return copy;});
+            for(int start=0;start<e.getValue().size();start+=WorldRenderGroups.MAX_INSTANCES){
+                List<Matrix4f> group=e.getValue().subList(start,Math.min(start+WorldRenderGroups.MAX_INSTANCES,e.getValue().size()));
+                result.attachChild(new StaticTreeInstances("TreeInstances",e.getKey().geometry(),material,group));
+            }
         }
         WorldMeshBuilder walls=meshes.computeIfAbsent(facade,k->new WorldMeshBuilder());
         WorldMeshBuilder roofs=meshes.computeIfAbsent(roof,k->new WorldMeshBuilder());
         for(MapCellPlan.Building b:plan.buildings)building(plan,b,walls,roofs);
-        int i=0;for(var e:meshes.entrySet()){Geometry g=e.getValue().finish("MapMesh_"+i++,e.getKey());if(g!=null)result.attachChild(g);}
+        int i=0;for(var e:meshes.entrySet()){Geometry g=e.getValue().finish("MapMesh_"+i++,e.getKey());if(g!=null)for(Geometry part:WorldRenderGroups.split(g))result.attachChild(part);}
         result.updateGeometricState();return new Built(result,plan.trees.size(),plan.buildings.size(),plan.level);
     }
     private static List<Vector3f> ring(JsonArray p,float y){

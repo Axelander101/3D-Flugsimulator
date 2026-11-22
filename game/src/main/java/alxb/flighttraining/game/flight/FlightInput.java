@@ -33,6 +33,7 @@ public final class FlightInput {
     public boolean throttleDown;
 
     public boolean shoot;
+    public boolean infraredMissile;
 
     public FlightInput(InputManager inputManager) {
         this.inputManager = inputManager;
@@ -55,6 +56,7 @@ public final class FlightInput {
 
 
         inputManager.addMapping("Shoot", new KeyTrigger(KeyInput.KEY_SPACE));
+        inputManager.addMapping("InfraredMissile", new KeyTrigger(KeyInput.KEY_M));
 
         inputManager.addListener(actionListener,
                 "PitchUp",
@@ -65,7 +67,8 @@ public final class FlightInput {
                 "YawRight",
                 "ThrottleUp",
                 "ThrottleDown",
-                "Shoot"
+                "Shoot",
+                "InfraredMissile"
         );
     }
 
@@ -198,6 +201,10 @@ public final class FlightInput {
 
             case "Shoot":
                 shoot = isPressed;
+                break;
+
+            case "InfraredMissile":
+                infraredMissile = isPressed;
                 break;
         }
     };
