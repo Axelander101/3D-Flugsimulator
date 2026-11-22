@@ -1,0 +1,289 @@
+{
+  "switch": {
+    "seconds": 0.18,
+    "source": "https://freesound.org/s/217499/",
+    "loop": false,
+    "format": "PCM16 mono 44100 Hz",
+    "licence": "http://creativecommons.org/publicdomain/zero/1.0/",
+    "author": "vkproduktion"
+  },
+  "switch_heavy": {
+    "seconds": 0.13151927437641722,
+    "source": "https://freesound.org/s/135567/",
+    "loop": false,
+    "format": "PCM16 mono 44100 Hz",
+    "licence": "https://creativecommons.org/licenses/by/4.0/",
+    "author": "kingsamas"
+  },
+  "gear": {
+    "seconds": 3.1,
+    "source": "https://freesound.org/s/425273/",
+    "loop": false,
+    "format": "PCM16 mono 44100 Hz",
+    "licence": "http://creativecommons.org/publicdomain/zero/1.0/",
+    "author": "77Pacer"
+  },
+  "hydraulics": {
+    "seconds": 1.0,
+    "source": "https://freesound.org/s/871231/",
+    "loop": true,
+    "format": "PCM16 mono 44100 Hz",
+    "licence": "http://creativecommons.org/publicdomain/zero/1.0/",
+    "author": "qubodup"
+  },
+  "caution": {
+    "seconds": 0.19360544217687076,
+    "source": "https://freesound.org/s/389511/",
+    "loop": true,
+    "format": "PCM16 mono 44100 Hz",
+    "licence": "http://creativecommons.org/publicdomain/zero/1.0/",
+    "author": "bbrocer"
+  },
+  "threat": {
+    "seconds": 0.9319954648526078,
+    "source": "https://freesound.org/s/656060/",
+    "loop": false,
+    "format": "PCM16 mono 44100 Hz",
+    "licence": "http://creativecommons.org/publicdomain/zero/1.0/",
+    "author": "adh.dreaming"
+  },
+  "cannon": {
+    "seconds": 2.227981859410431,
+    "source": "https://freesound.org/s/98331/",
+    "loop": true,
+    "format": "PCM16 mono 44100 Hz"
+  },
+  "launch": {
+    "seconds": 1.2,
+    "source": "https://freesound.org/s/162379/",
+    "loop": false,
+    "format": "PCM16 mono 44100 Hz"
+  },
+  "seeker": {
+    "seconds": 9.75,
+    "source": "https://freesound.org/s/569779/",
+    "loop": true,
+    "format": "PCM16 mono 44100 Hz",
+    "processing": "Slowed to 0.4x; playback pitch 0.5 gives 0.2x original as suggested by creator."
+  },
+  "engine_idle": {
+    "seconds": 4.9,
+    "source": "https://freesound.org/people/minian89/sounds/152509/",
+    "loop": true,
+    "format": "PCM16 mono 44100 Hz",
+    "author": "minian89",
+    "licence": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "processing": "Stable 28..33s segment, mono, crossfaded loop, level normalised; designed jet effect, not an original Hornet recording."
+  },
+  "engine_power": {
+    "seconds": 4.9,
+    "source": "https://freesound.org/people/minian89/sounds/152509/",
+    "loop": true,
+    "format": "PCM16 mono 44100 Hz",
+    "author": "minian89",
+    "licence": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "processing": "Stable 45..50s segment, mono, crossfaded loop, level normalised; designed jet effect, not an original Hornet recording."
+  },
+  "afterburner": {
+    "seconds": 6.0,
+    "source": "Original procedural game sound; CC0",
+    "loop": true,
+    "format": "PCM16 mono 44100 Hz"
+  },
+  "wind": {
+    "seconds": 6.0,
+    "source": "Original procedural game sound; CC0",
+    "loop": true,
+    "format": "PCM16 mono 44100 Hz"
+  },
+  "impact": {
+    "seconds": 0.22,
+    "source": "Original procedural game sound; CC0",
+    "loop": false,
+    "format": "PCM16 mono 44100 Hz"
+  },
+  "explosion": {
+    "seconds": 1.3999773242630384,
+    "source": "Original procedural game sound; CC0",
+    "loop": false,
+    "format": "PCM16 mono 44100 Hz"
+  },
+  "touchdown": {
+    "seconds": 0.34997732426303857,
+    "source": "Original procedural game sound; CC0",
+    "loop": false,
+    "format": "PCM16 mono 44100 Hz"
+  },
+  "brakes": {
+    "seconds": 1.2,
+    "source": "Original procedural game sound; CC0",
+    "loop": true,
+    "format": "PCM16 mono 44100 Hz"
+  },
+  "radio": {
+    "seconds": 0.16,
+    "source": "Original procedural game sound; CC0",
+    "loop": false,
+    "format": "PCM16 mono 44100 Hz"
+  },
+  "contact": {
+    "seconds": 0.18,
+    "source": "Original procedural game sound; CC0",
+    "loop": false,
+    "format": "PCM16 mono 44100 Hz"
+  },
+  "stall": {
+    "seconds": 2.043356009070295,
+    "source": "Locally generated with Piper en_US-ljspeech-high; public-domain LJ Speech dataset",
+    "loop": false,
+    "format": "PCM16 mono 44100 Hz",
+    "text": "Caution. High angle of attack."
+  },
+  "terrain": {
+    "seconds": 1.1609977324263039,
+    "source": "Locally generated with Piper en_US-ljspeech-high; public-domain LJ Speech dataset",
+    "loop": false,
+    "format": "PCM16 mono 44100 Hz",
+    "text": "Terrain. Pull up."
+  },
+  "gear_down": {
+    "seconds": 1.3815873015873017,
+    "source": "Locally generated with Piper en_US-ljspeech-high; public-domain LJ Speech dataset",
+    "loop": false,
+    "format": "PCM16 mono 44100 Hz",
+    "text": "Landing gear down."
+  },
+  "gear_up": {
+    "seconds": 1.18421768707483,
+    "source": "Locally generated with Piper en_US-ljspeech-high; public-domain LJ Speech dataset",
+    "loop": false,
+    "format": "PCM16 mono 44100 Hz",
+    "text": "Landing gear up."
+  },
+  "gear_speed": {
+    "seconds": 1.172607709750567,
+    "source": "Locally generated with Piper en_US-ljspeech-high; public-domain LJ Speech dataset",
+    "loop": false,
+    "format": "PCM16 mono 44100 Hz",
+    "text": "Check landing gear."
+  },
+  "engine_off": {
+    "seconds": 0.893968253968254,
+    "source": "Locally generated with Piper en_US-ljspeech-high; public-domain LJ Speech dataset",
+    "loop": false,
+    "format": "PCM16 mono 44100 Hz",
+    "text": "Engines off."
+  },
+  "engine_on": {
+    "seconds": 1.1029478458049886,
+    "source": "Locally generated with Piper en_US-ljspeech-high; public-domain LJ Speech dataset",
+    "loop": false,
+    "format": "PCM16 mono 44100 Hz",
+    "text": "Engines starting."
+  },
+  "g_limit": {
+    "seconds": 0.7198185941043084,
+    "source": "Locally generated with Piper en_US-ljspeech-high; public-domain LJ Speech dataset",
+    "loop": false,
+    "format": "PCM16 mono 44100 Hz",
+    "text": "Over G."
+  },
+  "speed": {
+    "seconds": 0.8475283446712019,
+    "source": "Locally generated with Piper en_US-ljspeech-high; public-domain LJ Speech dataset",
+    "loop": false,
+    "format": "PCM16 mono 44100 Hz",
+    "text": "Overspeed."
+  },
+  "brake_on": {
+    "seconds": 1.3351473922902495,
+    "source": "Locally generated with Piper en_US-ljspeech-high; public-domain LJ Speech dataset",
+    "loop": false,
+    "format": "PCM16 mono 44100 Hz",
+    "text": "Parking brake set."
+  },
+  "brake_off": {
+    "seconds": 1.4164172335600906,
+    "source": "Locally generated with Piper en_US-ljspeech-high; public-domain LJ Speech dataset",
+    "loop": false,
+    "format": "PCM16 mono 44100 Hz",
+    "text": "Parking brake released."
+  },
+  "airport_0": {
+    "seconds": 2.8212244897959184,
+    "source": "Locally generated with Piper en_US-ljspeech-high; public-domain LJ Speech dataset",
+    "loop": false,
+    "format": "PCM16 mono 44100 Hz",
+    "text": "Meiringen airport nearby. Watch for traffic."
+  },
+  "airport_1": {
+    "seconds": 2.507755102040816,
+    "source": "Locally generated with Piper en_US-ljspeech-high; public-domain LJ Speech dataset",
+    "loop": false,
+    "format": "PCM16 mono 44100 Hz",
+    "text": "Emmen airport nearby. Watch for traffic."
+  },
+  "airport_2": {
+    "seconds": 2.6006349206349206,
+    "source": "Locally generated with Piper en_US-ljspeech-high; public-domain LJ Speech dataset",
+    "loop": false,
+    "format": "PCM16 mono 44100 Hz",
+    "text": "Payerne airport nearby. Watch for traffic."
+  },
+  "airport_3": {
+    "seconds": 2.705124716553288,
+    "source": "Locally generated with Piper en_US-ljspeech-high; public-domain LJ Speech dataset",
+    "loop": false,
+    "format": "PCM16 mono 44100 Hz",
+    "text": "Zurich airport nearby. Watch for traffic."
+  },
+  "airport_4": {
+    "seconds": 2.8444444444444446,
+    "source": "Locally generated with Piper en_US-ljspeech-high; public-domain LJ Speech dataset",
+    "loop": false,
+    "format": "PCM16 mono 44100 Hz",
+    "text": "Geneva airport nearby. Watch for traffic."
+  },
+  "airport_5": {
+    "seconds": 3.274013605442177,
+    "source": "Locally generated with Piper en_US-ljspeech-high; public-domain LJ Speech dataset",
+    "loop": false,
+    "format": "PCM16 mono 44100 Hz",
+    "text": "Basel Mulhouse airport nearby. Watch for traffic."
+  },
+  "airport_6": {
+    "seconds": 2.914104308390023,
+    "source": "Locally generated with Piper en_US-ljspeech-high; public-domain LJ Speech dataset",
+    "loop": false,
+    "format": "PCM16 mono 44100 Hz",
+    "text": "Bern Belp airport nearby. Watch for traffic."
+  },
+  "airport_7": {
+    "seconds": 2.9257142857142857,
+    "source": "Locally generated with Piper en_US-ljspeech-high; public-domain LJ Speech dataset",
+    "loop": false,
+    "format": "PCM16 mono 44100 Hz",
+    "text": "Altenrhein airport nearby. Watch for traffic."
+  },
+  "airport_8": {
+    "seconds": 2.8328344671201813,
+    "source": "Locally generated with Piper en_US-ljspeech-high; public-domain LJ Speech dataset",
+    "loop": false,
+    "format": "PCM16 mono 44100 Hz",
+    "text": "Lugano airport nearby. Watch for traffic."
+  },
+  "airport_9": {
+    "seconds": 2.681904761904762,
+    "source": "Locally generated with Piper en_US-ljspeech-high; public-domain LJ Speech dataset",
+    "loop": false,
+    "format": "PCM16 mono 44100 Hz",
+    "text": "Sion airport nearby. Watch for traffic."
+  },
+  "airport_10": {
+    "seconds": 2.589024943310658,
+    "source": "Locally generated with Piper en_US-ljspeech-high; public-domain LJ Speech dataset",
+    "loop": false,
+    "format": "PCM16 mono 44100 Hz",
+    "text": "Grenchen airport nearby. Watch for traffic."
+  }
+}
