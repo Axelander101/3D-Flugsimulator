@@ -1,0 +1,11 @@
+{
+  "changed": [
+    "game/src/main/java/alxb/flighttraining/game/FlightTraining.java",
+    "game/src/main/java/alxb/flighttraining/game/ui/LoadingScreen.java",
+    "game/src/main/resources/Airports/LSZH.png"
+  ],
+  "new": [
+    "game/src/main/java/alxb/flighttraining/game/ui/LoadingScreen.java",
+    "game/src/main/resources/Airports/LSZH.png"
+  ]
+}

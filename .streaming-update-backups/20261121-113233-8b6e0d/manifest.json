@@ -1,0 +1,30 @@
+{
+  "changed": [
+    "game/src/main/resources/MatDefs/WorldObjects/BaseUnshadedFragment.glsllib",
+    "game/src/main/resources/MatDefs/WorldObjects/Unshaded.j3md",
+    "game/src/main/resources/MatDefs/WorldObjects/BaseUnshadedVertex.glsllib",
+    "game/src/main/resources/MatDefs/WorldObjects/Lighting.frag",
+    "game/src/main/resources/MatDefs/WorldObjects/BaseLightingVertex.glsllib",
+    "game/src/main/resources/MatDefs/WorldObjects/Fade.glsllib",
+    "game/src/main/resources/MatDefs/WorldObjects/Unshaded.vert",
+    "game/src/main/resources/MatDefs/WorldObjects/Lighting.j3md",
+    "game/src/main/resources/MatDefs/WorldObjects/NOTICE.txt",
+    "game/src/main/resources/MatDefs/WorldObjects/BaseLightingFragment.glsllib",
+    "game/src/main/resources/MatDefs/WorldObjects/Unshaded.frag",
+    "game/src/main/resources/MatDefs/WorldObjects/Lighting.vert"
+  ],
+  "new": [
+    "game/src/main/resources/MatDefs/WorldObjects/BaseUnshadedFragment.glsllib",
+    "game/src/main/resources/MatDefs/WorldObjects/Unshaded.j3md",
+    "game/src/main/resources/MatDefs/WorldObjects/BaseUnshadedVertex.glsllib",
+    "game/src/main/resources/MatDefs/WorldObjects/Lighting.frag",
+    "game/src/main/resources/MatDefs/WorldObjects/BaseLightingVertex.glsllib",
+    "game/src/main/resources/MatDefs/WorldObjects/Fade.glsllib",
+    "game/src/main/resources/MatDefs/WorldObjects/Unshaded.vert",
+    "game/src/main/resources/MatDefs/WorldObjects/Lighting.j3md",
+    "game/src/main/resources/MatDefs/WorldObjects/NOTICE.txt",
+    "game/src/main/resources/MatDefs/WorldObjects/BaseLightingFragment.glsllib",
+    "game/src/main/resources/MatDefs/WorldObjects/Unshaded.frag",
+    "game/src/main/resources/MatDefs/WorldObjects/Lighting.vert"
+  ]
+}
