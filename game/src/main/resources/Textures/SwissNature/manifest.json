@@ -1,0 +1,178 @@
+[
+  {
+    "id": "Spruce_0_LOD0",
+    "triangles": 3096,
+    "height": 21.0
+  },
+  {
+    "id": "Spruce_0_LOD1",
+    "triangles": 738,
+    "height": 21.0
+  },
+  {
+    "id": "Spruce_0_LOD2",
+    "triangles": 8,
+    "height": 21.0,
+    "type": "crossed side and top impostor rendered from LOD0"
+  },
+  {
+    "id": "Spruce_0_LOD3",
+    "triangles": 8,
+    "height": 21.0,
+    "type": "crossed side and top impostor rendered from LOD0"
+  },
+  {
+    "id": "Spruce_1_LOD0",
+    "triangles": 3096,
+    "height": 22.470000000000002
+  },
+  {
+    "id": "Spruce_1_LOD1",
+    "triangles": 738,
+    "height": 22.470000000000002
+  },
+  {
+    "id": "Spruce_1_LOD2",
+    "triangles": 8,
+    "height": 22.470000000000002,
+    "type": "crossed side and top impostor rendered from LOD0"
+  },
+  {
+    "id": "Spruce_1_LOD3",
+    "triangles": 8,
+    "height": 22.470000000000002,
+    "type": "crossed side and top impostor rendered from LOD0"
+  },
+  {
+    "id": "Fir_0_LOD0",
+    "triangles": 3096,
+    "height": 24.0
+  },
+  {
+    "id": "Fir_0_LOD1",
+    "triangles": 738,
+    "height": 24.0
+  },
+  {
+    "id": "Fir_0_LOD2",
+    "triangles": 8,
+    "height": 24.0,
+    "type": "crossed side and top impostor rendered from LOD0"
+  },
+  {
+    "id": "Fir_0_LOD3",
+    "triangles": 8,
+    "height": 24.0,
+    "type": "crossed side and top impostor rendered from LOD0"
+  },
+  {
+    "id": "Fir_1_LOD0",
+    "triangles": 3096,
+    "height": 25.68
+  },
+  {
+    "id": "Fir_1_LOD1",
+    "triangles": 738,
+    "height": 25.68
+  },
+  {
+    "id": "Fir_1_LOD2",
+    "triangles": 8,
+    "height": 25.68,
+    "type": "crossed side and top impostor rendered from LOD0"
+  },
+  {
+    "id": "Fir_1_LOD3",
+    "triangles": 8,
+    "height": 25.68,
+    "type": "crossed side and top impostor rendered from LOD0"
+  },
+  {
+    "id": "Beech_0_LOD0",
+    "triangles": 1514,
+    "height": 18.0
+  },
+  {
+    "id": "Beech_0_LOD1",
+    "triangles": 756,
+    "height": 18.0
+  },
+  {
+    "id": "Beech_0_LOD2",
+    "triangles": 8,
+    "height": 18.0,
+    "type": "crossed side and top impostor rendered from LOD0"
+  },
+  {
+    "id": "Beech_0_LOD3",
+    "triangles": 8,
+    "height": 18.0,
+    "type": "crossed side and top impostor rendered from LOD0"
+  },
+  {
+    "id": "Beech_1_LOD0",
+    "triangles": 1514,
+    "height": 19.26
+  },
+  {
+    "id": "Beech_1_LOD1",
+    "triangles": 756,
+    "height": 19.26
+  },
+  {
+    "id": "Beech_1_LOD2",
+    "triangles": 8,
+    "height": 19.26,
+    "type": "crossed side and top impostor rendered from LOD0"
+  },
+  {
+    "id": "Beech_1_LOD3",
+    "triangles": 8,
+    "height": 19.26,
+    "type": "crossed side and top impostor rendered from LOD0"
+  },
+  {
+    "id": "Larch_0_LOD0",
+    "triangles": 3096,
+    "height": 20.0
+  },
+  {
+    "id": "Larch_0_LOD1",
+    "triangles": 738,
+    "height": 20.0
+  },
+  {
+    "id": "Larch_0_LOD2",
+    "triangles": 8,
+    "height": 20.0,
+    "type": "crossed side and top impostor rendered from LOD0"
+  },
+  {
+    "id": "Larch_0_LOD3",
+    "triangles": 8,
+    "height": 20.0,
+    "type": "crossed side and top impostor rendered from LOD0"
+  },
+  {
+    "id": "Larch_1_LOD0",
+    "triangles": 3096,
+    "height": 21.400000000000002
+  },
+  {
+    "id": "Larch_1_LOD1",
+    "triangles": 738,
+    "height": 21.400000000000002
+  },
+  {
+    "id": "Larch_1_LOD2",
+    "triangles": 8,
+    "height": 21.400000000000002,
+    "type": "crossed side and top impostor rendered from LOD0"
+  },
+  {
+    "id": "Larch_1_LOD3",
+    "triangles": 8,
+    "height": 21.400000000000002,
+    "type": "crossed side and top impostor rendered from LOD0"
+  }
+]
