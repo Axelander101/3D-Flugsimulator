@@ -1,0 +1,14 @@
+<html>
+<head><title>404 Not Found</title></head>
+<body>
+<h1>404 Not Found</h1>
+<ul>
+<li>Code: NoSuchKey</li>
+<li>Message: The specified key does not exist.</li>
+<li>Key: ch.swisstopo.swissalti3d/swissalti3d_2024_2701-1242/swissalti3d_2024_2701-1242_2_2056_5728.tif</li>
+<li>RequestId: EJ4XNMJXC8GHBDAY</li>
+<li>HostId: PldhqYj8gYTjh3xEbXVvJjcypQ6cPe3hl+RKv/ecsK3U8llWpkAazHVAnFDE3Np2Jnabt9pOhjxnLgLXnrnRB3OHdxxERyFk</li>
+</ul>
+<hr/>
+</body>
+</html>

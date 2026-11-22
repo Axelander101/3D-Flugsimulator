@@ -1,0 +1,13 @@
+{
+  "source": "OpenStreetMap contributors / Geofabrik Switzerland extract",
+  "license": "ODbL 1.0",
+  "downloaded": "2026-11-21",
+  "cellSize": 1000,
+  "axis": "local east, local south; LV95 southwest origin encoded by filename",
+  "counts": {
+    "mappedTrees": 1040153,
+    "buildings": 2813565,
+    "forests": 110106,
+    "cells": 36348
+  }
+}

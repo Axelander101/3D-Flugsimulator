@@ -1,0 +1,29 @@
+[
+  {
+    "file": "FT_IR_Missile_LOD0.glb",
+    "triangles": 3310,
+    "dimensions_blender": [
+      0.5799999833106995,
+      3.059999942779541,
+      0.5799999833106995
+    ]
+  },
+  {
+    "file": "FT_IR_Missile_LOD1.glb",
+    "triangles": 1678,
+    "dimensions_blender": [
+      0.5799999833106995,
+      3.059999942779541,
+      0.5799999833106995
+    ]
+  },
+  {
+    "file": "FT_IR_Missile_LOD2.glb",
+    "triangles": 686,
+    "dimensions_blender": [
+      0.5799999833106995,
+      3.059999942779541,
+      0.5799999833106995
+    ]
+  }
+]
